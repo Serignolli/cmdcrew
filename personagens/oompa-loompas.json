@@ -1,0 +1,144 @@
+{
+  "id": "oompa-loompas",
+  "nome": "Oompa-Loompas",
+  "categoria": "Fábrica de Chocolate",
+  "descricao": "Os funcionários mais dedicados da fábrica. Martelam, carregam barras de chocolate e cantam uma musiquinha de moral a cada bug.",
+  "efeito": "notas",
+  "carga": "chocolate",
+  "sprites": {
+    "andar": [
+      [
+        "......HHHH......",
+        ".....HHHHHH.....",
+        "....HHHHHHHH....",
+        "....SEESSEES....",
+        "....SSKSSKSS....",
+        "....SSSSSSSS....",
+        ".....SSKKSS.....",
+        "......SSSS......",
+        "...CCOOOOOOCC...",
+        "..SCCOOAAOOCCS..",
+        "..S.COOOOOOC.S..",
+        "....OOOOOOOO....",
+        "....OOO..OOO....",
+        "...OO....OO.....",
+        "..BBB.....BBB...",
+        "................"
+      ],
+      [
+        "................",
+        "......HHHH......",
+        ".....HHHHHH.....",
+        "....HHHHHHHH....",
+        "....SEESSEES....",
+        "....SSKSSKSS....",
+        "....SSSSSSSS....",
+        ".....SSKKSS.....",
+        "......SSSS......",
+        "...CCOOOOOOCC...",
+        "...SCOOAAOOCS...",
+        "...S.OOOOOO.S...",
+        "....OOOOOOOO....",
+        ".....OOOOOO.....",
+        ".....BB..BB.....",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        "......HHHH..TTT.",
+        ".....HHHHHH.TTT.",
+        "....HHHHHHHH.G..",
+        "....SEESSEES.G..",
+        "....SSKSSKSSSG..",
+        "....SSSSSSSS.S..",
+        ".....SSKKSS..S..",
+        "......SSSS...C..",
+        "...CCOOOOOOCCC..",
+        "..SCCOOAAOOO....",
+        "..S.COOOOOOO....",
+        "....OOOOOOOO....",
+        "....OOO..OOO....",
+        "...OO....OO.....",
+        "..BBB.....BBB...",
+        "................"
+      ],
+      [
+        "......HHHH......",
+        ".....HHHHHH.....",
+        "....HHHHHHHH....",
+        "....SEESSEES....",
+        "....SSKSSKSS....",
+        "....SSSSSSSS....",
+        ".....SSKKSS.....",
+        "......SSSS......",
+        "...CCOOOOOOCC...",
+        "..SCCOOAAOOCCS..",
+        "..S.COOOOOOC.SGG",
+        "....OOOOOOOO..G.",
+        "....OOO..OOO..G.",
+        "...OO....OO..TTT",
+        "..BBB.....BBBTTT",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "classico",
+      "nome": "Clássico (cabelo verde)",
+      "cores": { "H": "#3fa34d", "S": "#f08a24", "E": "#ffffff", "K": "#2b1a12", "C": "#6b3e1f", "O": "#f4f1e8", "A": "#c9a227", "B": "#3b2414", "T": "#8a8f98", "G": "#7a4a21" }
+    },
+    {
+      "id": "moderno",
+      "nome": "Moderno (macacão vermelho)",
+      "cores": { "H": "#2b1d14", "S": "#8d5a3b", "E": "#2b1d14", "K": "#1b1b1b", "C": "#9e1f18", "O": "#c62828", "A": "#ffd54f", "B": "#222222" }
+    },
+    {
+      "id": "algodao-doce",
+      "nome": "Algodão-doce",
+      "cores": { "H": "#ff8fc8", "S": "#ffb070", "C": "#ffffff", "O": "#8ecdf5", "A": "#ff5fa2", "B": "#5a3d7a" }
+    },
+    {
+      "id": "menta",
+      "nome": "Menta com chocolate",
+      "cores": { "H": "#5a3217", "S": "#f2a65a", "C": "#3e2410", "O": "#9be3c6", "A": "#5a3217", "B": "#3e2410" }
+    }
+  ],
+  "verbos": [
+    "Loompando",
+    "Doompetiando",
+    "Mexendo o rio de chocolate",
+    "Temperando o caramelo",
+    "Testando chicletes de três pratos",
+    "Polindo bilhetes dourados",
+    "Enrolando balas",
+    "Compondo uma canção de moral",
+    "Ajustando a cascata de chocolate",
+    "Carregando sacas de cacau",
+    "Soprando bolhas de refrigerante",
+    "Pintando pirulitos",
+    "Inspecionando a fábrica"
+  ],
+  "dicas": [
+    "Os oompa-loompas trabalham melhor quando recebem cacau em grão.",
+    "Nunca mastigue o chiclete de três pratos antes do código compilar.",
+    "Cada bug ganha uma canção de moral. Os oompa-loompas já estão compondo a deste."
+  ],
+  "falas": [
+    "Oompa loompa doompety doo!",
+    "Mais chocolate na linha 42!",
+    "Quem mexeu no meu caramelo?",
+    "Esse bug tem gosto de framboesa",
+    "Bilhete dourado encontrado!",
+    "Cuidado com o rio!",
+    "Tá quase!",
+    "Mais um commit de chocolate"
+  ],
+  "falasFim": [
+    "Pronto, chefe!",
+    "Doompety dee!",
+    "Tudo embalado!",
+    "Fábrica em ordem!"
+  ]
+}

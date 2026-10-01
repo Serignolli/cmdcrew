@@ -1,0 +1,138 @@
+{
+  "id": "pinguins",
+  "nome": "Pinguins",
+  "categoria": "Animais",
+  "descricao": "Engenheiros de refrigeração. Bamboleiam pra lá e pra cá com peixes frescos e mantêm o processador geladinho.",
+  "efeito": "neve",
+  "carga": "peixe",
+  "sprites": {
+    "andar": [
+      [
+        "................",
+        "................",
+        "......KKKK......",
+        ".....KKKKKK.....",
+        ".....KKKEKKK....",
+        ".....KKKKKOOO...",
+        ".....KWWWKK.....",
+        "....KWWWWWKK....",
+        "...KKWWWWWWKK...",
+        "...KKWWWWWWKK...",
+        "..K.KWWWWWWK.K..",
+        "....KWWWWWWK....",
+        ".....KWWWWKK....",
+        "......KKKKK.....",
+        ".....OO...OO....",
+        "................"
+      ],
+      [
+        "................",
+        "................",
+        "......KKKK......",
+        ".....KKKKKK.....",
+        ".....KKKEKKK....",
+        ".....KKKKKOOO...",
+        ".....KWWWKK.....",
+        "....KWWWWWKK....",
+        "...KKWWWWWWKK...",
+        "..KKKWWWWWWKKK..",
+        "....KWWWWWWK....",
+        "....KWWWWWWK....",
+        ".....KWWWWKK....",
+        "......KKKKK.....",
+        "......OO.OO.....",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        "................",
+        "................",
+        "......KKKK......",
+        ".....KKKKKK.....",
+        ".....KKKEKKK....",
+        ".....KKKKKOOO...",
+        ".....KWWWKK.....",
+        "....KWWWWWKK....",
+        "...KKWWWWWWKKKK.",
+        "....KWWWWWWK....",
+        "....KWWWWWWK....",
+        "....KWWWWWWK....",
+        ".....KWWWWKK....",
+        "......KKKKK.....",
+        ".....OO...OO....",
+        "................"
+      ],
+      [
+        "................",
+        "................",
+        "......KKKK......",
+        ".....KKKKKK.....",
+        ".....KKKEKKK....",
+        ".....KKKKKOOO...",
+        ".....KWWWKK.....",
+        "....KWWWWWKKKK..",
+        "...KKWWWWWWKK...",
+        "....KWWWWWWK....",
+        "....KWWWWWWK....",
+        "....KWWWWWWK....",
+        ".....KWWWWKK....",
+        "......KKKKK.....",
+        ".....OO...OO....",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "imperador",
+      "nome": "Imperador",
+      "cores": { "K": "#1f2530", "W": "#f5f5f5", "O": "#ff9800", "E": "#ffffff" }
+    },
+    {
+      "id": "azulzinho",
+      "nome": "Pinguim-azul",
+      "cores": { "K": "#3f6fb5", "W": "#e3f2fd", "O": "#37474f" }
+    },
+    {
+      "id": "rosa",
+      "nome": "Rosa-chiclete",
+      "cores": { "K": "#ad1457", "W": "#fce4ec", "O": "#ffb300" }
+    },
+    {
+      "id": "dourado",
+      "nome": "Dourado",
+      "cores": { "K": "#8d6e00", "W": "#fff8e1", "O": "#e65100" }
+    }
+  ],
+  "verbos": [
+    "Deslizando",
+    "Bamboleando",
+    "Pescando sardinhas",
+    "Empilhando cubos de gelo",
+    "Chocando o ovo",
+    "Patinando no código",
+    "Quebrando o gelo",
+    "Resfriando o processador",
+    "Marchando em fila"
+  ],
+  "dicas": [
+    "Os pinguins mantêm o seu processador a -20 °C.",
+    "Nenhum pinguim foi resfriado durante a execução deste código.",
+    "Quando o código trava, os pinguins chamam isso de congelamento controlado."
+  ],
+  "falas": [
+    "Noot noot!",
+    "Peixe fresco!",
+    "Gelo na medida",
+    "Escorreguei num null",
+    "Tá frio aqui no servidor",
+    "Vamos deslizar!",
+    "Sorriam e acenem"
+  ],
+  "falasFim": [
+    "Noot! Pronto!",
+    "Iceberg entregue!",
+    "Sorriam e acenem, rapazes!"
+  ]
+}

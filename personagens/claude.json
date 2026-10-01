@@ -1,0 +1,128 @@
+{
+  "id": "claude",
+  "nome": "Estrelinhas do Claude",
+  "categoria": "Claude",
+  "descricao": "O ícone do Claude criou perninhas. Pulsa como o spinner do terminal e carrega um terminal na cabeça.",
+  "efeito": "claude",
+  "carga": "terminal",
+  "sprites": {
+    "andar": [
+      [
+        ".......O........",
+        "...O...O...O....",
+        "....O..O..O.....",
+        ".....OOOOO......",
+        ".O..OOOOOOO..O..",
+        "..OOOOOOOOOOO...",
+        "OOOOOOKOOKOOOOO.",
+        "..OOOOKOOKOOO...",
+        ".O..OOOOOOO..O..",
+        ".....OOOOO......",
+        "....D.....D.....",
+        "...D.......D....",
+        ".DD.........DD..",
+        "................"
+      ],
+      [
+        ".......O........",
+        "...O...O...O....",
+        "....O..O..O.....",
+        ".....OOOOO......",
+        ".O..OOOOOOO..O..",
+        "..OOOOOOOOOOO...",
+        "OOOOOOKOOKOOOOO.",
+        "..OOOOKOOKOOO...",
+        ".O..OOOOOOO..O..",
+        ".....OOOOO......",
+        ".....D...D......",
+        ".....D...D......",
+        "....DD...DD.....",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        "................",
+        "................",
+        ".......O........",
+        "....O.OOO.O.....",
+        ".....OOOOO......",
+        "...OOOOOOOOO....",
+        "..OOOOKOOKOOOO..",
+        "...OOOKOOKOOO...",
+        "...OOOOOOOOO....",
+        ".....OOOOO......",
+        "....D.....D.....",
+        "...D.......D....",
+        ".DD.........DD..",
+        "................"
+      ],
+      [
+        ".O.....O.....O..",
+        "..O....O....O...",
+        "...O...O...O....",
+        "....OOOOOOO.....",
+        "O...OOOOOOO...O.",
+        ".OOOOOOOOOOOOO..",
+        "OOOOOOKOOKOOOOO.",
+        ".OOOOOKOOKOOOO..",
+        "O...OOOOOOO...O.",
+        "....OOOOOOO.....",
+        "....D.....D.....",
+        "...D.......D....",
+        ".DD.........DD..",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "classico",
+      "nome": "Clássico terracota",
+      "cores": { "O": "#d97757", "D": "#8a4a33", "K": "#141413" }
+    },
+    {
+      "id": "creme",
+      "nome": "Creme",
+      "cores": { "O": "#f0eee6", "D": "#a8a292", "K": "#d97757" }
+    },
+    {
+      "id": "carvao",
+      "nome": "Carvão",
+      "cores": { "O": "#30302e", "D": "#141413", "K": "#f5a37f" }
+    },
+    {
+      "id": "pessego",
+      "nome": "Pêssego",
+      "cores": { "O": "#f5a37f", "D": "#c46a4a", "K": "#3a1f14" }
+    }
+  ],
+  "verbos": [
+    "Clauding",
+    "Brilhando",
+    "Pulsando",
+    "Irradiando ideias",
+    "Pensando em estrelinhas",
+    "Girando o spinner",
+    "Desembaraçando o código",
+    "Tokenizando"
+  ],
+  "dicas": [
+    "As estrelinhas pulsam no mesmo ritmo do spinner: ✢ ✳ ✶ ✻ ✽",
+    "Cada estrelinha na tela é um token feliz."
+  ],
+  "falas": [
+    "✻",
+    "Brilhando…",
+    "Pensando fundo",
+    "Um token de cada vez",
+    "Olha o spinner!",
+    "Tô no terminal",
+    "Que prompt bonito"
+  ],
+  "falasFim": [
+    "✻ Feito!",
+    "Brilho encerrado",
+    "Tchau! ✳"
+  ]
+}

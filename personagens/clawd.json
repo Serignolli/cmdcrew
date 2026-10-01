@@ -1,0 +1,182 @@
+{
+  "id": "clawd",
+  "nome": "Clawd (Claude Code)",
+  "categoria": "Claude",
+  "descricao": "O bichinho do Claude Code. Digita sem parar, solta as estrelinhas do Claude e carrega o ícone na cabeça.",
+  "efeito": "claude",
+  "carga": "claude",
+  "sprites": {
+    "andar": [
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..OOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "..OOOOKOOOOKOO..",
+        "..OOOOKOOOOKOO..",
+        "OOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOO",
+        "..OOOOOOOOOOOO..",
+        "..DDDDDDDDDDDD..",
+        "...D.D....D.D...",
+        "...D.D....D.D...",
+        "................",
+        "................"
+      ],
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..OOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "..OOOOKOOOOKOO..",
+        "..OOOOKOOOOKOO..",
+        "OOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOO",
+        "..OOOOOOOOOOOO..",
+        "..DDDDDDDDDDDD..",
+        "...D.D....D.D...",
+        ".....D......D...",
+        "................",
+        "................"
+      ],
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..OOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "..OOOOKOOOOKOO..",
+        "..OOOOKOOOOKOO..",
+        "OOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOO",
+        "..OOOOOOOOOOOO..",
+        "..DDDDDDDDDDDD..",
+        "...D.D....D.D...",
+        "...D.D....D.D...",
+        "................",
+        "................"
+      ],
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..OOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "..OOOOKOOOOKOO..",
+        "..OOOOKOOOOKOO..",
+        "OOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOO",
+        "..OOOOOOOOOOOO..",
+        "..DDDDDDDDDDDD..",
+        "...D.D....D.D...",
+        "...D......D.....",
+        "................",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..OOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "..OOOOKOOOOKOOOO",
+        "..OOOOKOOOOKOOOO",
+        "OOOOOOOOOOOOOO..",
+        "OOOOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "..DDDDDDDDDDDD..",
+        "...D.D....D.D...",
+        "...D.D....D.D...",
+        "................",
+        "................"
+      ],
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..OOOOOOOOOOOO..",
+        "..OOOOOOOOOOOO..",
+        "OOOOOOOOOOOOOO..",
+        "OOOOOOKOOOOKOO..",
+        "..OOOOOOOOOOOOOO",
+        "..OOOOOOOOOOOOOO",
+        "..OOOOOOOOOOOO..",
+        "..DDDDDDDDDDDD..",
+        "...D.D....D.D...",
+        "...D.D....D.D...",
+        "................",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "classico",
+      "nome": "Clássico terracota",
+      "cores": { "O": "#d77757", "D": "#b85f42", "K": "#141413" }
+    },
+    {
+      "id": "creme",
+      "nome": "Creme",
+      "cores": { "O": "#f0eee6", "D": "#cfcabb", "K": "#d77757" }
+    },
+    {
+      "id": "noite",
+      "nome": "Modo escuro",
+      "cores": { "O": "#3d3d3a", "D": "#262624", "K": "#f5a37f" }
+    },
+    {
+      "id": "menta",
+      "nome": "Menta",
+      "cores": { "O": "#7cc7a4", "D": "#559e7d", "K": "#1f3a2e" }
+    },
+    {
+      "id": "dourado",
+      "nome": "Dourado",
+      "cores": { "O": "#e8b64c", "D": "#b8862a", "K": "#3a2a08" }
+    }
+  ],
+  "verbos": [
+    "Clauding",
+    "Pensando com as garrinhas",
+    "Lendo o CLAUDE.md",
+    "Rodando os testes",
+    "Compactando o contexto",
+    "Grepando o repositório",
+    "Refatorando com carinho",
+    "Consultando as skills",
+    "Escrevendo o diff",
+    "Invocando subagentes"
+  ],
+  "dicas": [
+    "O Clawd lembra: um bom CLAUDE.md economiza muita explicação.",
+    "Esc interrompe o Claude, mas o Clawd continua trabalhando por alguns minutos.",
+    "Dica do Clawd: peça um plano antes de mudanças grandes."
+  ],
+  "falas": [
+    "Clawd na área!",
+    "Deixa comigo",
+    "Lendo o CLAUDE.md…",
+    "Rodando os testes…",
+    "Posso editar esse arquivo?",
+    "Hmm, interessante",
+    "Contexto quase cheio!",
+    "✻ ✳ ✢ ✶",
+    "Achei o bug!"
+  ],
+  "falasFim": [
+    "Pronto! ✻",
+    "Tarefa concluída",
+    "Até o próximo prompt!"
+  ]
+}

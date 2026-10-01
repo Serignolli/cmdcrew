@@ -1,0 +1,22 @@
+# gerados pela compilação (src/build.ps1)
+bin/
+dist/
+
+# Supporters Pack: personagens HD, arte de origem e referências. Nunca vai para o repositório público.
+supporters-pack/
+# pacotes instalados localmente (o programa lê de pacotes/ ao lado de bin/)
+pacotes/
+
+# configuração pessoal (criada pela tela de configuração)
+config.json
+
+# prévias e caches das ferramentas Python
+ferramentas/previa/
+__pycache__/
+*.pyc
+
+# editores e sistema
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

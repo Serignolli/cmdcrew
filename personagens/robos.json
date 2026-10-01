@@ -1,0 +1,139 @@
+{
+  "id": "robos",
+  "nome": "Robozinhos",
+  "categoria": "Outros",
+  "descricao": "Pequenos robôs de manutenção que soldam circuitos, soltam faíscas e carregam engrenagens.",
+  "efeito": "faiscas",
+  "carga": "engrenagem",
+  "sprites": {
+    "andar": [
+      [
+        ".......A........",
+        ".......K........",
+        "....MMMMMMMM....",
+        "....MDDDDDDM....",
+        "....MDLDDLDM....",
+        "....MDDDDDDM....",
+        "....MMMMMMMM....",
+        "......KKKK......",
+        "...MMMMMMMMMM...",
+        "..KMMXXMMMMMMK..",
+        "..KMMXXMMDDMMK..",
+        "..M.MMMMMMMM.M..",
+        "....KK....KK....",
+        "....KK....KK....",
+        "...KKKK..KKKK...",
+        "................"
+      ],
+      [
+        "........A.......",
+        ".......K........",
+        "....MMMMMMMM....",
+        "....MDDDDDDM....",
+        "....MDDLDDLM....",
+        "....MDDDDDDM....",
+        "....MMMMMMMM....",
+        "......KKKK......",
+        "...MMMMMMMMMM...",
+        "..KMMXXMMMMMMK..",
+        "..KMMXXMMDDMMK..",
+        "...MMMMMMMMMM...",
+        ".....KK..KK.....",
+        ".....KK..KK.....",
+        "....KKKKKKKK....",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        ".......A........",
+        ".......K........",
+        "....MMMMMMMM....",
+        "....MDDDDDDM....",
+        "....MDDLDDLM....",
+        "....MDDDDDDM....",
+        "....MMMMMMMM....",
+        "......KKKK......",
+        "...MMMMMMMMMM...",
+        "..KMMXXMMMMMMMMT",
+        "..KMMXXMMDDMMK..",
+        "..M.MMMMMMMM....",
+        "....KK....KK....",
+        "....KK....KK....",
+        "...KKKK..KKKK...",
+        "................"
+      ],
+      [
+        "........A.......",
+        ".......K........",
+        "....MMMMMMMM....",
+        "....MDDDDDDM....",
+        "....MDDLDDLM....",
+        "....MDDDDDDM....",
+        "....MMMMMMMM....",
+        "......KKKK......",
+        "...MMMMMMMMMM...",
+        "..KMMXXMMMMMMK..",
+        "..KMMXXMMDDMMMMT",
+        "..M.MMMMMMMM....",
+        "....KK....KK....",
+        "....KK....KK....",
+        "...KKKK..KKKK...",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "classico",
+      "nome": "Clássico prateado",
+      "cores": { "A": "#ff5252", "K": "#263238", "M": "#b0bec5", "D": "#37474f", "L": "#4dd0e1", "X": "#ffca28", "T": "#ff9800" }
+    },
+    {
+      "id": "retro",
+      "nome": "Retrô laranja",
+      "cores": { "A": "#29b6f6", "K": "#3e2723", "M": "#e0703a", "D": "#3e2723", "L": "#fff59d", "X": "#fdd835" }
+    },
+    {
+      "id": "neon",
+      "nome": "Neon",
+      "cores": { "A": "#00e5ff", "K": "#111111", "M": "#303030", "D": "#0a0a0a", "L": "#76ff03", "X": "#e040fb", "T": "#00e5ff" }
+    },
+    {
+      "id": "dourado",
+      "nome": "Dourado de luxo",
+      "cores": { "A": "#ffffff", "K": "#5d4300", "M": "#d4af37", "D": "#5d4300", "L": "#ff1744", "X": "#fff3c4" }
+    }
+  ],
+  "verbos": [
+    "Computando",
+    "Soldando circuitos",
+    "Apertando parafusos",
+    "Recalibrando sensores",
+    "Lubrificando engrenagens",
+    "Compilando bip-bops",
+    "Processando bits",
+    "Desfragmentando ideias",
+    "Atualizando firmware",
+    "Bipando"
+  ],
+  "dicas": [
+    "Robôs de manutenção recomendam um git commit a cada 42 parafusos.",
+    "Nível de óleo dos robozinhos: ótimo. Nível de café do humano: desconhecido.",
+    "Os robôs não sonham com ovelhas elétricas; sonham com testes passando."
+  ],
+  "falas": [
+    "Bip bop!",
+    "Executando tarefa 0x2A",
+    "Parafuso solto detectado",
+    "Óleo em 42%",
+    "01101111 01101001!",
+    "Recalculando rota",
+    "Humanos são engraçados"
+  ],
+  "falasFim": [
+    "Tarefa concluída. Bip!",
+    "Entrando em modo soneca…",
+    "Sucesso: 100%"
+  ]
+}

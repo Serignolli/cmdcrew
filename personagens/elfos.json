@@ -1,0 +1,165 @@
+{
+  "id": "elfos",
+  "nome": "Elfos",
+  "categoria": "Fantasia",
+  "descricao": "Ágeis e organizados. Andam leves por cima do terminal e acertam cada bug com uma flecha.",
+  "efeito": "flechas",
+  "carga": "folha",
+  "sprites": {
+    "andar": [
+      [
+        "................",
+        ".....HHHHH......",
+        "....HHHHHHH.....",
+        ".S.HHSSSSSHH.S..",
+        "..SHSKSSSKSHS...",
+        "...HSSSSSSSH....",
+        "...HHSSMSSHH....",
+        "...HH.SSS.HH....",
+        "....TTTTTTT.....",
+        "...TTTTTTTTT....",
+        "..STTDDDDDTTS...",
+        "....TTTTTTT.....",
+        "....LL...LL.....",
+        "....LL...LL.....",
+        "...OOO...OOO....",
+        "................"
+      ],
+      [
+        "................",
+        "....HHHHHHH.....",
+        ".S.HHSSSSSHH.S..",
+        "..SHSKSSSKSHS...",
+        "...HSSSSSSSH....",
+        "...HHSSMSSHH....",
+        "...HH.SSS.HH....",
+        "....TTTTTTT.....",
+        "...TTTTTTTTT....",
+        "..STTDDDDDTTS...",
+        "....TTTTTTT.....",
+        ".....LL.LL......",
+        ".....LL.LL......",
+        "....OOO.OOO.....",
+        "................",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        "................",
+        ".....HHHHH......",
+        "....HHHHHHH.....",
+        ".S.HHSSSSSHH.S..",
+        "..SHSKSSSKSHSW..",
+        "...HSSSSSSSH.AW.",
+        "...HHSSMSSHHA..W",
+        "...HH.SSS.HA...W",
+        "....TTTTTTSQQQAS",
+        "...TTTTTTTTA...W",
+        "..STTDDDDDTTA..W",
+        "....TTTTTTT..AW.",
+        "....LL...LL..W..",
+        "....LL...LL.....",
+        "...OOO...OOO....",
+        "................"
+      ],
+      [
+        "................",
+        ".....HHHHH......",
+        "....HHHHHHH.....",
+        ".S.HHSSSSSHH.S..",
+        "..SHSKSSSKSHSW..",
+        "...HSSSSSSSH.AW.",
+        "...HHSSMSSHHA..W",
+        "...HH.SSS.HA...W",
+        "....TTTTTTSQQQAS",
+        "...TTTTTTTTA...W",
+        "..STTDDDDDTTA..W",
+        "....TTTTTTT..AW.",
+        "....LL...LL..W..",
+        "....LL...LL.....",
+        "...OOO...OOO....",
+        "................"
+      ],
+      [
+        "................",
+        ".....HHHHH......",
+        "....HHHHHHH.....",
+        ".S.HHSSSSSHH.S..",
+        "..SHSKSSSKSHSW..",
+        "...HSSSSSSSH.AW.",
+        "...HHSSMSSHH.A.W",
+        "...HH.SSS.HH.A.W",
+        "....TTTTTTT..A.S",
+        "...TTTTTTTTT.A.W",
+        "..STTDDDDDTTSA.W",
+        "....TTTTTTT..AW.",
+        "....LL...LL..W..",
+        "....LL...LL.....",
+        "...OOO...OOO....",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "floresta",
+      "nome": "Floresta (cabelo dourado)",
+      "cores": {
+        "H": "#f5d76e",
+        "S": "#f1c27d",
+        "K": "#1b5e20",
+        "M": "#c0392b",
+        "T": "#2e7d32",
+        "D": "#6d4c41",
+        "L": "#5d4037",
+        "O": "#3e2723",
+        "W": "#795548",
+        "A": "#cfd8dc",
+        "Q": "#bcaaa4"
+      }
+    },
+    {
+      "id": "noite",
+      "nome": "Noite (cabelo prateado)",
+      "cores": {
+        "H": "#e0e6ea",
+        "S": "#e8c9ad",
+        "K": "#283593",
+        "T": "#283593",
+        "D": "#90a4ae",
+        "L": "#1a237e",
+        "O": "#263238"
+      }
+    },
+    {
+      "id": "outono",
+      "nome": "Outono (ruivo)",
+      "cores": {
+        "H": "#d84315",
+        "S": "#f5cba7",
+        "K": "#4e342e",
+        "T": "#ef6c00",
+        "D": "#5d4037",
+        "L": "#6d4c41"
+      }
+    },
+    {
+      "id": "neve",
+      "nome": "Neve",
+      "cores": {
+        "H": "#ffffff",
+        "S": "#ffe0d0",
+        "K": "#0277bd",
+        "T": "#e3f2fd",
+        "D": "#64b5f6",
+        "L": "#b0bec5",
+        "O": "#78909c"
+      }
+    }
+  ],
+  "verbos": ["Mirando no bug", "Afinando a harpa", "Colhendo ervas do backlog", "Lendo runas antigas", "Tecendo a documentação", "Andando sem fazer barulho", "Encantando as funções", "Consultando as estrelas", "Trançando o cabelo", "Protegendo a floresta de dependências"],
+  "dicas": ["Um elfo nunca erra a flecha. Às vezes o bug que se mexe.", "Código élfico: bonito, antigo e ninguém mais sabe mexer.", "Os elfos acham seu README muito curto."],
+  "falas": ["Na mosca!", "Bug abatido!", "Que floresta bonita de pastas", "Ouço um bug se aproximando", "Mais uma flecha!", "Isso é código élfico antigo", "Silêncio, estou mirando", "A floresta agradece"],
+  "falasFim": ["Todos os bugs abatidos!", "Até a próxima lua!", "A floresta está em paz!", "Missão élfica cumprida!"]
+}

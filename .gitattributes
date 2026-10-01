@@ -1,0 +1,13 @@
+# Texto com LF no repositório; scripts do Windows sempre com CRLF.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binários
+*.wav binary
+*.gif binary
+*.png binary
+*.ttf binary
+*.ico binary
+*.exe binary
+*.zip binary

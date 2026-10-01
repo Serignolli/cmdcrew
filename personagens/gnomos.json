@@ -1,0 +1,138 @@
+{
+  "id": "gnomos",
+  "nome": "Gnomos mineiros",
+  "categoria": "Outros",
+  "descricao": "Gnomos barbudos que picaretam o código atrás de pedras preciosas (e às vezes de bugs).",
+  "efeito": "faiscas",
+  "carga": "gema",
+  "sprites": {
+    "andar": [
+      [
+        ".......R........",
+        "......RRR.......",
+        ".....RRRRR......",
+        "....RRRRRRR.....",
+        "...RRRRRRRRR....",
+        "....SKSSSKS.....",
+        "....SSSNNSS.....",
+        "....BBBBBBB.....",
+        "...CBBBBBBBC....",
+        "..SCCBBBBBCCS...",
+        "...CLLLBLLLC....",
+        "....CCCCCCC.....",
+        "....PP...PP.....",
+        "...PP.....PP....",
+        "..KKK.....KKK...",
+        "................"
+      ],
+      [
+        "................",
+        ".......R........",
+        "......RRR.......",
+        ".....RRRRR......",
+        "....RRRRRRR.....",
+        "...RRRRRRRRR....",
+        "....SKSSSKS.....",
+        "....SSSNNSS.....",
+        "....BBBBBBB.....",
+        "...CBBBBBBBC....",
+        "...SCBBBBBCS....",
+        "...CLLLBLLLC....",
+        "....CCCCCCC.....",
+        ".....PP.PP......",
+        ".....KKKKKK.....",
+        "................"
+      ]
+    ],
+    "trabalhar": [
+      [
+        ".......R....TTT.",
+        "......RRR....G.T",
+        ".....RRRRR...G..",
+        "....RRRRRRR..G..",
+        "...RRRRRRRRR.G..",
+        "....SKSSSKS.SS..",
+        "....SSSNNSS.S...",
+        "....BBBBBBB.C...",
+        "...CBBBBBBBCC...",
+        "..SCCBBBBBCC....",
+        "...CLLLBLLLC....",
+        "....CCCCCCC.....",
+        "....PP...PP.....",
+        "...PP.....PP....",
+        "..KKK.....KKK...",
+        "................"
+      ],
+      [
+        ".......R........",
+        "......RRR.......",
+        ".....RRRRR......",
+        "....RRRRRRR.....",
+        "...RRRRRRRRR....",
+        "....SKSSSKS.....",
+        "....SSSNNSS.....",
+        "....BBBBBBB.....",
+        "...CBBBBBBBC....",
+        "..SCCBBBBBCCSGGG",
+        "...CLLLBLLLC..T.",
+        "....CCCCCCC...T.",
+        "....PP...PP..T..",
+        "...PP.....PP....",
+        "..KKK.....KKK...",
+        "................"
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "classico",
+      "nome": "Clássico (gorro vermelho)",
+      "cores": { "R": "#c62828", "S": "#f1c27d", "K": "#2b2b2b", "N": "#e57373", "B": "#f5f5f5", "C": "#1e5aa8", "P": "#6d4c41", "L": "#3e2723", "T": "#9e9e9e", "G": "#8d6e63" }
+    },
+    {
+      "id": "floresta",
+      "nome": "Guardião da floresta",
+      "cores": { "R": "#2e7d32", "C": "#8d6e63", "B": "#d7ccc8", "P": "#4e342e", "L": "#1b5e20" }
+    },
+    {
+      "id": "mineiro",
+      "nome": "Mineiro de capacete",
+      "cores": { "R": "#f9a825", "C": "#455a64", "B": "#795548", "P": "#37474f", "L": "#ffb300" }
+    },
+    {
+      "id": "inverno",
+      "nome": "Inverno",
+      "cores": { "R": "#1565c0", "C": "#e53935", "B": "#ffffff", "P": "#263238", "L": "#90caf9" }
+    }
+  ],
+  "verbos": [
+    "Minerando",
+    "Martelando",
+    "Cavando cristais",
+    "Forjando ferramentas",
+    "Cultivando cogumelos",
+    "Guardando o jardim",
+    "Lapidando pedras preciosas",
+    "Contando moedas",
+    "Afiando a picareta"
+  ],
+  "dicas": [
+    "Todo bom código tem pelo menos uma pedra preciosa escondida.",
+    "Os gnomos dizem que um bug bem minerado vale mais que ouro.",
+    "Nunca discuta com um gnomo armado de picareta."
+  ],
+  "falas": [
+    "Hei-hou!",
+    "Achei um cristal!",
+    "Mais fundo!",
+    "Essa rocha é dura",
+    "Cogumelo no almoço",
+    "Ouro! Ah não, é pirita",
+    "Ninguém mexe no meu jardim"
+  ],
+  "falasFim": [
+    "Hei-hou, pra casa eu vou!",
+    "Mina fechada!",
+    "Tesouro guardado!"
+  ]
+}

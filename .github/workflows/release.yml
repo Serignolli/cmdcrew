@@ -1,7 +1,7 @@
 name: Release
 
 # Ao criar uma tag v* (ex.: git tag v1.0.0 && git push --tags), compila o instalador no Windows
-# e publica o OompaLoompas-Setup.exe na release. O site aponta sempre para releases/latest.
+# e publica o CmdCrew-Setup.exe na release. O site aponta sempre para releases/latest.
 on:
   push:
     tags:
@@ -23,4 +23,4 @@ jobs:
       - name: Publicar na release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/OompaLoompas-Setup.exe
+          files: dist/CmdCrew-Setup.exe

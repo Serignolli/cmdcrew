@@ -1,0 +1,138 @@
+{
+  "id": "formigas",
+  "nome": "Formigas",
+  "categoria": "Animais",
+  "descricao": "Uma colônia inteira trabalhando em fila: levantam folhas, carregam cubinhos de açúcar e levantam poeira.",
+  "efeito": "poeira",
+  "carga": "acucar",
+  "sprites": {
+    "andar": [
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "............L..L",
+        ".............LL.",
+        "..AAA.......AAA.",
+        ".AAAAA.AAA.AAWAA",
+        ".AADAAAAAAAAAAA.",
+        "..AAA..AAA..AA..",
+        "..L.L.L.L.L.L...",
+        ".L...L...L...L.."
+      ],
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "............L..L",
+        ".............LL.",
+        "..AAA.......AAA.",
+        ".AAAAA.AAA.AAWAA",
+        ".AADAAAAAAAAAAA.",
+        "..AAA..AAA..AA..",
+        "...L.L.L.L.L.L..",
+        "..L..L..L..L..L."
+      ]
+    ],
+    "trabalhar": [
+      [
+        "................",
+        "................",
+        "................",
+        "..........GGG...",
+        "........GGGGGGG.",
+        ".......GJJJJJJGG",
+        "........GGGGGGG.",
+        "..........GGG...",
+        "............L..L",
+        ".............LL.",
+        "..AAA.......AAA.",
+        ".AAAAA.AAA.AAWAA",
+        ".AADAAAAAAAAAAA.",
+        "..AAA..AAA..AA..",
+        "..L.L.L.L.L.L...",
+        ".L...L...L...L.."
+      ],
+      [
+        "................",
+        "................",
+        "................",
+        "................",
+        "..........GGG...",
+        "........GGGGGGG.",
+        ".......GJJJJJJGG",
+        "........GGGGGGG.",
+        "..........GGG..L",
+        ".............LL.",
+        "..AAA.......AAA.",
+        ".AAAAA.AAA.AAWAA",
+        ".AADAAAAAAAAAAA.",
+        "..AAA..AAA..AA..",
+        "...L.L.L.L.L.L..",
+        "...L.L.L.L.L.L.."
+      ]
+    ]
+  },
+  "skins": [
+    {
+      "id": "vermelha",
+      "nome": "Lava-pés (vermelha)",
+      "cores": { "A": "#c62828", "D": "#ef5350", "L": "#5d1a1a", "W": "#ffffff", "G": "#43a047", "J": "#2e7d32" }
+    },
+    {
+      "id": "preta",
+      "nome": "Carpinteira (preta)",
+      "cores": { "A": "#212121", "D": "#616161", "L": "#111111" }
+    },
+    {
+      "id": "cortadeira",
+      "nome": "Saúva (cortadeira)",
+      "cores": { "A": "#8d4b2a", "D": "#b0703f", "L": "#4e2a17", "G": "#7cb342", "J": "#558b2f" }
+    },
+    {
+      "id": "dourada",
+      "nome": "Dourada",
+      "cores": { "A": "#f9a825", "D": "#ffd54f", "L": "#8d6e00", "G": "#ef6c00", "J": "#bf360c" }
+    }
+  ],
+  "verbos": [
+    "Formigando",
+    "Carregando migalhas",
+    "Empilhando folhas",
+    "Cavando túneis",
+    "Organizando a colônia",
+    "Seguindo a trilha de feromônio",
+    "Levantando 50 vezes o próprio peso",
+    "Estocando açúcar",
+    "Construindo o formigueiro"
+  ],
+  "dicas": [
+    "Uma formiga sozinha faz pouco; mil formigas fazem um refactor.",
+    "As formigas já encontraram três migalhas de bug no seu código.",
+    "Fila indiana é o jeito mais antigo de processar tarefas em ordem."
+  ],
+  "falas": [
+    "Mais uma folha!",
+    "Açúcar à vista!",
+    "Trilha liberada!",
+    "Pela rainha!",
+    "Isso pesa 50x eu",
+    "Túnel quase pronto",
+    "Fila indiana!"
+  ],
+  "falasFim": [
+    "Colônia satisfeita!",
+    "Tudo guardado!",
+    "Missão cumprida, rainha!"
+  ]
+}

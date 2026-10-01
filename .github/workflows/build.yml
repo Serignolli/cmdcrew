@@ -1,0 +1,23 @@
+name: Build
+
+# Confere se o projeto compila a cada push e pull request (o instalador só é publicado pelo release.yml).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar (compilador C# do .NET Framework, que já vem no Windows)
+        shell: pwsh
+        run: ./src/build.ps1
+
+      - name: Guardar o executável
+        uses: actions/upload-artifact@v4
+        with:
+          name: CmdCrew-Setup
+          path: dist/CmdCrew-Setup.exe
