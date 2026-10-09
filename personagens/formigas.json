@@ -2,7 +2,7 @@
   "id": "formigas",
   "nome": "Formigas",
   "categoria": "Animais",
-  "descricao": "Uma colônia inteira trabalhando em fila: levantam folhas, carregam cubinhos de açúcar e levantam poeira.",
+  "descricao": "Uma colônia inteira em fila indiana carregando bytes. Cada cubinho de açúcar é um pacote de dados entregue no prazo.",
   "efeito": "poeira",
   "carga": "acucar",
   "sprites": {

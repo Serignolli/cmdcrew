@@ -67,9 +67,10 @@ namespace CmdCrew
             return Rectangle.FromLTRB(r.Left, r.Top, r.Right, r.Bottom);
         }
 
-        // Traz o terminal da sala para a frente (restaurando se estiver minimizado).
-        public static void Focus(IntPtr h)
+        // Traz o terminal da sala para a frente (restaurando se estiver minimizado), já na aba da sessão.
+        public static void Focus(IntPtr h, int pid)
         {
+            h = TerminalTab.Locate(h, pid);
             if (h == IntPtr.Zero || !IsWindow(h)) return;
             if (IsIconic(h)) ShowWindow(h, 9 /* SW_RESTORE */);
             SetForegroundWindow(h);
@@ -89,6 +90,7 @@ namespace CmdCrew
     {
         public string Id, Transcript, Cwd, State;
         public long Hwnd;
+        public int Pid;     // processo ligado ao console da aba (para achar a aba certa no Windows Terminal)
         public DateTime Started, Changed;   // UTC
         public bool Demo;
         public PermissionAsk Ask;
@@ -103,7 +105,8 @@ namespace CmdCrew
             }
         }
 
-        // Última vez que algo aconteceu: o próprio arquivo ou o transcript da conversa.
+        // Última vez que algo aconteceu: o próprio arquivo, o transcript da conversa ou o de um subagente
+        // (o Claude Code grava os subagentes em <sessão>\subagents\, e o transcript principal fica parado enquanto eles trabalham).
         public DateTime LastActivity
         {
             get
@@ -115,6 +118,13 @@ namespace CmdCrew
                     {
                         var t = File.GetLastWriteTimeUtc(Transcript);
                         if (t > last) last = t;
+                        string sub = Path.Combine(Path.GetDirectoryName(Transcript), Path.GetFileNameWithoutExtension(Transcript), "subagents");
+                        if (Directory.Exists(sub))
+                            foreach (var f in Directory.GetFiles(sub))
+                            {
+                                var ft = File.GetLastWriteTimeUtc(f);
+                                if (ft > last) last = ft;
+                            }
                     }
                 }
                 catch { }
@@ -122,8 +132,63 @@ namespace CmdCrew
             }
         }
 
-        // Estado para desenhar: "trabalhando" vira "parado" se nada mexe há muito tempo (o Esc não dispara o Stop),
-        // e "aguardando" volta a "trabalhando" assim que o transcript anda (a permissão foi respondida no terminal).
+        // O Esc não dispara o Stop: a interrupção só aparece no transcript, como uma mensagem
+        // "[Request interrupted by user...]" depois do início do trabalho.
+        public bool Interrupted
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Transcript)) return false;
+                try
+                {
+                    var fi = new FileInfo(Transcript);
+                    if (!fi.Exists) return false;
+                    CachedTail c;
+                    lock (tails)
+                        if (tails.TryGetValue(Transcript, out c) && c.Stamp == fi.LastWriteTimeUtc && c.Length == fi.Length)
+                            return c.InterruptedAt > Started;
+                    DateTime at = LastInterrupt(Transcript);
+                    lock (tails) tails[Transcript] = new CachedTail { Stamp = fi.LastWriteTimeUtc, Length = fi.Length, InterruptedAt = at };
+                    return at > Started;
+                }
+                catch { return false; }
+            }
+        }
+
+        class CachedTail { public DateTime Stamp, InterruptedAt; public long Length; }
+        static readonly Dictionary<string, CachedTail> tails = new Dictionary<string, CachedTail>();
+
+        // Horário (UTC) da última interrupção registrada no final do transcript, se a última mensagem for ela.
+        static DateTime LastInterrupt(string transcript)
+        {
+            using (var f = new FileStream(transcript, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                long start = Math.Max(0, f.Length - 64 * 1024);
+                f.Seek(start, SeekOrigin.Begin);
+                var buf = new byte[f.Length - start];
+                int read = 0;
+                while (read < buf.Length) { int n = f.Read(buf, read, buf.Length - read); if (n <= 0) break; read += n; }
+                var lines = Encoding.UTF8.GetString(buf, 0, read).Split('\n');
+                // a última mensagem de verdade (usuário ou assistente) decide
+                for (int i = lines.Length - 1; i >= 0; i--)
+                {
+                    string l = lines[i];
+                    if (l.IndexOf("\"type\":\"user\"", StringComparison.Ordinal) < 0 && l.IndexOf("\"type\":\"assistant\"", StringComparison.Ordinal) < 0) continue;
+                    if (l.IndexOf("[Request interrupted by user", StringComparison.Ordinal) < 0) return DateTime.MinValue;
+                    int k = l.IndexOf("\"timestamp\":\"", StringComparison.Ordinal);
+                    DateTime ts;
+                    if (k >= 0 && DateTime.TryParse(l.Substring(k + 13, Math.Min(30, l.Length - k - 13)).Split('"')[0],
+                            CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out ts))
+                        return ts;
+                    return DateTime.UtcNow;
+                }
+            }
+            return DateTime.MinValue;
+        }
+
+        // Estado para desenhar. "trabalhando" só vira "parado" se a conversa foi interrompida (Esc) ou, como rede de
+        // segurança, se nada mexe há muito tempo (comandos e raciocínios longos ficam vários minutos sem gravar nada).
+        // "aguardando" volta a "trabalhando" assim que o transcript anda (a permissão foi respondida no terminal).
         public RoomState Resolve(double idleMinutes)
         {
             switch (State)
@@ -135,7 +200,9 @@ namespace CmdCrew
                     if (!Demo && LastActivity > Changed.AddSeconds(2)) return RoomState.Working;
                     return RoomState.Waiting;
                 default:
-                    if (!Demo && (DateTime.UtcNow - LastActivity).TotalMinutes > Math.Max(0.5, idleMinutes)) return RoomState.Stopped;
+                    if (Demo) return RoomState.Working;
+                    if (Interrupted) return RoomState.Stopped;
+                    if ((DateTime.UtcNow - LastActivity).TotalMinutes > Math.Max(Config.MinIdleMinutes, idleMinutes)) return RoomState.Stopped;
                     return RoomState.Working;
             }
         }
@@ -148,6 +215,7 @@ namespace CmdCrew
             d["cwd"] = Cwd ?? "";
             d["transcript"] = Transcript ?? "";
             d["hwnd"] = Hwnd.ToString(CultureInfo.InvariantCulture);
+            d["pid"] = Pid.ToString(CultureInfo.InvariantCulture);
             d["inicio"] = Started.Ticks.ToString(CultureInfo.InvariantCulture);
             d["mudou"] = Changed.Ticks.ToString(CultureInfo.InvariantCulture);
             if (Demo) d["demo"] = true;
@@ -178,6 +246,9 @@ namespace CmdCrew
             long h;
             long.TryParse(Json.Str(d, "hwnd", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture, out h);
             s.Hwnd = h;
+            int pid;
+            int.TryParse(Json.Str(d, "pid", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture, out pid);
+            s.Pid = pid;
             s.Started = ReadTicks(d, "inicio");
             s.Changed = ReadTicks(d, "mudou");
             s.Demo = Json.Bool(d, "demo", false);

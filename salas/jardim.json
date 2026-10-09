@@ -1,0 +1,70 @@
+{
+ "id": "jardim",
+ "nome": "Jardim",
+ "descricao": "O gnomo rega, cava e rastela o canteiro enquanto as borboletas passeiam.",
+ "personagens": ["gnomos-jardim"],
+ "cor": "#5bb85b",
+ "imagem": "jardim.png",
+ "chao": 42,
+ "altura": 26,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 26,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 7
+  },
+  {
+   "x": 54,
+   "tipo": "trabalhar-cavar",
+   "andar": "andar",
+   "direita": true,
+   "min": 3,
+   "max": 5
+  },
+  {
+   "x": 74,
+   "tipo": "trabalhar-rastelar",
+   "andar": "andar",
+   "direita": true,
+   "min": 3,
+   "max": 5
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "area": [0, 4, 96, 14],
+   "cores": ["#ffffff"],
+   "n": 3,
+   "vx": 3,
+   "vy": 0,
+   "tam": [4, 2],
+   "tipo": "particulas"
+  },
+  {
+   "pontos": [
+    [20, 16],
+    [44, 12],
+    [66, 18]
+   ],
+   "cores": ["#ff80ab", "#ffd54f", "#b388ff"],
+   "vel": 6,
+   "limiar": 0,
+   "tipo": "piscar"
+  },
+  {
+   "area": [10, 8, 76, 14],
+   "cores": ["#ff80ab", "#b388ff"],
+   "n": 2,
+   "vx": 6,
+   "vy": 1.5,
+   "tam": [2, 1],
+   "tipo": "particulas"
+  }
+ ],
+ "frente": []
+}

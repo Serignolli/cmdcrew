@@ -1,6 +1,6 @@
 // Motor de animação do site: lê os mesmos JSON do programa (window.PERSONAGENS, gerado por
 // ferramentas/gerar_site.py) e faz a equipe andar, trabalhar, pular e falar num <canvas>.
-// Espelha o que o OompaLoompas.exe faz em cima do terminal (src/Overlay.cs).
+// Espelha o que o CmdCrew.exe faz em cima do terminal (src/Overlay.cs).
 (function () {
   "use strict";
 

@@ -1,0 +1,73 @@
+{
+ "id": "escritorio",
+ "nome": "Escritório do dev",
+ "descricao": "O dev digita sem parar, o monitor enche de código e a caneca solta fumaça.",
+ "personagens": ["devs-hd", "programadores"],
+ "cor": "#7c6cf0",
+ "imagem": "escritorio.png",
+ "chao": 41,
+ "altura": 22,
+ "skins": {
+  "programadores": ["cansado", "cansada", "gamer", "hacker"]
+ },
+ "lugares": [
+  {
+   "x": 40,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 5,
+   "max": 10
+  },
+  {
+   "x": 60,
+   "tipo": "trabalhar-digitar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 8
+  },
+  {
+   "x": 82,
+   "tipo": "parado",
+   "andar": "andar",
+   "direita": true,
+   "min": 2.5,
+   "max": 4
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "pontos": [
+    [8, 7],
+    [12, 10],
+    [19, 12],
+    [9, 18],
+    [24, 19],
+    [14, 21]
+   ],
+   "cores": ["#fff6c8", "#cfd8ff"],
+   "vel": 2.3,
+   "limiar": -0.3,
+   "tipo": "piscar"
+  },
+  {
+   "x": 50,
+   "y": 19,
+   "w": 14,
+   "h": 7,
+   "tipo": "tela"
+  },
+  {
+   "x": 46,
+   "y": 23,
+   "cor": "#b0bec5",
+   "n": 2,
+   "altura": 5,
+   "quando": ["trabalhando"],
+   "tipo": "fumaca"
+  }
+ ],
+ "frente": []
+}

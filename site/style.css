@@ -167,13 +167,17 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 
 /* ---------- download ---------- */
 .download { background: var(--bg2); border-top: 3px solid var(--ink); }
-.dl-box { display: grid; grid-template-columns: 1.2fr 1fr; gap: 36px; align-items: center; background: var(--card); border: 3px solid var(--ink); border-radius: 20px; box-shadow: 8px 8px 0 var(--ink); padding: 40px; }
+.dl-box { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 36px; align-items: center; background: var(--card); border: 3px solid var(--ink); border-radius: 20px; box-shadow: 8px 8px 0 var(--ink); padding: 40px; }
 .dl-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .dl-steps li { display: flex; align-items: center; gap: 12px; font-weight: 700; background: var(--bg); border: 2px solid var(--ink); border-radius: 10px; padding: 10px 14px; }
 .dl-steps b { display: grid; place-items: center; min-width: 28px; height: 28px; background: var(--mint); border: 2px solid var(--ink); border-radius: 7px; font-family: "Pixelify Sans", sans-serif; }
 .later { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; color: var(--ink2); font-weight: 700; }
 .later span:not(.tag) { background: var(--card); border: 2px solid var(--ink2); border-radius: 999px; padding: 2px 12px; opacity: .8; }
 .later .tag { background: var(--sun); border: 2px solid var(--ink); border-radius: 999px; padding: 2px 12px; color: var(--ink); }
+.dl-unix-title { font-weight: 700; margin: 22px 0 8px; }
+.dl-cmd { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+.dl-cmd code { flex: 1 1 260px; min-width: 0; overflow-wrap: anywhere; word-break: break-all; background: var(--ink); color: #f6f1e7; border-radius: 10px; padding: 12px 14px; font-size: .9rem; }
+.dl-cmd .btn { padding: .5em 1em; }
 
 /* ---------- perguntas ---------- */
 details { background: var(--card); border: 3px solid var(--ink); border-radius: 12px; margin-bottom: 12px; box-shadow: 3px 3px 0 var(--ink); }
@@ -221,6 +225,7 @@ footer a { color: var(--sun); }
 .room-shot img { display: block; width: 100%; height: auto; image-rendering: pixelated; border-radius: 6px; }
 .room-shot figcaption { color: var(--ink2); font-size: .95rem; margin-top: 10px; }
 .room-shot figcaption b { color: var(--ink); }
+.rooms-sub-title { margin: 8px 0 6px; font-size: 1.5rem; }
 .rooms .features { grid-template-columns: repeat(4, 1fr); }
 
 /* ---------- supporters pack ---------- */
@@ -232,6 +237,13 @@ footer a { color: var(--sun); }
 .pack-card.soon { background: transparent; border: 3px dashed #7a6352; box-shadow: none; }
 .pack-art { height: 170px; display: grid; place-items: center; background: radial-gradient(circle at 50% 70%, #5a4330, #2b1d14 75%); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
 .pack-art img { max-width: 100%; max-height: 160px; image-rendering: pixelated; }
+/* cartão do pack: o personagem e a sala dele se alternando */
+.pack-swap { position: relative; }
+.pack-swap img { position: absolute; inset: 0; margin: auto; opacity: 0; transition: opacity .6s ease; }
+.pack-swap img.on { opacity: 1; }
+.pack-swap img:nth-of-type(2) { max-width: 94%; max-height: 94%; border-radius: 6px; }
+.swap-label { position: absolute; left: 8px; bottom: 6px; font: 700 .72rem "Pixelify Sans", sans-serif; color: var(--sun); background: #2b1d14cc; border-radius: 6px; padding: 1px 7px; opacity: 1; transition: opacity .6s ease; }
+.pack-swap.room .swap-label:not(.room), .pack-swap:not(.room) .swap-label.room { opacity: 0; }
 .pack-art.q { font: 700 3rem "Pixelify Sans", sans-serif; color: var(--sun); background: #2b1d14; animation: bob 2.4s ease-in-out infinite; }
 .pack-card > div:not(.pack-art) { display: flex; flex-direction: column; flex: 1; }
 .pack-card h3 { color: var(--bg); }

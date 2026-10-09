@@ -20,16 +20,19 @@ namespace CmdCrew
 
         readonly Config cfg;
         readonly List<Character> chars;
-        readonly List<RoomPreview> previews = new List<RoomPreview>();
+        RoomPreview roomPreview;
+        ComboBox roomChar;
+        Label roomDesc;
+        readonly List<string> roomIds = new List<string>();
         readonly RadioButton[] modeRadios = new RadioButton[3];
         readonly float k;
-        CheckBox enabled, mix, showName, permissions, bubbles, terminalPhrases, soundDone, soundAttention, soundFailure;
+        CheckBox enabled, showName, permissions, bubbles, terminalPhrases, soundDone, soundAttention, soundFailure;
         ComboBox corner, position, cbChar, cbSkin;
         TrackBar roomSize, speed;
         NumericUpDown doneSecs, count, crewSize;
         PreviewBox crewPreview;
         Label hookStatus, packStatus, status;
-        PixelButton hookBtn;
+        readonly Dictionary<Agent, CheckBox> agentBoxes = new Dictionary<Agent, CheckBox>();
         Panel roomsPanel, crewPanel;
         bool loading = true;
 
@@ -48,13 +51,27 @@ namespace CmdCrew
             ForeColor = Theme.Ink;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.Manual;   // posicionada em FitToScreen
             try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
 
             BuildUi();
             Theme.Apply(this);
             LoadValues();
             loading = false;
+            FitToScreen();
+        }
+
+        // A tela é alta: em monitores baixos (ou com a escala do Windows alta) ela ganha barra de rolagem
+        // em vez de esconder os botões de baixo atrás da barra de tarefas.
+        void FitToScreen()
+        {
+            Rectangle wa = Screen.FromPoint(Cursor.Position).WorkingArea;
+            if (Height > wa.Height)
+            {
+                AutoScroll = true;
+                Size = new Size(Width + SystemInformation.VerticalScrollBarWidth, wa.Height);
+            }
+            Location = new Point(wa.Left + Math.Max(0, (wa.Width - Width) / 2), wa.Top + Math.Max(0, (wa.Height - Height) / 2));
         }
 
         // ---------- montagem ----------
@@ -85,7 +102,7 @@ namespace CmdCrew
         {
             const int W = 1010;
             Add(this, new Label { Text = "CmdCrew", Font = Theme.Pixel(22f), AutoSize = true }, 18, 10, 200, 44);
-            var sub = Lbl(this, "Uma equipe de bichinhos em pixel art que trabalha junto com o Claude Code e avisa quando ele termina.", 20, 52, 760);
+            var sub = Lbl(this, "Uma equipe de bichinhos em pixel art que trabalha junto com o seu agente de IA e avisa quando ele termina.", 20, 52, 760);
             sub.ForeColor = Theme.Ink2;
 
             // modo
@@ -105,23 +122,19 @@ namespace CmdCrew
             Lbl(roomsPanel, "Salas no canto da tela", 12, 10, 400, 22, true);
             var hint = Lbl(roomsPanel, "Uma sala por terminal trabalhando. Duplo clique na sala leva ao terminal dela.", 12, 32, 576);
             hint.ForeColor = Theme.Ink2;
-            float unit = Math.Max(2f, 2.6f * k);
-            int x = 6;
-            foreach (var t in RoomTheme.All)
-            {
-                var pv = new RoomPreview(t, unit) { Location = new Point(S(x), S(56)) };
-                pv.Click += (s, e) => { mix.Checked = false; cfg.Theme = ((RoomPreview)s).RoomTheme.Id; Changed(); };
-                roomsPanel.Controls.Add(pv);
-                previews.Add(pv);
-                bool premium = pv.UsesPremium;
-                var desc = Lbl(roomsPanel, t.Name + (premium ? "  ★ Supporters Pack" : "") + "\n" + t.Description, x + 6, 56 + (int)(pv.Height / k) + 2, (int)(pv.Width / k) - 8, 52);
-                desc.ForeColor = Theme.Ink2;
-                desc.Font = Theme.Body(8.5f);
-                x += (int)(pv.Width / k) + 10;
-            }
-            int y = 56 + (int)(previews[0].Height / k) + 58;
-            mix = Chk(roomsPanel, "Alternar os temas (cada terminal novo ganha o próximo)", 12, y, 560);
-            y += 32;
+            // cada personagem tem a sua sala: escolher quem trabalha nela escolhe a sala
+            roomPreview = new RoomPreview(Math.Max(2f, 3f * k)) { Location = new Point(S(6), S(56)) };
+            roomsPanel.Controls.Add(roomPreview);
+            int px = (int)(roomPreview.Width / k) + 16;
+            Lbl(roomsPanel, "Quem trabalha na sala", px, 60, 590 - px, 20, true);
+            roomChar = Add(roomsPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, px, 84, 586 - px, 26);
+            roomIds.Add(""); roomChar.Items.Add("O mesmo do terminal");
+            foreach (var c in chars) { roomIds.Add(c.Id); roomChar.Items.Add(c.Name + (c.Premium ? "  ★" : "")); }
+            roomIds.Add("*"); roomChar.Items.Add("Alternar entre todos (um por terminal)");
+            roomChar.SelectedIndexChanged += delegate { if (!loading) { cfg.RoomCharacter = roomIds[Math.Max(0, roomChar.SelectedIndex)]; Changed(); } };
+            roomDesc = Lbl(roomsPanel, "", px, 118, 586 - px, 96);
+            roomDesc.ForeColor = Theme.Ink2;
+            int y = 56 + (int)(roomPreview.Height / k) + 14;
             Lbl(roomsPanel, "Tamanho", 12, y + 8, 70);
             roomSize = Add(roomsPanel, new TrackBar { Minimum = 1, Maximum = 4, TickStyle = TickStyle.Both, AutoSize = false }, 80, y, 150, 36);
             roomSize.ValueChanged += delegate { Changed(); };
@@ -195,13 +208,24 @@ namespace CmdCrew
             var openPacks = Add(this, new Button { Text = "Abrir a pasta" }, 810, by, 130, 30);
             openPacks.Click += delegate { Directory.CreateDirectory(Paths.PacksDir); Process.Start("explorer.exe", "\"" + Paths.PacksDir + "\""); };
 
+            // ----- agentes -----
+            by += 40;
+            Lbl(this, "Agentes", 20, by + 3, 70, 22, true);
+            int ax = 96;
+            foreach (var a in Agents.All)
+            {
+                var agent = a;
+                var cb = Add(this, new CheckBox { Text = a.Name }, ax, by, 148, 24);
+                cb.CheckedChanged += delegate { if (!loading) ToggleAgent(agent, cb.Checked); };
+                agentBoxes[a] = cb;
+                ax += 150;
+            }
+
             // ----- rodapé -----
-            by += 50;
-            hookStatus = Lbl(this, "", 20, by + 4, 470, 40);
+            by += 40;
+            hookStatus = Lbl(this, "", 20, by + 4, 600, 40);
             status = Lbl(this, "", 20, by + 46, 600);
             status.ForeColor = Color.FromArgb(40, 120, 70);
-            hookBtn = Add(this, new PixelButton(), W - 360, by, 166, 44);
-            hookBtn.Click += delegate { ToggleHooks(); };
             var test = Add(this, new PixelButton { Text = "Testar salas", Primary = true }, W - 184, by, 166, 44);
             test.Click += delegate { Program.Launch("demo-salas 3 10"); SetStatus("Olha o canto da tela!"); };
             // discreto de propósito: quem quiser sair acha, mas não é o destaque da tela
@@ -228,8 +252,10 @@ namespace CmdCrew
             int mi = Math.Max(0, Array.IndexOf(ModeIds, cfg.Mode));
             for (int i = 0; i < 3; i++) modeRadios[i].Checked = i == mi;
             enabled.Checked = cfg.Enabled;
-            mix.Checked = cfg.Theme == "*";
-            foreach (var p in previews) { p.Selected = cfg.Theme != "*" && p.RoomTheme.Id == RoomTheme.Find(cfg.Theme).Id; p.Invalidate(); }
+            int ri = roomIds.IndexOf(cfg.RoomCharacter ?? "");
+            if (ri < 0) ri = 0;
+            if (roomChar.SelectedIndex != ri) roomChar.SelectedIndex = ri;
+            UpdateRoomPreview();
             roomSize.Value = Math.Max(1, Math.Min(4, cfg.RoomSize));
             corner.SelectedIndex = cfg.Corner == "esquerda" ? 1 : 0;
             doneSecs.Value = (decimal)Math.Max(2, Math.Min(120, cfg.DoneSeconds));
@@ -249,6 +275,25 @@ namespace CmdCrew
             UpdateHooks();
             UpdatePacks();
             loading = old;
+        }
+
+        // A prévia mostra a sala de quem vai trabalhar nela (alternando, passa por todos).
+        void UpdateRoomPreview()
+        {
+            List<Character> show;
+            if (cfg.RoomCharacter == "*") show = chars;
+            else
+            {
+                var c = cfg.RoomCharacterFor(chars, 0);
+                show = c == null ? new List<Character>() : new List<Character> { c };
+            }
+            roomPreview.SetCharacters(show, cfg);
+            var first = show.FirstOrDefault();
+            if (first == null) { roomDesc.Text = ""; return; }
+            var theme = RoomTheme.ForCharacter(first.Id);
+            roomDesc.Text = cfg.RoomCharacter == "*"
+                ? "Cada terminal novo ganha o próximo personagem, cada um na sua sala."
+                : theme.Name + (first.Premium ? "  ★ Supporters Pack" : "") + "\n" + theme.Description;
         }
 
         void OnCharacterChanged()
@@ -285,8 +330,6 @@ namespace CmdCrew
         {
             if (loading) return;
             cfg.Enabled = enabled.Checked;
-            if (!mix.Checked && cfg.Theme == "*") cfg.Theme = RoomTheme.All[0].Id;
-            if (mix.Checked) cfg.Theme = "*";
             cfg.RoomSize = roomSize.Value;
             cfg.Corner = corner.SelectedIndex == 1 ? "esquerda" : "direita";
             cfg.DoneSeconds = (double)doneSecs.Value;
@@ -302,7 +345,7 @@ namespace CmdCrew
             try
             {
                 cfg.Save();
-                ClaudeSettings.ApplyPhrases(cfg);
+                if (ClaudeSettings.HooksInstalled()) ClaudeSettings.ApplyPhrases(cfg);
             }
             catch (Exception ex) { Paths.Log("config: " + ex); SetStatus("Não deu para salvar: " + ex.Message); }
             var c = cbChar.SelectedItem as Character;
@@ -323,22 +366,31 @@ namespace CmdCrew
 
         void UpdateHooks()
         {
-            bool on = ClaudeSettings.HooksInstalled();
-            hookStatus.Text = on ? "✔ Ligado ao Claude Code. Sessões abertas antes disso precisam ser reiniciadas."
-                                 : "Ainda não está ligado ao Claude Code.";
-            hookStatus.ForeColor = on ? Color.FromArgb(40, 120, 70) : Theme.Accent2;
-            hookBtn.Text = on ? "Desligar" : "Ligar ao Claude";
+            var on = Agents.All.Where(a => { try { return a.Installed(); } catch { return false; } }).ToList();
+            foreach (var kv in agentBoxes)
+            {
+                kv.Value.Checked = on.Contains(kv.Key);
+                kv.Value.ForeColor = kv.Key.Detected || kv.Value.Checked ? Theme.Ink : Theme.Ink2;
+            }
+            hookStatus.Text = on.Count > 0
+                ? "✔ A equipe acompanha: " + string.Join(", ", on.Select(a => a.Name).ToArray()) + ". Sessões abertas antes disso precisam ser reiniciadas."
+                : "Nenhum agente ligado: marque pelo menos um acima.";
+            hookStatus.ForeColor = on.Count > 0 ? Color.FromArgb(40, 120, 70) : Theme.Accent2;
         }
 
-        void ToggleHooks()
+        void ToggleAgent(Agent a, bool on)
         {
             try
             {
-                if (ClaudeSettings.HooksInstalled()) ClaudeSettings.RemoveAll();
-                else { ClaudeSettings.InstallHooks(); ClaudeSettings.ApplyPhrases(cfg); }
+                if (on) { a.Install(); if (a.Id == "claude") ClaudeSettings.ApplyPhrases(cfg); }
+                else a.Remove();
+                SetStatus(a.Name + (on ? " ligado." : " desligado."));
             }
-            catch (Exception ex) { SetStatus("Não deu para mexer no settings.json: " + ex.Message); }
+            catch (Exception ex) { SetStatus("Não deu para mexer na configuração do " + a.Name + ": " + ex.Message); }
+            bool old = loading;
+            loading = true;
             UpdateHooks();
+            loading = old;
         }
 
         void UpdatePacks()
@@ -379,35 +431,25 @@ namespace CmdCrew
         void SetStatus(string s) { status.Text = s; }
     }
 
-    // Prévia animada de um tema de sala: trabalha alguns segundos, termina, e recomeça.
+    // Prévia animada da sala: trabalha alguns segundos, termina e recomeça (alternando, passa para o próximo personagem).
     public class RoomPreview : Control
     {
-        public readonly RoomTheme RoomTheme;
-        public bool Selected;
-        public bool UsesPremium;
         Room room;
+        List<Character> list = new List<Character>();
+        string skin;
+        Config cfg;
+        int index;
         readonly Timer timer = new Timer();
         readonly Font font, small;
         readonly float unit;
         float cycle;
 
-        public RoomPreview(RoomTheme theme, float unit)
+        public RoomPreview(float unit)
         {
-            RoomTheme = theme;
             this.unit = unit;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
-            Cursor = Cursors.Hand;
             font = new Font(Theme.PixelFamily, 6.2f * unit, FontStyle.Regular, GraphicsUnit.Pixel);
             small = new Font(Theme.PixelFamily, 5.4f * unit, FontStyle.Regular, GraphicsUnit.Pixel);
-            var all = Character.LoadAll(null);
-            var ch = all.FirstOrDefault(c => c.Id == theme.CharacterId) ?? all.FirstOrDefault(c => c.Id == theme.FallbackId);
-            if (ch != null)
-            {
-                UsesPremium = ch.Premium;
-                room = new Room(RoomTheme, ch, 0, 7) { ProjectName = "meu-projeto", Started = DateTime.UtcNow };
-                room.SetScale(unit);
-                room.Enter = 1;
-            }
             Size = new Size((int)(RoomTheme.W * unit) + 16, (int)(RoomTheme.H * unit) + 16);
             timer.Interval = 33;
             timer.Tick += (s, e) =>
@@ -415,20 +457,42 @@ namespace CmdCrew
                 if (room == null || !Visible) return;
                 cycle += 0.033f;
                 if (cycle > 9 && room.State == RoomState.Working) room.SetState(RoomState.Done, DateTime.UtcNow);
-                if (cycle > 14) { cycle = 0; room.Started = DateTime.UtcNow; room.SetState(RoomState.Working, DateTime.UtcNow); }
+                if (cycle > 14)
+                {
+                    cycle = 0;
+                    if (list.Count > 1) { index++; Build(); }
+                    else { room.Started = DateTime.UtcNow; room.SetState(RoomState.Working, DateTime.UtcNow); }
+                }
                 room.Update(0.033f, true);
                 Invalidate();
             };
             timer.Start();
         }
 
+        public void SetCharacters(List<Character> chars, Config cfg)
+        {
+            this.cfg = cfg;
+            if (room != null && chars.SequenceEqual(list) && skin == cfg.Skin) return;
+            list = chars.ToList();
+            skin = cfg.Skin;
+            index = 0; cycle = 0;
+            Build();
+        }
+
+        void Build()
+        {
+            if (list.Count == 0) { room = null; Invalidate(); return; }
+            var ch = list[index % list.Count];
+            room = new Room(RoomTheme.ForCharacter(ch.Id), ch, 0, 7, cfg == null ? null : cfg.RoomSkinFor(ch)) { ProjectName = "meu-projeto", Started = DateTime.UtcNow };
+            room.SetScale(unit);
+            room.Enter = 1;
+            Invalidate();
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
             g.Clear(Parent != null ? Parent.BackColor : Theme.Bg);
-            if (Selected)
-                using (var p = Theme.Round(new RectangleF(2, 2, Width - 5, Height - 5), 10))
-                using (var pen = new Pen(Theme.Accent, 4)) { g.SmoothingMode = SmoothingMode.AntiAlias; g.DrawPath(pen, p); }
             if (room != null) room.Draw(g, 8, 8, font, small);
             if (!Enabled)
                 using (var b = new SolidBrush(Color.FromArgb(150, Parent != null ? Parent.BackColor : Theme.Bg))) g.FillRectangle(b, ClientRectangle);
@@ -494,10 +558,10 @@ namespace CmdCrew
 
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.Half;
-            int rows = ch.BottomRow - ch.TopRow + 1;
+            int rows = ch.FeetRow - ch.TopRow + 1;
             int scale = Math.Max(1, Math.Min((int)(r.Height * 0.6) / Math.Max(1, rows), (r.Width / 2 - 10) / Math.Max(1, ch.Width)));
             Skin skin = skinId == "*" ? ch.Skins[(tick / 18) % ch.Skins.Count] : ch.GetSkin(skinId);
-            int top = ground - (ch.BottomRow + 1) * scale;
+            int top = ground - (ch.FeetRow + 1) * scale;
             if (ch.FlyHeight > 0) top -= (int)(Math.Min(ch.FlyHeight, 8) * scale + Math.Sin(tick * 0.35) * scale);   // quem voa
 
             // Andando da esquerda até o meio, em loop

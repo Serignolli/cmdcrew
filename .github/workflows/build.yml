@@ -1,13 +1,13 @@
 name: Build
 
-# Confere se o projeto compila a cada push e pull request (o instalador só é publicado pelo release.yml).
+# Confere se o projeto compila a cada push e pull request (os instaladores só são publicados pelo release.yml).
 on:
   push:
     branches: [main]
   pull_request:
 
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,3 +21,28 @@ jobs:
         with:
           name: CmdCrew-Setup
           path: dist/CmdCrew-Setup.exe
+
+  macos-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go/go.mod
+          cache-dependency-path: go/go.sum
+
+      - name: Conferir o código
+        working-directory: go
+        run: |
+          test -z "$(gofmt -l .)"
+          go vet ./...
+
+      - name: Compilar e empacotar
+        run: sh go/empacotar.sh
+
+      - name: Guardar os pacotes
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmdcrew-macos-linux
+          path: dist/cmdcrew-*.tar.gz

@@ -115,7 +115,7 @@ def dragao():
         "....VV..........")
     save({
         "id": "dragao", "nome": "Dragão", "categoria": "Fantasia",
-        "descricao": "Voa em cima do terminal batendo as asas e cospe fogo quando está trabalhando. Guarda as gemas do seu código.",
+        "descricao": "Guardião do tesouro do repositório. Voa em cima do terminal e cospe fogo no código legado até sobrar só o que presta.",
         "voo": 5, "efeito": "fogo", "carga": "gema",
         "sprites": {"andar": [up, mid, down, mid], "trabalhar": [fire_up, fire_down], "parado": [mid]},
         "skins": [
@@ -186,7 +186,7 @@ def elfos():
     released = with_bow([(13, y) for y in range(5, 12)], [(12, 10, "S")])
     save({
         "id": "elfos", "nome": "Elfos", "categoria": "Fantasia",
-        "descricao": "Ágeis e organizados. Andam leves por cima do terminal e acertam cada bug com uma flecha.",
+        "descricao": "Caçadores de bugs da floresta. Enxergam um ponto e vírgula faltando a 200 linhas de distância e acertam com uma flecha.",
         "efeito": "flechas", "carga": "folha",
         "sprites": {"andar": [walk_a, walk_b], "trabalhar": [drawn, drawn, released]},
         "skins": [
@@ -268,7 +268,7 @@ def cachorros():
         "..P.P...P...P...")
     save({
         "id": "cachorros", "nome": "Cachorros", "categoria": "Animais",
-        "descricao": "Vira-lata caramelo e companhia. Latem para os bugs, cavam o repositório e trazem a bolinha de volta.",
+        "descricao": "Cães de guarda do repositório. Latem para os bugs, enterram TODOs no quintal e sempre trazem o build de volta.",
         "efeito": "latidos", "carga": "osso",
         "efeitosTrabalho": {"trabalhar": "latidos", "trabalhar-cavar": "terra"},
         "sprites": {"andar": [walk_a, walk_b], "trabalhar": [bark_open, walk_a], "trabalhar-cavar": [dig_a, dig_b]},
@@ -354,7 +354,7 @@ def programadores():
         }
     save({
         "id": "programadores", "nome": "Programadores", "categoria": "Programação",
-        "descricao": "O dev cansado com a caneca de café, o gamer de fone e o hacker de capuz. Digitam sem parar enquanto o Claude trabalha.",
+        "descricao": "Os devs de plantão: o cansado movido a café, o gamer que faz speedrun de deploy e o hacker que só digita de capuz. Commit, café, repete.",
         "efeito": "codigo", "carga": "cafe",
         "sprites": sprites(tired),
         "skins": [
@@ -378,7 +378,7 @@ def programadores():
         "dicas": ["Funciona na minha máquina é um estado de espírito, não uma garantia.",
                   "Todo bug corrigido às 18h de sexta volta segunda às 9h.", "Café não é dependência. É infraestrutura."],
         "falas": ["Funciona na minha máquina!", "Quem mexeu no main?", "É só um ponto e vírgula...", "Café acabou?!",
-                  "Achei o bug!", "Hack the planet!", "git push --force? Não!", "Mais um console.log", "Era cache.", "Level up!"],
+                  "Achei o bug!", "Invadindo o mainframe!", "git push --force? Não!", "Mais um console.log", "Era cache.", "Level up!"],
         "falasFim": ["Deploy feito!", "Todos os testes passaram!", "Merge aprovado!", "Commitado!"],
     })
 
@@ -387,7 +387,7 @@ def programadores():
 # Cada um tem desenho próprio (sprites dentro da skin).
 
 def robos_classicos():
-    # astromecânico: W branco, B azul, G cinza, E olho, R luz vermelha
+    # robô-cúpula: W branco, B azul, G cinza, E olho, R luz vermelha
     def astro(eye_left, light):
         dome_eye = "....BWWEWWWB...." if eye_left else "....BWWWWEWB...."
         return F(
@@ -404,7 +404,7 @@ def robos_classicos():
             "..GG..WWWW..GG..",
             "..GG...GG...GG..",
             ".GGG..GGGG..GGG.")
-    # dourado de protocolo: Y dourado, D dourado escuro, E olho, K juntas
+    # dourado tagarela: Y dourado, D dourado escuro, E olho, K juntas
     gold_head = [
         ".....YYYYY......",
         "....YYYYYYY.....",
@@ -458,14 +458,14 @@ def robos_classicos():
             "...W.......W...." if brush_a else "..W.W.....W.W...")
     save({
         "id": "robos-classicos", "nome": "Robôs clássicos", "categoria": "Outros",
-        "descricao": "O baixinho que apita, o dourado que fala demais e o aspirador que não para. Inspirados nos robôs das ficções científicas.",
+        "descricao": "Uma tripulação de ficção científica: o baixinho que apita em binário, o dourado que traduz stack traces e o aspirador que limpa o cache.",
         "efeito": "faiscas", "carga": "engrenagem",
         "sprites": {"andar": [astro(True, False), astro(False, False)], "trabalhar": [astro(True, True), astro(False, False)]},
         "skins": [
-            {"id": "astro", "nome": "Astromecânico (apita)", "efeito": "notas",
+            {"id": "astro", "nome": "Robô-cúpula (apita)", "efeito": "notas",
              "cores": {"W": "#eceff1", "B": "#1e88e5", "G": "#78909c", "E": "#212121", "R": "#e53935"}},
-            {"id": "astro-vermelho", "nome": "Astromecânico vermelho", "base": "astro", "cores": {"B": "#d32f2f"}},
-            {"id": "dourado", "nome": "Dourado de protocolo", "efeito": "estrelas",
+            {"id": "astro-vermelho", "nome": "Robô-cúpula vermelho", "base": "astro", "cores": {"B": "#d32f2f"}},
+            {"id": "dourado", "nome": "Dourado tagarela", "efeito": "estrelas",
              "cores": {"Y": "#fbc02d", "D": "#c49000", "E": "#fff176", "K": "#5d4037"},
              "sprites": {"andar": [gold_a, gold_b], "trabalhar": [gold_panic_a, gold_a]}},
             {"id": "aspirador", "nome": "Aspirador", "efeito": "poeira", "carga": "caixa",
@@ -473,13 +473,13 @@ def robos_classicos():
              "sprites": {"andar": [vacuum(False, True), vacuum(False, False)], "trabalhar": [vacuum(True, True), vacuum(False, False)]}},
         ],
         "verbos": ["Calculando as probabilidades", "Apitando em binário", "Aspirando os logs", "Consultando o banco de memória",
-                   "Traduzindo seis milhões de idiomas", "Recarregando as baterias", "Varrendo o repositório", "Girando a cúpula",
+                   "Traduzindo idiomas demais", "Recarregando as baterias", "Varrendo o repositório", "Girando a cúpula",
                    "Obedecendo às três leis", "Soldando o circuito"],
-        "dicas": ["As chances de um deploy na sexta dar certo são de 3.720 para 1.", "Robôs de limpeza também varrem dependências não usadas.",
-                  "Bip bop: este commit foi aprovado por um astromecânico."],
-        "falas": ["Bip bop!", "Oh, não! Estamos perdidos!", "Vrrrrrr...", "Fui feito para sofrer", "Bip bip buuu!",
+        "dicas": ["As chances de um deploy na sexta dar certo são de mil para 1.", "Robôs de limpeza também varrem dependências não usadas.",
+                  "Bip bop: este commit foi aprovado por um robô-cúpula."],
+        "falas": ["Bip bop!", "Ai, ai, ai, isso vai dar errado!", "Vrrrrrr...", "Meus circuitos não aguentam", "Bip bip buuu!",
                   "Poeira detectada!", "Que desagradável!", "Bateria em 12%"],
-        "falasFim": ["Bip bop, pronto!", "Graças ao criador!", "Voltando para a base!", "Tudo limpinho!"],
+        "falasFim": ["Bip bop, pronto!", "Ufa, sobrevivi!", "Voltando para a base!", "Tudo limpinho!"],
     })
 
 

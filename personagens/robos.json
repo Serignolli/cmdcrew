@@ -2,7 +2,7 @@
   "id": "robos",
   "nome": "Robozinhos",
   "categoria": "Outros",
-  "descricao": "Pequenos robôs de manutenção que soldam circuitos, soltam faíscas e carregam engrenagens.",
+  "descricao": "Robozinhos de manutenção que soldam circuitos, apertam os parafusos soltos do back-end e apitam de alegria quando os testes passam.",
   "efeito": "faiscas",
   "carga": "engrenagem",
   "sprites": {

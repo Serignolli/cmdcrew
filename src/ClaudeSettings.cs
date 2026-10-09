@@ -12,7 +12,7 @@ namespace CmdCrew
     {
         // Os nomes antigos (Oompa-Loompas e Salinhas, antes do CmdCrew) também são reconhecidos,
         // para a atualização não deixar ganchos duplicados para trás.
-        static readonly string[] Markers = { "CmdCrew.exe", "OompaLoompas.exe", "Salinhas.exe" };
+        static readonly string[] Markers = { "CmdCrew", "OompaLoompas.exe", "Salinhas.exe" };
 
         static readonly string[][] HookEvents = {
             new[] { "UserPromptSubmit", "start" },
@@ -24,9 +24,11 @@ namespace CmdCrew
             new[] { "SessionEnd", "end" },
         };
 
-        static Dictionary<string, object> Load()
+        static Dictionary<string, object> Load() { return LoadWithBackup(Paths.ClaudeSettings); }
+
+        // Antes da primeira alteração, guarda uma cópia do arquivo como estava.
+        public static Dictionary<string, object> LoadWithBackup(string path)
         {
-            string path = Paths.ClaudeSettings;
             string backup = path + ".antes-cmdcrew.bak";
             if (File.Exists(path) && !File.Exists(backup)) File.Copy(path, backup);
             return Json.LoadObject(path);
@@ -34,14 +36,15 @@ namespace CmdCrew
 
         static void Save(Dictionary<string, object> s) { Json.Save(Paths.ClaudeSettings, s); }
 
-        static bool IsOurs(object hook)
+        public static bool IsOurs(object hook)
         {
             var h = hook as Dictionary<string, object>;
             string cmd = h == null ? "" : Json.Str(h, "command", "");
             return Markers.Any(m => cmd.IndexOf(m, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
-        static void StripOurHooks(Dictionary<string, object> s)
+        // Tira os nossos ganchos de um settings.json no formato do Claude Code (o Qwen Code, o Gemini CLI e o Codex usam o mesmo).
+        public static void StripOurHooks(Dictionary<string, object> s)
         {
             var hooks = Json.Obj(s, "hooks");
             if (hooks == null) return;
@@ -68,11 +71,13 @@ namespace CmdCrew
             if (hooks.Count == 0) s.Remove("hooks");
         }
 
-        public static bool HooksInstalled()
+        public static bool HooksInstalled() { return HasOurHooks(Paths.ClaudeSettings); }
+
+        public static bool HasOurHooks(string path)
         {
             try
             {
-                var hooks = Json.Obj(Json.LoadObject(Paths.ClaudeSettings), "hooks");
+                var hooks = Json.Obj(Json.LoadObject(path), "hooks");
                 if (hooks == null) return false;
                 foreach (var ev in hooks.Keys)
                     foreach (var g in Json.Arr(hooks, ev) ?? new List<object>())

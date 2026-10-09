@@ -76,7 +76,7 @@ namespace CmdCrew
             spriteW = ch.Width * px;
             gravity = 900f * scale / 3f;
             // altura do desenho + objeto carregado + espaço para os pulos + balão
-            formH = (ch.BottomRow - ch.TopRow + 1) * px + 7 * scale + 6 * scale + (int)(40 * dpi / 96.0)
+            formH = (ch.FeetRow - ch.TopRow + 1) * px + 7 * scale + 6 * scale + (int)(40 * dpi / 96.0)
                   + (ch.FlyHeight > 0 ? ch.FlyHeight * px + 2 * scale : 0);   // espaço para quem voa
 
             speech = cfg.Phrases(ch, "falas");
@@ -519,7 +519,7 @@ namespace CmdCrew
         // ---------- partículas ----------
 
         int Ground { get { return ClientSize.Height; } }
-        int SpriteTop { get { return Ground - (ch.BottomRow + 1) * px; } }
+        int SpriteTop { get { return Ground - (ch.FeetRow + 1) * px; } }
         int HeadTopOf(Worker w) { return SpriteTop + w.TopRow * px - (int)w.Y - Fly(w); }
 
         // Altura de quem voa: fixa + um sobe e desce suave (bater de asas).
@@ -538,7 +538,7 @@ namespace CmdCrew
         {
             float frontX = w.X + w.Dir * spriteW * 0.45f;
             float headY = HeadTopOf(w);
-            float midY = Ground - (ch.BottomRow - w.TopRow) * px * 0.3f - Fly(w);
+            float midY = Ground - (ch.FeetRow - w.TopRow) * px * 0.3f - Fly(w);
             float headX = w.X + w.Dir * spriteW * 0.2f;
             // "faiscas+terra": vários efeitos de uma vez
             if (effect != null && effect.IndexOf('+') >= 0)

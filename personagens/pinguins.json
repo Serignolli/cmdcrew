@@ -2,7 +2,7 @@
   "id": "pinguins",
   "nome": "Pinguins",
   "categoria": "Animais",
-  "descricao": "Engenheiros de refrigeração. Bamboleiam pra lá e pra cá com peixes frescos e mantêm o processador geladinho.",
+  "descricao": "A equipe de refrigeração do data center. Deixam o processador geladinho, bamboleiam entre os servidores e aceitam pagamento em peixe fresco.",
   "efeito": "neve",
   "carga": "peixe",
   "sprites": {
@@ -122,17 +122,17 @@
     "Quando o código trava, os pinguins chamam isso de congelamento controlado."
   ],
   "falas": [
-    "Noot noot!",
+    "Quac quac!",
     "Peixe fresco!",
     "Gelo na medida",
     "Escorreguei num null",
     "Tá frio aqui no servidor",
     "Vamos deslizar!",
-    "Sorriam e acenem"
+    "Pose de pinguim!"
   ],
   "falasFim": [
-    "Noot! Pronto!",
+    "Quac! Pronto!",
     "Iceberg entregue!",
-    "Sorriam e acenem, rapazes!"
+    "Missão gelada cumprida!"
   ]
 }

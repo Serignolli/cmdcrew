@@ -2,7 +2,7 @@
   "id": "robos-classicos",
   "nome": "Robôs clássicos",
   "categoria": "Outros",
-  "descricao": "O baixinho que apita, o dourado que fala demais e o aspirador que não para. Inspirados nos robôs das ficções científicas.",
+  "descricao": "Uma tripulação de ficção científica: o baixinho que apita em binário, o dourado que traduz stack traces e o aspirador que limpa o cache.",
   "efeito": "faiscas",
   "carga": "engrenagem",
   "sprites": {
@@ -86,7 +86,7 @@
   "skins": [
     {
       "id": "astro",
-      "nome": "Astromecânico (apita)",
+      "nome": "Robô-cúpula (apita)",
       "efeito": "notas",
       "cores": {
         "W": "#eceff1",
@@ -98,7 +98,7 @@
     },
     {
       "id": "astro-vermelho",
-      "nome": "Astromecânico vermelho",
+      "nome": "Robô-cúpula vermelho",
       "base": "astro",
       "cores": {
         "B": "#d32f2f"
@@ -106,7 +106,7 @@
     },
     {
       "id": "dourado",
-      "nome": "Dourado de protocolo",
+      "nome": "Dourado tagarela",
       "efeito": "estrelas",
       "cores": {
         "Y": "#fbc02d",
@@ -284,8 +284,8 @@
       }
     }
   ],
-  "verbos": ["Calculando as probabilidades", "Apitando em binário", "Aspirando os logs", "Consultando o banco de memória", "Traduzindo seis milhões de idiomas", "Recarregando as baterias", "Varrendo o repositório", "Girando a cúpula", "Obedecendo às três leis", "Soldando o circuito"],
-  "dicas": ["As chances de um deploy na sexta dar certo são de 3.720 para 1.", "Robôs de limpeza também varrem dependências não usadas.", "Bip bop: este commit foi aprovado por um astromecânico."],
-  "falas": ["Bip bop!", "Oh, não! Estamos perdidos!", "Vrrrrrr...", "Fui feito para sofrer", "Bip bip buuu!", "Poeira detectada!", "Que desagradável!", "Bateria em 12%"],
-  "falasFim": ["Bip bop, pronto!", "Graças ao criador!", "Voltando para a base!", "Tudo limpinho!"]
+  "verbos": ["Calculando as probabilidades", "Apitando em binário", "Aspirando os logs", "Consultando o banco de memória", "Traduzindo idiomas demais", "Recarregando as baterias", "Varrendo o repositório", "Girando a cúpula", "Obedecendo às três leis", "Soldando o circuito"],
+  "dicas": ["As chances de um deploy na sexta dar certo são de mil para 1.", "Robôs de limpeza também varrem dependências não usadas.", "Bip bop: este commit foi aprovado por um robô-cúpula."],
+  "falas": ["Bip bop!", "Ai, ai, ai, isso vai dar errado!", "Vrrrrrr...", "Meus circuitos não aguentam", "Bip bip buuu!", "Poeira detectada!", "Que desagradável!", "Bateria em 12%"],
+  "falasFim": ["Bip bop, pronto!", "Ufa, sobrevivi!", "Voltando para a base!", "Tudo limpinho!"]
 }

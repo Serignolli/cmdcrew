@@ -1,0 +1,101 @@
+{
+ "id": "covil",
+ "nome": "Covil do dragão",
+ "descricao": "O dragão voa sobre o tesouro, cospe fogo e as tochas iluminam a caverna.",
+ "personagens": ["dragao"],
+ "cor": "#e0663a",
+ "imagem": "covil.png",
+ "chao": 42,
+ "altura": 22,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 30,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 7
+  },
+  {
+   "x": 64,
+   "tipo": "parado",
+   "andar": "andar",
+   "direita": true,
+   "min": 2.5,
+   "max": 4
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "x": 9,
+   "y": 18,
+   "raio": 12,
+   "cor": "#ff9b42",
+   "pronto": "#8ff0b0",
+   "erro": "#ff5050",
+   "tipo": "luz"
+  },
+  {
+   "x": 89,
+   "y": 18,
+   "raio": 12,
+   "cor": "#ff9b42",
+   "pronto": "#8ff0b0",
+   "erro": "#ff5050",
+   "tipo": "luz"
+  },
+  {
+   "vel": 7,
+   "quadros": [
+    [
+     ["#ff9800", 7, 17, 4, 4],
+     ["#ffeb3b", 8, 18, 2, 3],
+     ["#f44336", 8, 16, 1, 1],
+     ["#ff9800", 87, 18, 4, 3],
+     ["#ffeb3b", 88, 19, 2, 2],
+     ["#f44336", 89, 17, 1, 1]
+    ],
+    [
+     ["#ff9800", 7, 18, 4, 3],
+     ["#ffeb3b", 8, 19, 2, 2],
+     ["#f44336", 9, 17, 1, 1],
+     ["#ff9800", 87, 17, 4, 4],
+     ["#ffeb3b", 88, 18, 2, 3],
+     ["#f44336", 88, 16, 1, 1]
+    ]
+   ],
+   "tipo": "quadros"
+  },
+  {
+   "pontos": [
+    [74, 28],
+    [80, 32],
+    [86, 37],
+    [70, 34],
+    [64, 38]
+   ],
+   "tipo": "brilho"
+  },
+  {
+   "area": [4, 6, 8, 14],
+   "cores": ["#ffb74d", "#ff7043"],
+   "n": 3,
+   "vx": 0.5,
+   "vy": -7,
+   "tam": [1, 1],
+   "tipo": "particulas"
+  },
+  {
+   "area": [84, 6, 8, 14],
+   "cores": ["#ffb74d", "#ff7043"],
+   "n": 3,
+   "vx": -0.5,
+   "vy": -7,
+   "tam": [1, 1],
+   "tipo": "particulas"
+  }
+ ],
+ "frente": []
+}

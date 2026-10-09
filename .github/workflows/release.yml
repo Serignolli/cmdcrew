@@ -1,7 +1,9 @@
 name: Release
 
-# Ao criar uma tag v* (ex.: git tag v1.0.0 && git push --tags), compila o instalador no Windows
-# e publica o CmdCrew-Setup.exe na release. O site aponta sempre para releases/latest.
+# Ao criar uma tag v* (ex.: git tag v1.1.0 && git push --tags), compila e publica na release:
+#   CmdCrew-Setup.exe                 Windows (C#, compilador que já vem no Windows)
+#   cmdcrew-<sistema>-<arq>.tar.gz    macOS e Linux (Go), baixados pelo install.sh
+# O site aponta sempre para releases/latest.
 on:
   push:
     tags:
@@ -11,7 +13,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,3 +26,23 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/CmdCrew-Setup.exe
+
+  macos-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go/go.mod
+          cache-dependency-path: go/go.sum
+
+      - name: Compilar e empacotar (macOS e Linux, Intel e ARM)
+        run: sh go/empacotar.sh
+
+      - name: Publicar na release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/cmdcrew-*.tar.gz
+            install.sh

@@ -1,0 +1,84 @@
+{
+ "id": "fabrica",
+ "nome": "Fábrica de chocolate",
+ "descricao": "Os chocolateiros martelam, o rio de chocolate borbulha e a esteira não para.",
+ "personagens": ["chocolateiros"],
+ "cor": "#b06a3b",
+ "imagem": "fabrica.png",
+ "chao": 43,
+ "altura": 22,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 26,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 8
+  },
+  {
+   "x": 66,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 3,
+   "max": 6
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "vel": 1.5,
+   "quadros": [
+    [
+     ["#5b3416", 39, 23, 5, 3],
+     ["#7d4a22", 40, 23, 3, 1],
+     ["#7b1fa2", 42, 24, 2, 2],
+     ["#5b3416", 50, 23, 5, 3],
+     ["#7d4a22", 51, 23, 3, 1],
+     ["#7b1fa2", 53, 24, 2, 2],
+     ["#5b3416", 61, 23, 5, 3],
+     ["#7d4a22", 62, 23, 3, 1],
+     ["#7b1fa2", 64, 24, 2, 2]
+    ],
+    [
+     ["#5b3416", 42, 23, 5, 3],
+     ["#7d4a22", 43, 23, 3, 1],
+     ["#7b1fa2", 45, 24, 2, 2],
+     ["#5b3416", 53, 23, 5, 3],
+     ["#7d4a22", 54, 23, 3, 1],
+     ["#7b1fa2", 56, 24, 2, 2]
+    ],
+    [
+     ["#5b3416", 45, 23, 5, 3],
+     ["#7d4a22", 46, 23, 3, 1],
+     ["#7b1fa2", 48, 24, 2, 2],
+     ["#5b3416", 56, 23, 5, 3],
+     ["#7d4a22", 57, 23, 3, 1],
+     ["#7b1fa2", 59, 24, 2, 2]
+    ]
+   ],
+   "tipo": "quadros"
+  },
+  {
+   "area": [0, 34, 96, 5],
+   "cores": ["#8d5a36", "#a0693f"],
+   "n": 6,
+   "vx": 1,
+   "vy": -1.2,
+   "tam": [1, 1],
+   "tipo": "particulas"
+  },
+  {
+   "area": [0, 35, 96, 4],
+   "cores": ["#4e2a13"],
+   "n": 4,
+   "vx": 4,
+   "vy": 0,
+   "tam": [3, 1],
+   "tipo": "particulas"
+  }
+ ],
+ "frente": []
+}

@@ -7,14 +7,16 @@
 <meta name="description" data-i18n-attr="content:meta.description" content="Uma equipe de bichinhos em pixel art que trabalha junto com o Claude Code e avisa quando ele termina. Em cima do terminal ou numa salinha no canto da tela, uma por terminal. Grátis e de código aberto.">
 <meta name="theme-color" content="#2b1d14">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://cmdcrew.serignolli.com/">
+<link rel="canonical" href="https://cmdcrew.serignolli.com/">
 <meta property="og:title" data-i18n-attr="content:meta.ogTitle" content="CmdCrew para o Claude Code">
 <meta property="og:description" data-i18n-attr="content:meta.ogDescription" content="Uma equipe de bichinhos em pixel art que trabalha junto com o Claude Code e avisa quando ele termina.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<script src="i18n.js"></script>
+<link rel="stylesheet" href="style.css?v=1.1.1">
+<script src="i18n.js?v=1.1.1"></script>
 </head>
 <body>
 
@@ -36,7 +38,7 @@
 <header class="hero">
   <div class="container hero-grid">
     <div class="hero-text">
-      <div class="pill"><span class="dot"></span><span data-i18n="hero.pill">para o Claude Code · Windows · grátis e de código aberto</span></div>
+      <div class="pill"><span class="dot"></span><span data-i18n="hero.pill">para Claude Code, Codex, Gemini, Qwen, OpenCode e Copilot · Windows, macOS e Linux · grátis</span></div>
       <h1 data-i18n="hero.title">O Claude pensa.<br><span class="hl">A equipe trabalha.</span></h1>
       <p class="lead" data-i18n="hero.lead">Enquanto o Claude Code resolve o seu código, uma equipe de bichinhos em pixel art trabalha junto: em cima do terminal ou numa salinha no canto da tela, uma por terminal. Quando ele termina, eles comemoram e avisam. Se ele precisar de você, eles chamam.</p>
       <div class="cta">
@@ -74,6 +76,16 @@
         <img src="img/sala-pronto.gif" data-i18n-attr="alt:rooms.shot3Alt" alt="Sala com o letreiro PRONTO e confete" width="300" height="192" loading="lazy">
         <figcaption data-i18n="rooms.shot3"><b>Pronto!</b> Letreiro, confete e um plim. A sala fica alguns segundos e sai.</figcaption>
       </figure>
+    </div>
+    <h3 class="rooms-sub-title" data-i18n="rooms.eachTitle">Cada personagem tem a sua sala.</h3>
+    <p class="sub" data-i18n="rooms.eachSub">O dragão cospe fogo no covil, o pinguim gela os servidores, o elfo treina tiro ao alvo no bosque. Quem trabalha no terminal pode ser outro: o dragão em cima do terminal e o dev na sala, por exemplo.</p>
+    <div class="rooms-grid rooms-grid-6">
+      <figure class="room-shot"><img src="img/sala-covil.gif" alt="Covil do dragão" width="300" height="192" loading="lazy"><figcaption data-i18n="rooms.each1"><b>Covil do dragão.</b> Tochas, tesouro e fogo.</figcaption></figure>
+      <figure class="room-shot"><img src="img/sala-floresta.gif" alt="Bosque dos elfos" width="300" height="192" loading="lazy"><figcaption data-i18n="rooms.each2"><b>Bosque dos elfos.</b> Vaga-lumes e tiro ao alvo.</figcaption></figure>
+      <figure class="room-shot"><img src="img/sala-polo.gif" alt="Data center gelado dos pinguins" width="300" height="192" loading="lazy"><figcaption data-i18n="rooms.each3"><b>Data center gelado.</b> Servidores piscando e neve lá fora.</figcaption></figure>
+      <figure class="room-shot"><img src="img/sala-fabrica.gif" alt="Fábrica de chocolate" width="300" height="192" loading="lazy"><figcaption data-i18n="rooms.each4"><b>Fábrica de chocolate.</b> Rio de chocolate e esteira rodando.</figcaption></figure>
+      <figure class="room-shot"><img src="img/sala-quintal.gif" alt="Quintal do cachorro" width="300" height="192" loading="lazy"><figcaption data-i18n="rooms.each5"><b>Quintal.</b> Cava, late e guarda a casinha.</figcaption></figure>
+      <figure class="room-shot"><img src="img/sala-estudio.gif" alt="Estúdio do Claude" width="300" height="192" loading="lazy"><figcaption data-i18n="rooms.each6"><b>Estúdio do Claude.</b> O Clawd no terminal laranja.</figcaption></figure>
     </div>
     <div class="features">
       <div class="feat" data-i18n="rooms.feat1"><h3>Permissões na sala</h3><p>Quando o Claude pede para rodar um comando ou mexer num arquivo, a sala mostra o pedido com <em>Permitir</em>, <em>Negar</em> e <em>Terminal</em>. A pergunta também continua no terminal: responda onde preferir.</p></div>
@@ -119,35 +131,47 @@
     <p class="sub" data-i18n="pack.sub">Um pacote de personagens de fantasia e RPG em alta definição, desenhados quadro a quadro, com mais animações e mais detalhe. O CmdCrew continua grátis e aberto: o pack é para quem quer apoiar e ganhar uma equipe caprichada em troca.</p>
     <div class="pack-grid">
       <article class="pack-card">
-        <div class="pack-art"><img src="img/pack-anoes.gif" data-i18n-attr="alt:pack.card1Alt" alt="Anão mineiro HD andando, picando pedra e empurrando o carrinho" loading="lazy"></div>
+        <div class="pack-art pack-swap" data-swap>
+          <img class="on" src="img/pack-anoes.gif" data-i18n-attr="alt:pack.card1AltChar" alt="Anão minerador HD andando, picando pedra e empurrando o carrinho" loading="lazy">
+          <img src="img/sala-mina.gif" data-i18n-attr="alt:pack.card1AltRoom" alt="A mina: o anão HD picando pedra e empurrando o carrinho" loading="lazy">
+          <span class="swap-label" data-i18n="pack.swapChar">personagem</span><span class="swap-label room" data-i18n="pack.swapRoom">e a sala dele</span>
+        </div>
         <div data-i18n="pack.card1">
-          <h3>Anões mineiros</h3>
-          <p>Picam pedra, empurram o carrinho e carregam o saco. Cinco cores de capacete e barba.</p>
-          <div class="tags"><span>5 animações</span><span>5 cores</span><span>sala da mina</span></div>
+          <h3>Anões mineradores de código</h3>
+          <p>Picam pedra atrás dos veios de ouro do repositório, empurram o carrinho de commits e tiram os bugs da mina no saco. Vêm com a mina: lamparina, trilho e pedras brilhando.</p>
+          <div class="tags"><span>personagem + sala</span><span>5 animações</span><span>5 cores</span></div>
         </div>
       </article>
       <article class="pack-card">
-        <div class="pack-art"><img src="img/pack-gnomos-jardim.gif" data-i18n-attr="alt:pack.card2Alt" alt="Gnomo de jardim HD andando, regando, cavando e rastelando" loading="lazy"></div>
+        <div class="pack-art pack-swap" data-swap>
+          <img class="on" src="img/pack-gnomos-jardim.gif" data-i18n-attr="alt:pack.card2AltChar" alt="Gnomo de jardim HD andando, regando, cavando e rastelando" loading="lazy">
+          <img src="img/sala-jardim.gif" data-i18n-attr="alt:pack.card2AltRoom" alt="O jardim: o gnomo HD regando o canteiro" loading="lazy">
+          <span class="swap-label" data-i18n="pack.swapChar">personagem</span><span class="swap-label room" data-i18n="pack.swapRoom">e a sala dele</span>
+        </div>
         <div data-i18n="pack.card2">
-          <h3>Gnomos de jardim</h3>
-          <p>Regam, cavam e rastelam enquanto o Claude trabalha. Cinco cores de gorro.</p>
-          <div class="tags"><span>5 animações</span><span>5 cores</span></div>
+          <h3>Gnomos que plantam bancos de dados</h3>
+          <p>Regam as tabelas, cavam os índices e rastelam os logs até o jardim ficar normalizado. Vêm com o jardim: cerca, canteiro e borboletas.</p>
+          <div class="tags"><span>personagem + sala</span><span>5 animações</span><span>5 cores</span></div>
         </div>
       </article>
       <article class="pack-card">
-        <div class="pack-art"><img src="img/sala-mina.gif" data-i18n-attr="alt:pack.card3Alt" alt="Sala da mina com o anão HD picando pedra" loading="lazy"></div>
+        <div class="pack-art pack-swap" data-swap>
+          <img class="on" src="img/pack-elfos-hd.gif" data-i18n-attr="alt:pack.card3AltChar" alt="Elfo arqueiro HD andando e atirando com o arco" loading="lazy">
+          <img src="img/sala-bosque-hd.gif" data-i18n-attr="alt:pack.card3AltRoom" alt="O bosque: o elfo HD atirando no alvo" loading="lazy">
+          <span class="swap-label" data-i18n="pack.swapChar">personagem</span><span class="swap-label room" data-i18n="pack.swapRoom">e a sala dele</span>
+        </div>
         <div data-i18n="pack.card3">
-          <h3>A mina, em HD</h3>
-          <p>No modo Salas, o anão HD assume a mina: lamparina tremendo, trilho, carrinho e pedras brilhando.</p>
-          <div class="tags"><span>sala temática</span></div>
+          <h3>Elfos caçadores de bugs</h3>
+          <p>Acham o erro antes do compilador e acertam bem no meio da stack trace. Vêm com o bosque: vaga-lumes, lua e o alvo na árvore.</p>
+          <div class="tags"><span>personagem + sala</span><span>novo</span><span>5 cores</span></div>
         </div>
       </article>
       <article class="pack-card soon">
         <div class="pack-art q">?</div>
         <div data-i18n="pack.card4">
           <h3>E vem mais por aí</h3>
-          <p>Elfos arqueiros, dragão de verdade, magos, cavaleiros e outros heróis de RPG entram no pack conforme ficam prontos.</p>
-          <div class="tags"><span>elfos</span><span>dragão</span><span>magos</span><span>cavaleiros</span></div>
+          <p>Dragão de verdade, magos, cavaleiros e outros heróis de RPG entram no pack conforme ficam prontos.</p>
+          <div class="tags"><span>dragão</span><span>magos</span><span>cavaleiros</span></div>
         </div>
       </article>
     </div>
@@ -195,22 +219,28 @@
       <div>
         <p class="eyebrow">Download</p>
         <h2 data-i18n="dl.title">Contrate a equipe.</h2>
-        <p class="sub" data-i18n="dl.sub">Baixe o instalador, escolha seus personagens e onde eles aparecem. Na próxima vez que o Claude Code trabalhar, eles chegam.</p>
+        <p class="sub" data-i18n="dl.sub">Baixe o instalador, escolha seus personagens e onde eles aparecem. Na próxima vez que o seu agente trabalhar, eles chegam.</p>
         <a class="btn btn-primary btn-big" id="dlWindows" href="#">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 2.2 6.5 1.3v6.2H0zm7.3-1 8.7-1.2v7.5H7.3zM0 8.3h6.5v6.3L0 13.7zm7.3 0H16V16l-8.7-1.2z"/></svg>
           <span data-i18n="dl.button">Baixar para Windows</span>
         </a>
-        <p class="note"><span data-i18n="dl.note">Windows 10 ou 11 · precisa do <a href="https://docs.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a> instalado · não precisa de nada além disso</span> · <a href="#" id="repoLink2" target="_blank" rel="noopener" data-i18n="dl.repo">código no GitHub</a></p>
+        <p class="note"><span data-i18n="dl.note">Windows 10 ou 11 · não precisa de administrador nem de nada além do seu agente</span> · <a href="#" id="repoLink2" target="_blank" rel="noopener" data-i18n="dl.repo">código no GitHub</a></p>
+        <p class="dl-unix-title" data-i18n="dl.unixTitle">No macOS e no Linux, cole no terminal:</p>
+        <div class="dl-cmd">
+          <code id="unixCmd">curl -fsSL https://raw.githubusercontent.com/Serignolli/cmdcrew/main/install.sh | sh</code>
+          <button type="button" class="btn btn-ghost" id="copyCmd" data-i18n="dl.copy">Copiar</button>
+        </div>
+        <p class="note" data-i18n="dl.unixNote">Instala sem sudo e abre o assistente no próprio terminal. Para mudar depois: <code>cmdcrew config</code>.</p>
       </div>
       <ul class="dl-steps" data-i18n="dl.steps">
         <li><b>1</b> Abra o <code>CmdCrew-Setup.exe</code></li>
         <li><b>2</b> Escolha a equipe e onde ela aparece</li>
         <li><b>3</b> Clique em <em>Instalar</em></li>
-        <li><b>4</b> Mande um prompt no Claude Code!</li>
+        <li><b>4</b> Mande um prompt para o seu agente!</li>
       </ul>
     </div>
     <div class="later">
-      <span data-i18n="dl.laterOs">macOS e Linux</span><span>OpenCode</span><span>Qwen Code</span><span class="tag" data-i18n="dl.soon">em breve</span>
+      <span class="tag" data-i18n="dl.worksWith">Funciona com</span><span>Claude Code</span><span>Codex CLI</span><span>Gemini CLI</span><span>Qwen Code</span><span>OpenCode</span><span>Copilot CLI</span>
     </div>
   </div>
 </section>
@@ -222,11 +252,11 @@
     <details data-i18n="faq.q1"><summary>Eles atrapalham enquanto eu trabalho?</summary><p>Não. Nenhuma janela rouba o foco. A equipe em cima do terminal deixa os cliques passarem; as salas ficam num canto e só respondem aos botões e ao duplo clique. Tudo só aparece enquanto o Claude Code está trabalhando.</p></details>
     <details data-i18n="faq.q2"><summary>Como funciona a permissão pela sala?</summary><p>Quando o Claude Code precisa de permissão, ele chama o CmdCrew (pelo gancho <code>PermissionRequest</code>) e a sala mostra o pedido. <em>Permitir</em> e <em>Negar</em> respondem direto ao Claude; <em>Terminal</em> devolve a decisão para o terminal. A pergunta de sempre continua aparecendo no terminal também, então dá para responder lá se preferir. Isso pode ser desligado na configuração.</p></details>
     <details data-i18n="faq.q3"><summary>Precisa de internet? Manda algum dado?</summary><p>Não. Tudo roda no seu computador: sem conta, sem telemetria, sem servidor. O programa só conversa com o próprio Claude Code, pelos ganchos (hooks) que ele oferece.</p></details>
-    <details data-i18n="faq.q4"><summary>Posso ver o código antes de instalar?</summary><p>Pode e deve: o CmdCrew é de código aberto (licença MIT). Dá até para compilar você mesmo com o <code>instalar.cmd</code> do repositório, usando só o compilador que já vem no Windows.</p></details>
-    <details data-i18n="faq.q5"><summary>O que ele muda no meu Claude Code?</summary><p>Adiciona ganchos de início, fim, permissão e avisos e, se você quiser, troca as frases do spinner. Antes da primeira alteração é feito um backup do seu <code>settings.json</code>.</p></details>
+    <details data-i18n="faq.q4"><summary>Posso ver o código antes de instalar?</summary><p>Pode e deve: o CmdCrew é de código aberto (licença MIT). Dá até para compilar você mesmo com o <code>scripts\instalar.cmd</code> do repositório, usando só o compilador que já vem no Windows.</p></details>
+    <details data-i18n="faq.q5"><summary>O que ele muda nos meus agentes?</summary><p>Adiciona ganchos de início, fim, permissão e avisos (no OpenCode, um plugin) e, no Claude Code, se você quiser, troca as frases do spinner. Antes da primeira alteração é feito um backup de cada arquivo de configuração.</p></details>
     <details data-i18n="faq.q6"><summary>O que é o Supporters Pack?</summary><p>Um pacote de personagens medievais e de RPG em alta definição, com animações melhores, para quem quiser apoiar o projeto. O programa e os personagens normais continuam grátis.</p></details>
-    <details data-i18n="faq.q7"><summary>E se eu apertar Esc no meio?</summary><p>O Claude Code não avisa quando é interrompido, então a equipe percebe sozinha: depois de alguns minutos sem atividade, eles vão embora.</p></details>
-    <details data-i18n="faq.q8"><summary>Como mudar a configuração ou desinstalar?</summary><p>Abra o CmdCrew pelo menu Iniciar: é a tela de configuração. Lá dá para trocar a equipe, desligar sem desinstalar ou, no cantinho, desinstalar. Também dá para desinstalar por "Aplicativos instalados" do Windows. Ele tira os ganchos e devolve as frases originais do spinner.</p></details>
+    <details data-i18n="faq.q7"><summary>E se eu apertar Esc no meio? E nas tarefas longas?</summary><p>O Claude Code não avisa quando é interrompido, então a equipe lê a conversa e percebe a interrupção sozinha. Já nas tarefas longas (builds, testes, subagentes, raciocínios demorados) a sala fica até o fim: ela só sai sozinha depois de muito tempo sem nenhuma atividade.</p></details>
+    <details data-i18n="faq.q8"><summary>Como mudar a configuração ou desinstalar?</summary><p>Abra o CmdCrew pelo menu Iniciar: é a tela de configuração. Lá dá para trocar a equipe, escolher quem trabalha na sala, ligar e desligar cada agente ou, no cantinho, desinstalar. Também dá para desinstalar por "Aplicativos instalados" do Windows. No macOS e no Linux é <code>cmdcrew config</code> e <code>cmdcrew desinstalar</code>. Ele tira os ganchos e devolve as frases originais do spinner.</p></details>
   </div>
 </section>
 
@@ -247,17 +277,16 @@
   <div class="support-body">
     <canvas id="supportStage" class="stage support-stage" aria-hidden="true"></canvas>
     <h2 id="supportTitle" data-i18n="support.title">A equipe está a caminho!</h2>
-    <p data-i18n="support.text">Valeu por contratar os bichinhos. O projeto é gratuito, aberto e sem anúncios. Se eles deixarem seu dia mais divertido, apoie o projeto e leve o Supporters Pack, com os anões, gnomos e outros heróis em alta definição.</p>
+    <p data-i18n="support.text">Valeu por contratar os bichinhos. O projeto é gratuito, aberto e sem anúncios. Se eles deixarem seu dia mais divertido, apoie o projeto e leve o Supporters Pack: anões, gnomos, elfos e outros heróis em alta definição, cada um com a sua sala.</p>
     <div class="support-actions">
       <a class="btn btn-primary" href="#supporters" id="supportPack" data-i18n="support.pack">Ver o Supporters Pack</a>
-      <a class="btn btn-ghost" href="https://buymeacoffee.com/gabrielserignolli" target="_blank" rel="noopener noreferrer" data-i18n="support.coffee">Pagar um café</a>
     </div>
     <button class="support-close" id="supportClose" type="button" data-i18n="support.close">Agora não</button>
   </div>
 </dialog>
 
-<script src="dados.js"></script>
-<script src="sprites.js"></script>
-<script src="main.js"></script>
+<script src="dados.js?v=1.1.1"></script>
+<script src="sprites.js?v=1.1.1"></script>
+<script src="main.js?v=1.1.1"></script>
 </body>
 </html>

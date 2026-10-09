@@ -1,0 +1,64 @@
+{
+ "id": "torre",
+ "nome": "Torre do mago",
+ "descricao": "O mago do código conjura feitiços, o caldeirão borbulha e as estrelas piscam na janela.",
+ "personagens": ["magos-hd"],
+ "cor": "#9c6cf0",
+ "imagem": "torre.png",
+ "chao": 44,
+ "altura": 24,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 24,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 8
+  },
+  {
+   "x": 62,
+   "tipo": "parado",
+   "andar": "andar",
+   "direita": false,
+   "min": 2.5,
+   "max": 4
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "pontos": [
+    [38, 14],
+    [50, 12],
+    [41, 22],
+    [53, 19],
+    [47, 25]
+   ],
+   "cores": ["#fff6c8", "#cfd8ff"],
+   "vel": 2.3,
+   "limiar": -0.3,
+   "tipo": "piscar"
+  },
+  {
+   "area": [34, 22, 12, 7],
+   "cores": ["#4dd0e1", "#b388ff"],
+   "n": 3,
+   "vx": 0,
+   "vy": -4,
+   "tam": [1, 1],
+   "tipo": "particulas"
+  },
+  {
+   "x": 12,
+   "y": 21,
+   "raio": 10,
+   "cor": "#ffb74d",
+   "pronto": "#8ff0b0",
+   "erro": "#ff5050",
+   "tipo": "luz"
+  }
+ ],
+ "frente": []
+}

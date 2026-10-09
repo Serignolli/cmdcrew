@@ -16,7 +16,6 @@ namespace CmdCrew
         readonly Timer timer = new Timer();
         readonly Stopwatch clock = new Stopwatch();
         readonly List<Room> rooms = new List<Room>();
-        readonly Dictionary<string, Character> characters = new Dictionary<string, Character>();
         // salas que já saíram, com o "mudou" de quando saíram: só voltam se a sessão mudar de novo
         readonly Dictionary<string, DateTime> finished = new Dictionary<string, DateTime>();
         readonly Random rnd = new Random();
@@ -106,22 +105,15 @@ namespace CmdCrew
 
         // ---------- sessões ----------
 
-        // O personagem do tema; se ele for de um pacote que não está instalado, o substituto gratuito.
-        Character CharacterFor(RoomTheme theme)
-        {
-            Character c;
-            if (characters.TryGetValue(theme.Id, out c)) return c;
-            var all = Character.LoadAll(null);
-            c = all.FirstOrDefault(x => x.Id == theme.CharacterId) ?? all.FirstOrDefault(x => x.Id == theme.FallbackId) ?? all.FirstOrDefault();
-            if (c == null) throw new InvalidOperationException("Nenhum personagem em " + Paths.CharactersDir);
-            characters[theme.Id] = c;
-            return c;
-        }
+        List<Character> allChars;
 
-        RoomTheme NextTheme()
+        // O personagem do próximo terminal (a sala é a dele).
+        Character NextCharacter()
         {
-            if (cfg.Theme == "*") return RoomTheme.All[created % RoomTheme.All.Count];
-            return RoomTheme.Find(cfg.Theme);
+            if (allChars == null) allChars = Character.LoadAll(null);
+            var c = cfg.RoomCharacterFor(allChars, created);
+            if (c == null) throw new InvalidOperationException("Nenhum personagem em " + Paths.CharactersDir);
+            return c;
         }
 
         void Poll()
@@ -149,9 +141,10 @@ namespace CmdCrew
                     bool wanted = st == RoomState.Working || st == RoomState.Waiting || ((st == RoomState.Done || st == RoomState.Failed) && recent);
                     if (!wanted) continue;
                     // salas de mesmo tema ganham personagens diferentes, para não confundir os terminais
-                    var theme = NextTheme();
+                    var ch = NextCharacter();
+                    var theme = RoomTheme.ForCharacter(ch.Id);
                     int variant = rooms.Count(r => r.Theme == theme && !r.Leaving);
-                    room = new Room(theme, CharacterFor(theme), variant, rnd.Next());
+                    room = new Room(theme, ch, variant, rnd.Next(), cfg.RoomSkinFor(ch));
                     room.SessionId = s.Id;
                     room.SetScale(unit);
                     rooms.Add(room);
@@ -159,6 +152,7 @@ namespace CmdCrew
                 }
                 room.ProjectName = cfg.ShowName ? s.ProjectName : "";
                 room.Terminal = new IntPtr(s.Hwnd);
+                room.TerminalPid = s.Pid;
                 room.Started = s.Started;
                 room.Ask = s.Ask;
                 room.SetState(st, s.Changed);
@@ -318,7 +312,7 @@ namespace CmdCrew
             if (btn < 0) return;
             Sessions.Answer(room.Ask.Id, btn == 0 ? "allow" : btn == 1 ? "deny" : "terminal");
             room.Ask = null;
-            if (btn == 2) Native.Focus(room.Terminal);
+            if (btn == 2) Native.Focus(room.Terminal, room.TerminalPid);
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
@@ -331,7 +325,7 @@ namespace CmdCrew
             if (room == null) return;
             // com um pedido aberto, devolve a decisão para o terminal antes de ir até ele
             if (room.Ask != null) { Sessions.Answer(room.Ask.Id, "terminal"); room.Ask = null; }
-            Native.Focus(room.Terminal);
+            Native.Focus(room.Terminal, room.TerminalPid);
             if (room.State != RoomState.Working && room.State != RoomState.Waiting) room.Dismissed = true;
         }
 

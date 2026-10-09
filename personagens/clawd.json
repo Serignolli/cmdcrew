@@ -2,7 +2,7 @@
   "id": "clawd",
   "nome": "Clawd (Claude Code)",
   "categoria": "Claude",
-  "descricao": "O bichinho do Claude Code. Digita sem parar, solta as estrelinhas do Claude e carrega o ícone na cabeça.",
+  "descricao": "O mascote do Claude Code em pessoa. Digita mais rápido que o seu linter e solta estrelinhas a cada função que compila de primeira.",
   "efeito": "claude",
   "carga": "claude",
   "sprites": {

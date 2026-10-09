@@ -1,5 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -62,238 +66,354 @@ namespace CmdCrew
         public float MinT = 4, MaxT = 8;
     }
 
-    public abstract class RoomTheme
+    // Retângulo de uma sala, em pontos da cena.
+    public struct RoomRect
+    {
+        public Color C;
+        public float X, Y, W, H;
+    }
+
+    // Uma animação pronta da sala (ver ferramentas/gerar_salas.py). O programa de macOS/Linux (go/sala.go)
+    // interpreta exatamente do mesmo jeito.
+    public class RoomAnim
+    {
+        public string Type;
+        public HashSet<string> When;          // estados em que aparece (null = sempre)
+        public float[][] Points = new float[0][];
+        public Color[] Colors = new Color[0];
+        public float Speed, Threshold, X, Y, W, H, Radius, Height, VX, VY, SizeW = 1, SizeH = 1;
+        public int N;
+        public Color Color, Ready, Fail, Background;
+        public Dictionary<string, Color> StateColors = new Dictionary<string, Color>();
+        public bool Blink;
+        public List<RoomRect[]> Frames = new List<RoomRect[]>();
+    }
+
+    // Tema de uma sala, lido de salas\<id>.json (gerados por ferramentas/gerar_salas.py).
+    public class RoomTheme
     {
         public const int W = 100, H = 64, Frame = 2, Header = 10;
         public const int SceneX = Frame, SceneY = Frame + Header, SceneW = W - 2 * Frame, SceneH = H - SceneY - Frame;
 
-        public string Id, Name, Description, CharacterId;
-        public string[] Skins;
-        // personagem gratuito usado quando o principal (de um pacote) não está instalado
-        public string FallbackId;
-        public string[] FallbackSkins = new string[0];
+        public string Id, Name, Description;
+        public List<string> Characters = new List<string>();   // de quem é a sala (o primeiro disponível trabalha nela)
+        public Dictionary<string, string[]> Skins = new Dictionary<string, string[]>();   // cores preferidas de cada um
         public string Accent = "#7c6cf0";
         public float FloorY = 40;          // onde ficam os pés (pontos da cena)
         public float CharHeight = 24;      // altura desejada do personagem (pontos)
         public List<Spot> Spots = new List<Spot>();
+        readonly List<RoomRect> back = new List<RoomRect>(), front = new List<RoomRect>();
+        readonly List<RoomAnim> anims = new List<RoomAnim>();
 
-        public abstract void Background(Painter p);
-        public virtual void Animate(Painter p, double t, RoomState st, double stateT) { }
-        public virtual void Front(Painter p, double t, RoomState st) { }
+        public const string GenericId = "generica";
+        public const string ResourcePrefix = "salas/";
 
         static List<RoomTheme> all;
         public static List<RoomTheme> All
         {
-            get { return all ?? (all = new List<RoomTheme> { new OfficeTheme(), new MineTheme() }); }
+            get
+            {
+                if (all != null) return all;
+                var list = new List<RoomTheme>();
+                foreach (var f in Files())
+                {
+                    try { list.Add(Load(Json.Parse(f.Value) as Dictionary<string, object>)); }
+                    catch (Exception ex) { Paths.Log("sala " + f.Key + ": " + ex.Message); }
+                }
+                if (list.Count == 0) list.Add(new RoomTheme { Id = GenericId, Name = "Salinha", Spots = { new Spot { X = 40, Kind = "trabalhar" } } });
+                return all = list;
+            }
+        }
+
+        // salas\*.json ao lado do programa; sem a pasta (o Setup.exe sozinho), as embutidas no .exe.
+        public static IEnumerable<KeyValuePair<string, string>> Files()
+        {
+            if (Directory.Exists(Paths.RoomsDir))
+            {
+                foreach (var f in Directory.GetFiles(Paths.RoomsDir, "*.json").OrderBy(x => x))
+                    yield return new KeyValuePair<string, string>(Path.GetFileName(f), File.ReadAllText(f, Encoding.UTF8));
+                yield break;
+            }
+            foreach (var f in EmbeddedFiles()) yield return f;
+        }
+
+        public static IEnumerable<KeyValuePair<string, string>> EmbeddedFiles()
+        {
+            var asm = typeof(RoomTheme).Assembly;
+            foreach (var name in asm.GetManifestResourceNames().Where(n => n.StartsWith(ResourcePrefix) && n.EndsWith(".json")).OrderBy(n => n))
+                using (var r = new StreamReader(asm.GetManifestResourceStream(name), Encoding.UTF8))
+                    yield return new KeyValuePair<string, string>(name.Substring(ResourcePrefix.Length), r.ReadToEnd());
         }
 
         public static RoomTheme Find(string id)
         {
-            return All.FirstOrDefault(t => t.Id == id) ?? All[0];
+            return All.FirstOrDefault(t => t.Id == id) ?? All.FirstOrDefault(t => t.Id == GenericId) ?? All[0];
         }
 
-        // Pontinhos aleatórios, mas sempre iguais para a mesma sala.
-        protected static IEnumerable<int[]> Scatter(int seed, int n, int w, int h)
+        // A sala do personagem; quem não tem sala própria (personagens feitos em casa) trabalha na genérica.
+        public static RoomTheme ForCharacter(string characterId)
         {
-            var r = new Random(seed);
-            for (int i = 0; i < n; i++) yield return new[] { r.Next(w), r.Next(h), r.Next(100) };
+            if (characterId == "oompa-loompas") characterId = "chocolateiros";
+            return All.FirstOrDefault(t => t.Characters.Contains(characterId)) ?? Find(GenericId);
         }
-    }
 
-    // ---------------- Escritório: o dev e o monitor cheio de código ----------------
-    public class OfficeTheme : RoomTheme
-    {
+        // ---------- leitura ----------
+
+        static float F(object o) { try { return Convert.ToSingle(o, CultureInfo.InvariantCulture); } catch { return 0; } }
+
+        static RoomRect ReadRect(object o)
+        {
+            var a = (o as IEnumerable).Cast<object>().ToArray();
+            return new RoomRect { C = Painter.C(Convert.ToString(a[0])), X = F(a[1]), Y = F(a[2]), W = F(a[3]), H = F(a[4]) };
+        }
+
+        static List<RoomRect> ReadRects(IDictionary<string, object> d, string key)
+        {
+            return (Json.Arr(d, key) ?? new List<object>()).Select(ReadRect).ToList();
+        }
+
+        static RoomTheme Load(Dictionary<string, object> d)
+        {
+            var t = new RoomTheme();
+            t.Id = Json.Str(d, "id", "sala");
+            t.Name = Json.Str(d, "nome", t.Id);
+            t.Description = Json.Str(d, "descricao", "");
+            t.ImageName = Json.Str(d, "imagem", null);
+            t.Characters = Json.Strs(d, "personagens") ?? new List<string>();
+            t.Accent = Json.Str(d, "cor", t.Accent);
+            t.FloorY = (float)Json.Num(d, "chao", t.FloorY);
+            t.CharHeight = (float)Json.Num(d, "altura", t.CharHeight);
+            var skins = Json.Obj(d, "skins");
+            if (skins != null) foreach (var kv in skins) t.Skins[kv.Key] = (Json.Strs(skins, kv.Key) ?? new List<string>()).ToArray();
+            foreach (var o in Json.Arr(d, "lugares") ?? new List<object>())
+            {
+                var l = o as Dictionary<string, object>;
+                if (l == null) continue;
+                t.Spots.Add(new Spot { X = (float)Json.Num(l, "x", 40), Kind = Json.Str(l, "tipo", "trabalhar"), WalkKind = Json.Str(l, "andar", "andar"),
+                    FaceRight = Json.Bool(l, "direita", true), MinT = (float)Json.Num(l, "min", 4), MaxT = (float)Json.Num(l, "max", 8) });
+            }
+            if (t.Spots.Count == 0) t.Spots.Add(new Spot { X = 40, Kind = "trabalhar" });
+            t.back.AddRange(ReadRects(d, "fundo"));
+            t.front.AddRange(ReadRects(d, "frente"));
+            foreach (var o in Json.Arr(d, "animacoes") ?? new List<object>())
+            {
+                var a = o as Dictionary<string, object>;
+                if (a != null) t.anims.Add(ReadAnim(a));
+            }
+            return t;
+        }
+
+        static RoomAnim ReadAnim(Dictionary<string, object> a)
+        {
+            var r = new RoomAnim();
+            r.Type = Json.Str(a, "tipo", "");
+            var when = Json.Strs(a, "quando");
+            if (when != null) r.When = new HashSet<string>(when);
+            r.Points = (Json.Arr(a, "pontos") ?? new List<object>()).Select(p => (p as IEnumerable).Cast<object>().Select(F).ToArray()).ToArray();
+            r.Colors = (Json.Strs(a, "cores") ?? new List<string>()).Select(Painter.C).ToArray();
+            r.Speed = (float)Json.Num(a, "vel", 1);
+            r.Threshold = (float)Json.Num(a, "limiar", 0);
+            r.X = (float)Json.Num(a, "x", 0); r.Y = (float)Json.Num(a, "y", 0);
+            r.W = (float)Json.Num(a, "w", 1); r.H = (float)Json.Num(a, "h", 1);
+            r.Radius = (float)Json.Num(a, "raio", 10);
+            r.Height = (float)Json.Num(a, "altura", 5);
+            r.N = (int)Json.Num(a, "n", 2);
+            r.VX = (float)Json.Num(a, "vx", 0); r.VY = (float)Json.Num(a, "vy", 0);
+            var size = Json.Arr(a, "tam");
+            if (size != null && size.Count >= 2) { r.SizeW = F(size[0]); r.SizeH = F(size[1]); }
+            r.Color = Painter.C(Json.Str(a, "cor", "#ffffff"));
+            r.Ready = Painter.C(Json.Str(a, "pronto", Json.Str(a, "cor", "#ffffff")));
+            r.Fail = Painter.C(Json.Str(a, "erro", Json.Str(a, "cor", "#ffffff")));
+            r.Background = Painter.C(Json.Str(a, "fundo", "#0f1a24"));
+            r.Blink = Json.Bool(a, "piscar", false);
+            var sc = Json.Obj(a, "cores");
+            if (sc != null) foreach (var kv in sc) r.StateColors[kv.Key] = Painter.C(Convert.ToString(kv.Value));
+            var area = Json.Arr(a, "area");
+            if (area != null && area.Count >= 4) { r.X = F(area[0]); r.Y = F(area[1]); r.W = F(area[2]); r.H = F(area[3]); }
+            foreach (var q in Json.Arr(a, "quadros") ?? new List<object>())
+                r.Frames.Add((q as IEnumerable).Cast<object>().Select(ReadRect).ToArray());
+            return r;
+        }
+
+        // ---------- desenho ----------
+
+        public static string StateName(RoomState st)
+        {
+            switch (st)
+            {
+                case RoomState.Waiting: return "esperando";
+                case RoomState.Done: return "pronto";
+                case RoomState.Failed: return "erro";
+                case RoomState.Stopped: return "parado";
+                default: return "trabalhando";
+            }
+        }
+
+        // Número pseudoaleatório em [0, 1), igual em C# e em Go (as salas ficam idênticas nos dois programas).
+        public static double Hash(int n)
+        {
+            unchecked
+            {
+                uint x = (uint)n * 2654435761u;
+                x ^= x >> 15; x *= 2246822519u; x ^= x >> 13; x *= 3266489917u; x ^= x >> 16;
+                return x / 4294967296.0;
+            }
+        }
+
+        static float Mod(float a, float m) { if (m <= 0) return 0; float r = a % m; return r < 0 ? r + m : r; }
+
+        // Arte de fundo opcional ("imagem": "mina.png", ao lado do JSON ou embutida no .exe), esticada na cena inteira.
+        // Os retângulos do "fundo" são desenhados por cima dela.
+        public string ImageName;
+
+        Bitmap LoadImage()
+        {
+            if (string.IsNullOrEmpty(ImageName)) return null;
+            try
+            {
+                string file = Path.Combine(Paths.RoomsDir, ImageName);
+                if (File.Exists(file)) using (var b = new Bitmap(file)) return new Bitmap(b);
+                var st = typeof(RoomTheme).Assembly.GetManifestResourceStream(ResourcePrefix + ImageName);
+                if (st != null) using (st) using (var b = new Bitmap(st)) return new Bitmap(b);
+            }
+            catch (Exception ex) { Paths.Log("imagem da sala " + ImageName + ": " + ex.Message); }
+            return null;
+        }
+
+        public void Background(Painter p)
+        {
+            using (var img = LoadImage())
+                if (img != null)
+                {
+                    var mode = p.G.InterpolationMode;
+                    p.G.InterpolationMode = InterpolationMode.NearestNeighbor;
+                    p.G.DrawImage(img, new RectangleF(p.OX, p.OY, SceneW * p.U, SceneH * p.U));
+                    p.G.InterpolationMode = mode;
+                }
+            foreach (var r in back) p.R(r.C, r.X, r.Y, r.W, r.H);
+        }
+
+        public void Front(Painter p, double t, RoomState st) { foreach (var r in front) p.R(r.C, r.X, r.Y, r.W, r.H); }
+
         static readonly string[] CodeColors = { "#7fd1ae", "#ffca3a", "#8ab4f8", "#f28b82", "#c58af9", "#e8eaed" };
 
-        public OfficeTheme()
+        public void Animate(Painter p, double t, RoomState st, double stateT)
         {
-            Id = "escritorio"; Name = "Escritório do dev";
-            Description = "O dev digita sem parar, o monitor enche de código e a caneca solta fumaça.";
-            CharacterId = "programadores"; Skins = new[] { "cansado", "cansada", "gamer", "hacker" };
-            Accent = "#7c6cf0"; FloorY = 41; CharHeight = 22;
-            Spots.Add(new Spot { X = 40, Kind = "trabalhar", FaceRight = true, MinT = 5, MaxT = 10 });
-            Spots.Add(new Spot { X = 82, Kind = "parado", FaceRight = true, MinT = 2.5f, MaxT = 4 });
-        }
-
-        public override void Background(Painter p)
-        {
-            // parede listrada e rodapé
-            p.R("#3d3657", 0, 0, SceneW, 40);
-            for (int x = 2; x < SceneW; x += 6) p.R("#433c60", x, 0, 2, 38);
-            p.R("#2a2440", 0, 38, SceneW, 2);
-            // piso de tábuas
-            p.R("#7a5236", 0, 40, SceneW, SceneH - 40);
-            p.R("#6a4630", 0, 43, SceneW, 1);
-            p.R("#6a4630", 0, 46, SceneW, 1);
-            for (int x = 7; x < SceneW; x += 19) { p.R("#6a4630", x, 40, 1, 3); p.R("#6a4630", x + 9, 44, 1, 2); p.R("#6a4630", x + 4, 47, 1, 3); }
-            // tapete
-            p.R("#8e3b46", 18, 45, 32, 3); p.R("#a8505b", 19, 45, 30, 1);
-            // janela com céu noturno
-            p.R("#2a2440", 5, 4, 24, 22);
-            p.R("#1b2447", 6, 5, 22, 10); p.R("#243060", 6, 15, 22, 10);
-            p.R("#f4e9c1", 21, 7, 4, 4); p.R("#1b2447", 23, 7, 2, 2);   // lua minguante
-            p.R("#2a2440", 16, 5, 2, 20); p.R("#2a2440", 6, 14, 22, 2);
-            p.R("#8b6a4f", 4, 26, 26, 2);
-            // quadro na parede
-            p.R("#1f1a2e", 35, 7, 12, 10); p.R("#e8d8b0", 36, 8, 10, 8);
-            p.R("#d97757", 40, 10, 2, 4); p.R("#d97757", 38, 11, 6, 2); p.R("#b85f42", 40, 11, 2, 2);
-            // estante de livros
-            p.R("#4a2f1f", 73, 9, 20, 31); p.R("#2e1d13", 74, 10, 18, 29);
-            string[] books = { "#c0392b", "#2e86c1", "#f1c40f", "#27ae60", "#8e44ad", "#e67e22", "#16a085", "#d35400" };
-            for (int shelf = 0; shelf < 3; shelf++)
+            string stn = StateName(st);
+            foreach (var a in anims)
             {
-                int top = 10 + shelf * 10;
-                int x = 75, i = shelf * 3;
-                while (x < 90)
+                if (a.When != null && !a.When.Contains(stn)) continue;
+                switch (a.Type)
                 {
-                    int w = 2 + (i * 7 % 3 == 0 ? 1 : 0), h = 6 + (i % 3 == 1 ? 1 : 0);
-                    p.R(books[i % books.Length], x, top + 9 - h, w, h);
-                    x += w + (i % 4 == 3 ? 1 : 0); i++;
+                    case "piscar":
+                        for (int i = 0; i < a.Points.Length; i++)
+                        {
+                            if (Math.Sin(t * a.Speed + i * 1.7) <= a.Threshold || a.Colors.Length == 0) continue;
+                            var pt = a.Points[i];
+                            p.R(a.Colors[i % a.Colors.Length], pt[0], pt[1], pt.Length > 2 ? pt[2] : 1, pt.Length > 3 ? pt[3] : 1);
+                        }
+                        break;
+                    case "brilho":
+                        for (int i = 0; i < a.Points.Length; i++)
+                            if (Math.Sin(t * 1.7 + i * 2.1) > 0.85)
+                            {
+                                p.R("#ffffff", a.Points[i][0], a.Points[i][1], 1, 1);
+                                p.R("#ffffff", a.Points[i][0] - 1, a.Points[i][1] + 1, 1, 1);
+                            }
+                        break;
+                    case "fumaca":
+                        for (int i = 0; i < a.N; i++)
+                        {
+                            double ph = (t * 0.8 + i * 0.5) % 1.0;
+                            p.R(a.Color, a.X + (float)Math.Round(Math.Sin(ph * 6 + i) * 0.8), a.Y - (float)(ph * a.Height), 1, 1);
+                        }
+                        break;
+                    case "luz":
+                        {
+                            double flick = 0.5 + 0.25 * Math.Sin(t * 13) + 0.25 * Math.Sin(t * 7.3 + 1);
+                            Color c = st == RoomState.Done ? a.Ready : st == RoomState.Failed ? a.Fail : a.Color;
+                            p.Glow(c, (int)(9 + 5 * flick), a.X, a.Y, a.Radius);
+                            p.Glow(c, (int)(12 + 7 * flick), a.X, a.Y, a.Radius * 0.65f);
+                            p.Glow(c, (int)(18 + 10 * flick), a.X, a.Y, a.Radius * 0.35f);
+                        }
+                        break;
+                    case "estado":
+                        {
+                            Color c;
+                            if (!a.StateColors.TryGetValue(stn, out c) && !a.StateColors.TryGetValue("trabalhando", out c)) c = Painter.C(Accent);
+                            if (a.Blink && (st == RoomState.Waiting || st == RoomState.Working) && (int)(t * (st == RoomState.Waiting ? 2.5 : 1.2)) % 2 == 1) break;
+                            p.R(c, a.X, a.Y, a.W, a.H);
+                        }
+                        break;
+                    case "quadros":
+                        if (a.Frames.Count == 0) break;
+                        foreach (var r in a.Frames[a.Speed <= 0 ? 0 : (int)(t * a.Speed) % a.Frames.Count]) p.R(r.C, r.X, r.Y, r.W, r.H);
+                        break;
+                    case "particulas":
+                        for (int i = 0; i < a.N; i++)
+                        {
+                            if (a.Colors.Length == 0) break;
+                            float k = 0.7f + 0.6f * (float)Hash(i * 7 + 13);
+                            float x = a.X + Mod((float)Hash(i * 7 + 11) * a.W + (float)t * a.VX * k, a.W);
+                            float y = a.Y + Mod((float)Hash(i * 7 + 12) * a.H + (float)t * a.VY * k, a.H);
+                            p.R(a.Colors[i % a.Colors.Length], (float)Math.Floor(x), (float)Math.Floor(y), a.SizeW, a.SizeH);
+                        }
+                        break;
+                    case "tela":
+                        Screen(p, a, t, st);
+                        break;
                 }
-                p.R("#6d4630", 73, top + 9, 20, 1);
             }
-            // vaso de planta
-            p.R("#2f6b3a", 30, 27, 4, 5); p.R("#3f8f4a", 27, 29, 4, 4); p.R("#3f8f4a", 33, 28, 4, 5); p.R("#4fb05c", 30, 24, 3, 5);
-            p.R("#b5651d", 28, 33, 8, 8); p.R("#8e4f17", 28, 33, 8, 1); p.R("#9b5518", 29, 39, 6, 2);
-            // mesa
-            p.R("#8b5a3c", 45, 29, 28, 2); p.R("#6d4630", 45, 31, 28, 1);
-            p.R("#5a3a26", 46, 32, 2, 9); p.R("#5a3a26", 70, 32, 2, 9);
-            p.R("#6d4630", 60, 32, 10, 6); p.R("#c9a26b", 64, 34, 2, 1);
-            // monitor
-            p.R("#2b2b33", 57, 25, 3, 4); p.R("#2b2b33", 54, 28, 9, 1);
-            p.R("#1e1e26", 49, 13, 19, 13);
-            p.R("#0f1a24", 50, 14, 17, 11);
-            // teclado e caneca
-            p.R("#cfd8dc", 49, 28, 5, 1);
-            p.R("#e57373", 66, 26, 3, 3); p.R("#c62828", 69, 27, 1, 1); p.R("#4e342e", 66, 26, 3, 1);
         }
 
-        public override void Animate(Painter p, double t, RoomState st, double stateT)
+        // Monitor: código subindo enquanto trabalha, visto verde no fim, X vermelho no erro e "!" piscando esperando.
+        void Screen(Painter p, RoomAnim a, double t, RoomState st)
         {
-            // estrelas piscando
-            int[][] stars = { new[] { 8, 7 }, new[] { 12, 10 }, new[] { 19, 12 }, new[] { 9, 18 }, new[] { 24, 19 }, new[] { 14, 21 } };
-            for (int i = 0; i < stars.Length; i++)
-                if (Math.Sin(t * 2.3 + i * 1.7) > -0.3) p.R(i % 2 == 0 ? "#fff6c8" : "#cfd8ff", stars[i][0], stars[i][1], 1, 1);
-
-            // tela: linhas de código subindo enquanto trabalha; um visto verde quando termina
+            float cx = (float)Math.Floor(a.X + a.W / 2), cy = (float)Math.Floor(a.Y + a.H / 2);
             if (st == RoomState.Done)
             {
-                p.R("#123826", 50, 14, 17, 11);
-                string g = "#3ecf7a";
-                p.R(g, 53, 19, 2, 2); p.R(g, 55, 21, 2, 2); p.R(g, 57, 19, 2, 2); p.R(g, 59, 17, 2, 2); p.R(g, 61, 15, 2, 2);
+                p.R("#123826", a.X, a.Y, a.W, a.H);
+                foreach (var d in new[] { new[] { -5, 0 }, new[] { -3, 2 }, new[] { -1, 0 }, new[] { 1, -2 }, new[] { 3, -4 } })
+                    p.R("#3ecf7a", cx + d[0], cy + d[1], 2, 2);
             }
             else if (st == RoomState.Failed)
             {
-                p.R("#3a1418", 50, 14, 17, 11);
-                string r = "#f05a5a";
-                for (int i = 0; i < 7; i++) { p.R(r, 55 + i, 16 + i, 1, 1); p.R(r, 61 - i, 16 + i, 1, 1); }
+                p.R("#3a1418", a.X, a.Y, a.W, a.H);
+                for (int i = 0; i < 7; i++) { p.R("#f05a5a", cx - 3 + i, cy - 3 + i, 1, 1); p.R("#f05a5a", cx + 3 - i, cy - 3 + i, 1, 1); }
             }
             else if (st == RoomState.Waiting)
             {
-                bool on = (int)(t * 2) % 2 == 0;
-                p.R("#3a2e10", 50, 14, 17, 11);
-                if (on) { p.R("#ffb020", 58, 16, 2, 5); p.R("#ffb020", 58, 22, 2, 2); }
+                p.R("#3a2e10", a.X, a.Y, a.W, a.H);
+                if ((int)(t * 2) % 2 == 0) { p.R("#ffb020", cx, cy - 3, 2, 5); p.R("#ffb020", cx, cy + 3, 2, 2); }
             }
             else
             {
+                p.R(a.Background, a.X, a.Y, a.W, a.H);
+                var colors = a.Colors.Length > 0 ? a.Colors : CodeColors.Select(Painter.C).ToArray();
                 double speed = st == RoomState.Working ? 2.2 : 0;
                 int scroll = (int)(t * speed);
-                for (int row = 0; row < 5; row++)
+                int rows = Math.Max(1, (int)((a.H - 1) / 2)), maxLen = Math.Max(1, (int)a.W - 2);
+                for (int row = 0; row < rows; row++)
                 {
                     int n = scroll + row;
-                    var r = new Random(n * 7919);
-                    int indent = r.Next(3) * 2, len = 3 + r.Next(10);
-                    if (len + indent > 15) len = 15 - indent;
-                    int y = 15 + row * 2;
-                    if (row == 4)
+                    int indent = (int)(Hash(n * 3 + 1) * 3) * 2, len = 3 + (int)(Hash(n * 3 + 2) * 10);
+                    if (len + indent > maxLen) len = Math.Max(1, maxLen - indent);
+                    float y = a.Y + 1 + row * 2;
+                    if (row == rows - 1)
                     {
                         // a linha de baixo está sendo digitada
-                        double frac = (t * speed) - Math.Floor(t * speed);
+                        double frac = t * speed - Math.Floor(t * speed);
                         len = Math.Max(1, (int)(len * frac));
-                        if ((int)(t * 4) % 2 == 0) p.R("#e8eaed", 51 + indent + len, y, 1, 1);
+                        if ((int)(t * 4) % 2 == 0) p.R("#e8eaed", a.X + 1 + indent + len, y, 1, 1);
                     }
-                    p.R(CodeColors[r.Next(CodeColors.Length)], 51 + indent, y, len, 1);
+                    p.R(colors[(int)(Hash(n * 3 + 3) * colors.Length) % colors.Length], a.X + 1 + indent, y, len, 1);
                 }
             }
-
-            // fumacinha da caneca
-            if (st == RoomState.Working)
-                for (int i = 0; i < 2; i++)
-                {
-                    double ph = (t * 0.8 + i * 0.5) % 1.0;
-                    p.R("#b0bec5", 67 + (float)Math.Round(Math.Sin(ph * 6 + i) * 0.8), 25 - (float)(ph * 5), 1, 1);
-                }
         }
     }
 
-    // ---------------- Mina: o anão pica pedra, empurra o carrinho e leva o saco ----------------
-    public class MineTheme : RoomTheme
-    {
-        public MineTheme()
-        {
-            Id = "mina"; Name = "Mina dos anões";
-            Description = "O anão pica pedra, empurra o carrinho pelos trilhos e a lamparina tremeluz.";
-            CharacterId = "anoes"; Skins = new[] { "classico", "ferro-ruivo", "ouro", "azul", "verde" };
-            FallbackId = "gnomos";
-            Accent = "#d98e3a"; FloorY = 44; CharHeight = 26;
-            Spots.Add(new Spot { X = 22, Kind = "trabalhar", FaceRight = true, MinT = 5, MaxT = 9 });
-            Spots.Add(new Spot { X = 70, Kind = "trabalhar-saco", WalkKind = "trabalhar-carrinho", FaceRight = true, MinT = 2.5f, MaxT = 3.5f });
-        }
-
-        public override void Background(Painter p)
-        {
-            p.R("#2d2226", 0, 0, SceneW, SceneH);
-            foreach (var d in Scatter(7, 70, SceneW, 42))
-            {
-                string c = d[2] < 50 ? "#3a2c2f" : d[2] < 85 ? "#241b1e" : "#46363a";
-                int s = 1 + d[2] % 3;
-                p.R(c, d[0], d[1], s + 1, s);
-            }
-            // túnel ao fundo
-            p.R("#140f12", 62, 16, 22, 28); p.R("#140f12", 64, 13, 18, 3); p.R("#140f12", 67, 11, 12, 2);
-            p.R("#1c1518", 62, 16, 2, 28);
-            // escoras de madeira
-            p.R("#8b5e34", 0, 3, SceneW, 3); p.R("#6b4526", 0, 6, SceneW, 1);
-            p.R("#7a5230", 3, 6, 4, 38); p.R("#5e3e22", 6, 6, 1, 38);
-            p.R("#7a5230", 88, 6, 4, 38); p.R("#5e3e22", 91, 6, 1, 38);
-            // rocha com minério (onde ele bate a picareta)
-            p.R("#5b4a4f", 38, 30, 12, 14); p.R("#5b4a4f", 36, 34, 16, 10); p.R("#6e5c61", 39, 31, 5, 3); p.R("#463a3e", 44, 38, 7, 6);
-            p.R("#4dd0e1", 41, 36, 2, 2); p.R("#4dd0e1", 46, 33, 2, 1); p.R("#ffca3a", 47, 39, 2, 2);
-            // chão, trilho e dormentes
-            p.R("#4a3426", 0, 44, SceneW, SceneH - 44);
-            p.R("#3b291e", 0, 44, SceneW, 1);
-            for (int x = 1; x < SceneW; x += 5) p.R("#5d3b22", x, 46, 3, 2);
-            p.R("#9aa3ad", 0, 45, SceneW, 1);
-            foreach (var d in Scatter(3, 12, SceneW, 3)) p.R("#5c4332", d[0], 48 + d[1] % 2, 2, 1);
-            // pedras preciosas na parede
-            p.R("#e57373", 14, 12, 2, 2); p.R("#4dd0e1", 55, 8, 2, 2); p.R("#ffca3a", 30, 20, 2, 1); p.R("#81c784", 85, 30, 1, 2);
-        }
-
-        public override void Animate(Painter p, double t, RoomState st, double stateT)
-        {
-            // brilho das pedras
-            int[][] gems = { new[] { 14, 12 }, new[] { 55, 8 }, new[] { 41, 36 }, new[] { 47, 39 }, new[] { 30, 20 } };
-            for (int i = 0; i < gems.Length; i++)
-            {
-                double s = Math.Sin(t * 1.7 + i * 2.1);
-                if (s > 0.85) { p.R("#ffffff", gems[i][0], gems[i][1], 1, 1); p.R("#ffffff", gems[i][0] - 1, gems[i][1] + 1, 1, 1); }
-            }
-            // lamparina pendurada, com a luz tremendo
-            float lx = 48;
-            p.R("#55555e", lx, 6, 1, 5);
-            double flick = 0.5 + 0.25 * Math.Sin(t * 13) + 0.25 * Math.Sin(t * 7.3 + 1);
-            Color light = st == RoomState.Done ? Painter.C("#8ff0b0") : st == RoomState.Failed ? Painter.C("#ff7070") : Painter.C("#ffc862");
-            p.Glow(light, (int)(9 + 5 * flick), lx + 0.5f, 14, 20);
-            p.Glow(light, (int)(12 + 7 * flick), lx + 0.5f, 14, 13);
-            p.Glow(light, (int)(18 + 10 * flick), lx + 0.5f, 14, 7);
-            p.R("#caa04a", lx - 2, 11, 5, 1); p.R("#caa04a", lx - 2, 16, 5, 1);
-            p.R("#caa04a", lx - 2, 12, 1, 4); p.R("#caa04a", lx + 2, 12, 1, 4);
-            p.R(st == RoomState.Done ? "#8ff0b0" : "#ffe08a", lx - 1, 12, 3, 4);
-            p.R("#fff6d0", lx, 13 + (flick > 0.6 ? 0 : 1), 1, 2);
-        }
-    }
-
-    class Confetti { public float X, Y, VX, VY, Life; public Color C; }
+    // Confete do fim e as faíscas, labaredas, flechas... do trabalho (em pontos da cena).
+    class Confetti { public float X, Y, VX, VY, Life, Gravity = 60, W = 1, H = 1; public Color C; }
 
     // Uma sala na tela = uma sessão do Claude Code.
     public class Room
@@ -302,6 +422,7 @@ namespace CmdCrew
         public RoomTheme Theme;
         public string ProjectName = "";
         public IntPtr Terminal = IntPtr.Zero;
+        public int TerminalPid;
         public RoomState State = RoomState.Working;
         public DateTime Started = DateTime.UtcNow, Changed = DateTime.UtcNow;
         public bool Dismissed;           // clicou numa sala pronta: sai antes do tempo
@@ -333,16 +454,24 @@ namespace CmdCrew
         string bubble, doneLine;
         RoomState lastState = RoomState.Working;
 
-        public Room(RoomTheme theme, Character ch, int variant, int seed)
+        // variant: quantas salas iguais já estão na tela (cada uma ganha outra cor, para não confundir os terminais).
+        // preferSkin: a cor escolhida na configuração, que fica com a primeira sala.
+        public Room(RoomTheme theme, Character ch, int variant, int seed, string preferSkin = null)
         {
             Theme = theme;
             this.ch = ch;
             rnd = new Random(seed);
-            // as skins preferidas do tema, se o personagem for o principal; senão, as do próprio personagem
-            var ids = ch.Id == theme.CharacterId && theme.Skins.Length > 0 ? theme.Skins
-                    : ch.Id == theme.FallbackId && theme.FallbackSkins.Length > 0 ? theme.FallbackSkins
-                    : ch.Skins.Select(x => x.Id).ToArray();
-            skin = ch.GetSkin(ids[variant % ids.Length]);
+            // as cores preferidas da sala para este personagem; senão, todas as dele
+            string[] pref;
+            var ids = (theme.Skins.TryGetValue(ch.Id, out pref) ? pref : new string[0])
+                .Where(id => ch.Skins.Any(x => x.Id == id)).ToList();
+            if (ids.Count == 0) ids = ch.Skins.Select(x => x.Id).ToList();
+            if (!string.IsNullOrEmpty(preferSkin) && preferSkin != "*" && ch.Skins.Any(x => x.Id == preferSkin))
+            {
+                ids.Remove(preferSkin);
+                ids.Insert(0, preferSkin);
+            }
+            skin = ch.GetSkin(ids[variant % ids.Count]);
             speech = ch.DefaultPhrases("falas");
             endSpeech = ch.DefaultPhrases("falasFim");
             ax = theme.Spots[0].X;
@@ -365,7 +494,7 @@ namespace CmdCrew
             frames.Clear();
             if (background != null) { background.Dispose(); background = null; }
             // altura visível do desenho (sem as linhas vazias) define a escala do personagem
-            charVisTop = skin.TopRow; charVisBottom = ch.BottomRow;
+            charVisTop = skin.TopRow; charVisBottom = ch.FeetRow;
             int vis = Math.Max(1, charVisBottom - charVisTop + 1);
             float s = Theme.CharHeight * u / vis;
             charScale = s >= 2 ? (float)Math.Round(s) : Math.Max(0.5f, s);
@@ -379,7 +508,7 @@ namespace CmdCrew
             {
                 // os desenhos olham para a direita; para a esquerda, espelha
                 int px = charScale >= 1 && Math.Abs(charScale - Math.Round(charScale)) < 0.01 ? (int)Math.Round(charScale) : 1;
-                b = ch.Render(skin, k, px, !right);
+                b = ch.Render(skin, ch.HasKind(skin, k) || k.StartsWith("trabalhar") || k == "parado" ? k : "andar", px, !right);
                 frames[key] = b;
             }
             return b;
@@ -430,8 +559,8 @@ namespace CmdCrew
             for (int i = confetti.Count - 1; i >= 0; i--)
             {
                 var c = confetti[i];
-                c.Life -= dt; c.VY += 60 * dt; c.X += c.VX * dt; c.Y += c.VY * dt;
-                if (c.Life <= 0 || c.Y > RoomTheme.SceneH) confetti.RemoveAt(i);
+                c.Life -= dt; c.VY += c.Gravity * dt; c.X += c.VX * dt; c.Y += c.VY * dt;
+                if (c.Life <= 0 || c.Y > RoomTheme.SceneH || c.X < -4 || c.X > RoomTheme.SceneW + 4) confetti.RemoveAt(i);
             }
         }
 
@@ -468,7 +597,7 @@ namespace CmdCrew
                 else if (modeT <= 0)
                 {
                     // volta ao lugar principal, ou (às vezes) vai até o outro
-                    int next = spot != 0 ? 0 : (Theme.Spots.Count > 1 && rnd.NextDouble() < 0.55 ? 1 : 0);
+                    int next = spot != 0 ? 0 : (Theme.Spots.Count > 1 && rnd.NextDouble() < 0.55 ? 1 + rnd.Next(Theme.Spots.Count - 1) : 0);
                     if (next == spot) { modeT = RandT(Theme.Spots[spot]); }
                     else
                     {
@@ -500,7 +629,79 @@ namespace CmdCrew
                 if (jumpY <= 0) { jumpY = 0; jumpV = 0; }
             }
             frameT += dt;
-            if (frameT >= step) { frameT = 0; frame++; }
+            if (frameT >= step)
+            {
+                frameT = 0; frame++;
+                // o golpe de cada ciclo de trabalho solta o efeito do personagem (faíscas, fogo, flecha...)
+                if (State == RoomState.Working && mode == "work" && kind.StartsWith("trabalhar") && u > 0)
+                {
+                    int n = Frames(kind, faceRight).Length;
+                    if (n > 0 && frame % n == n - 1) SpawnEffect(ch.EffectOf(skin, kind));
+                }
+            }
+        }
+
+        // Quem voa (o dragão) fica no ar, subindo e descendo devagar.
+        float Fly { get { return ch.FlyHeight <= 0 || u <= 0 ? 0 : Math.Min(12f, ch.FlyHeight * charScale / u) + (float)Math.Sin(t * 3.2) * 1.2f; } }
+
+        float R(float a, float b) { return a + (float)rnd.NextDouble() * (b - a); }
+
+        void Particle(float x, float y, float vx, float vy, float grav, float life, string color, float w = 1, float h = 1)
+        {
+            if (confetti.Count > 160) return;
+            confetti.Add(new Confetti { X = x, Y = y, VX = vx, VY = vy, Gravity = grav, Life = life, C = Painter.C(color), W = w, H = h });
+        }
+
+        // Os efeitos de trabalho, em versão de pontinhos para caber na sala (os com texto, como "zzz", ficam só na equipe).
+        void SpawnEffect(string effect)
+        {
+            if (string.IsNullOrEmpty(effect)) return;
+            if (effect.IndexOf('+') >= 0) { foreach (var e in effect.Split('+')) SpawnEffect(e.Trim()); return; }
+            float dir = faceRight ? 1 : -1;
+            float halfW = ch.Width * charScale / u / 2;
+            float front = ax + dir * halfW * 0.9f, floor = Theme.FloorY - Fly;
+            float head = HeadY, mid = head + (Theme.FloorY - head) * 0.4f;
+            Func<string[], string> pick = c => c[rnd.Next(c.Length)];
+            switch (effect.ToLowerInvariant())
+            {
+                case "faiscas":
+                    for (int i = 0; i < 6; i++) Particle(front, floor - 1, R(-30, 30), R(-55, -20), 140, R(0.3f, 0.6f), pick(new[] { "#ffd54f", "#ff9800", "#ffffff", "#ff5722" }));
+                    break;
+                case "terra":
+                    for (int i = 0; i < 5; i++) Particle(front, floor - 1, -dir * R(-10, 25), R(-50, -25), 140, R(0.4f, 0.7f), pick(new[] { "#79553a", "#5d402d", "#966e46" }));
+                    break;
+                case "poeira":
+                    for (int i = 0; i < 3; i++) Particle(ax + R(-halfW * 0.6f, halfW * 0.6f), floor - 0.5f, R(-8, 8), R(-10, -3), 0, R(0.4f, 0.8f), pick(new[] { "#beaa8c", "#96826e" }));
+                    break;
+                case "neve":
+                    for (int i = 0; i < 4; i++) Particle(front, mid, R(-10, 10), R(-20, -7), 20, R(0.6f, 1.0f), pick(new[] { "#ffffff", "#b4dcff" }));
+                    break;
+                case "fogo":
+                    for (int i = 0; i < 10; i++)
+                        Particle(ax + dir * halfW, head + (Theme.FloorY - head) * 0.25f + R(-1, 1), dir * R(35, 65), R(-6, 3), -10, R(0.25f, 0.5f),
+                            pick(new[] { "#ffeb3b", "#ff9800", "#f44336", "#fff3b0" }), R(1, 2), 1);
+                    break;
+                case "flechas":
+                    Particle(front, mid, dir * 80, -1, 0, 0.8f, "#8d6e63", 4, 1);
+                    break;
+                case "moedas":
+                    for (int i = 0; i < 2; i++) Particle(front, mid, R(-15, 15), R(-55, -35), 140, R(0.6f, 0.9f), pick(new[] { "#ffd700", "#ffd54f" }), 2, 2);
+                    break;
+                case "flores": case "estrelas": case "claude": case "magia": case "coracoes": case "notas": case "codigo": case "dados":
+                    {
+                        string[] cols =
+                            effect == "flores" ? new[] { "#ec407a", "#ffeb3b", "#ab47bc", "#66bb6a" } :
+                            effect == "estrelas" ? new[] { "#ffd700", "#fff096", "#ff69b4" } :
+                            effect == "claude" ? new[] { "#d97757", "#f5a37f", "#b85f42" } :
+                            effect == "magia" ? new[] { "#b388ff", "#64ffda", "#ffd700" } :
+                            effect == "coracoes" ? new[] { "#ec407a", "#f48fb1", "#e53935" } :
+                            effect == "notas" ? new[] { "#7a3ca0", "#287a3c", "#c85028" } :
+                            effect == "dados" ? new[] { "#42a5f5", "#26c6da", "#ffca28" } :
+                            new[] { "#00e676", "#69f0ae", "#2ea043" };
+                        for (int i = 0; i < 3; i++) Particle(ax + dir * halfW * 0.4f + R(-2, 2), head + R(0, 3), dir * R(2, 7), R(-12, -6), 0, R(0.9f, 1.4f), pick(cols));
+                    }
+                    break;
+            }
         }
 
         // ---------------- desenho ----------------
@@ -570,7 +771,7 @@ namespace CmdCrew
             Theme.Animate(sp, t, State, stateT);
             DrawAgent(g, sx, sy);
             Theme.Front(sp, t, State);
-            foreach (var c in confetti) sp.R(c.C, c.X, c.Y, 1, 1);
+            foreach (var c in confetti) sp.R(c.C, c.X, c.Y, c.W, c.H);
             if (State == RoomState.Done) DrawBanner(g, sp, font, small);
             if (Ask != null) DrawAsk(g, sp, font, small);
             else if (bubble != null) DrawBubble(g, sp, small);
@@ -632,17 +833,17 @@ namespace CmdCrew
             float k = charScale / px;   // escala extra (só para desenhos detalhados em tamanhos pequenos)
             float w = bmp.Width * k, h = bmp.Height * k;
             float feet = (charVisBottom + 1) * px * k;
-            float cx = sx + ax * u, fy = sy + Theme.FloorY * u - jumpY * u;
+            float cx = sx + ax * u, fy = sy + Theme.FloorY * u - (jumpY + Fly) * u;
             // sombra
             using (var b = new SolidBrush(Color.FromArgb(70, 0, 0, 0)))
             {
-                float sw = Math.Min(w * 0.45f, 14 * u) * (1 - Math.Min(0.5f, jumpY / 20f));
+                float sw = Math.Min(w * 0.45f, 14 * u) * (1 - Math.Min(0.5f, (jumpY + Fly) / 20f));
                 g.FillRectangle(b, cx - sw / 2, sy + Theme.FloorY * u - u * 0.5f, sw, u);
             }
             g.DrawImage(bmp, new RectangleF((float)Math.Round(cx - w / 2), (float)Math.Round(fy - feet), w, h));
         }
 
-        public float HeadY { get { return Theme.FloorY - (charVisBottom - charVisTop + 1) * charScale / u - jumpY; } }
+        public float HeadY { get { return Theme.FloorY - (charVisBottom - charVisTop + 1) * charScale / u - jumpY - Fly; } }
 
         // Letreiro "PRONTO!" que desce do teto, com a fala de fim do personagem embaixo.
         void DrawBanner(Graphics g, Painter sp, Font font, Font small)

@@ -2,7 +2,7 @@
   "id": "programadores",
   "nome": "Programadores",
   "categoria": "Programação",
-  "descricao": "O dev cansado com a caneca de café, o gamer de fone e o hacker de capuz. Digitam sem parar enquanto o Claude trabalha.",
+  "descricao": "Os devs de plantão: o cansado movido a café, o gamer que faz speedrun de deploy e o hacker que só digita de capuz. Commit, café, repete.",
   "efeito": "codigo",
   "carga": "cafe",
   "sprites": {
@@ -401,6 +401,6 @@
     "Revisando o pull request"
   ],
   "dicas": ["Funciona na minha máquina é um estado de espírito, não uma garantia.", "Todo bug corrigido às 18h de sexta volta segunda às 9h.", "Café não é dependência. É infraestrutura."],
-  "falas": ["Funciona na minha máquina!", "Quem mexeu no main?", "É só um ponto e vírgula...", "Café acabou?!", "Achei o bug!", "Hack the planet!", "git push --force? Não!", "Mais um console.log", "Era cache.", "Level up!"],
+  "falas": ["Funciona na minha máquina!", "Quem mexeu no main?", "É só um ponto e vírgula...", "Café acabou?!", "Achei o bug!", "Invadindo o mainframe!", "git push --force? Não!", "Mais um console.log", "Era cache.", "Level up!"],
   "falasFim": ["Deploy feito!", "Todos os testes passaram!", "Merge aprovado!", "Commitado!"]
 }

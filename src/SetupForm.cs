@@ -23,6 +23,9 @@ namespace CmdCrew
         ComboBox cbMode;
         Label lblDesc;
         readonly List<CharTile> tiles = new List<CharTile>();
+        Config pending;                                   // a escolha da tela "quem vai trabalhar"
+        readonly List<string> agentIds = new List<string>();   // os agentes marcados
+        bool agentsTouched;
 
         int S(int v) { return (int)Math.Round(v * k); }
 
@@ -32,7 +35,7 @@ namespace CmdCrew
             chars = Character.LoadEmbedded(null);
             if (chars.Count == 0) chars = Character.LoadAll(null);
             // destaques primeiro, como no site
-            var order = new[] { "anoes", "gnomos-jardim", "oompa-loompas", "programadores", "clawd", "claude", "dragao", "elfos", "gatos", "pinguins", "formigas", "robos", "gnomos" };
+            var order = new[] { "anoes", "gnomos-jardim", "chocolateiros", "programadores", "clawd", "claude", "dragao", "elfos", "gatos", "pinguins", "formigas", "robos", "gnomos" };
             chars = chars.OrderBy(c => Array.IndexOf(order, c.Id) < 0 ? 99 : Array.IndexOf(order, c.Id)).ThenBy(c => c.Name).ToList();
             using (var g = CreateGraphics()) k = g.DpiX / 96f;
             AutoScaleMode = AutoScaleMode.None;
@@ -54,8 +57,9 @@ namespace CmdCrew
                 // na abertura, um pouco de todo mundo (na tela de escolha, a faixa mostra a equipe escolhida)
                 if (tiles.Count == 0) banner.SetCrew(chars.OrderBy(c => c.Width > 20 ? 0 : 1).ToList(), "*", Math.Min(6, Math.Max(3, chars.Count)));
             };
-            chosen = Character.Find(chars, "oompa-loompas") ?? chars.FirstOrDefault();
+            chosen = Character.Find(chars, "chocolateiros") ?? chars.FirstOrDefault();
             if (page == "escolher") ShowChoose();
+            else if (page == "agentes") ShowAgents();
             else if (page == "pronto") ShowDone();
             else if (page == "erro") ShowError("Exemplo de erro: não consegui gravar no settings.json do Claude Code.");
             else ShowWelcome();
@@ -91,16 +95,17 @@ namespace CmdCrew
         {
             Clear();
             Text_("Contrate a equipe!", 40, 24, 680, 52, Theme.Pixel(28f), Theme.Ink);
-            Text_("Enquanto o Claude Code trabalha, uma equipe de bichinhos em pixel art trabalha junto: em cima do terminal " +
-                  "ou numa salinha no canto da tela, uma por terminal. Quando o Claude termina, eles comemoram e avisam.",
+            Text_("Enquanto o seu agente (Claude Code, Codex, Gemini CLI, Qwen Code, OpenCode ou Copilot CLI) trabalha, uma equipe " +
+                  "de bichinhos em pixel art trabalha junto: em cima do terminal e numa salinha no canto da tela. Quando ele termina, eles comemoram e avisam.",
                   42, 84, 670, 70, Theme.Body(11f), Theme.Ink2);
 
-            bool found = Installer.ClaudeCodeFound;
+            var foundAgents = Agents.All.Where(a => a.Detected).Select(a => a.Name).ToList();
+            bool found = foundAgents.Count > 0;
             var status = new StatusBadge
             {
                 Ok = found,
-                Text = found ? "Claude Code encontrado neste computador." :
-                    "Não encontrei o Claude Code. Dá para instalar mesmo assim: a equipe aparece quando ele estiver instalado.",
+                Text = found ? "Encontrei neste computador: " + string.Join(", ", foundAgents.ToArray()) + "." :
+                    "Não encontrei nenhum agente. Dá para instalar mesmo assim: a equipe aparece quando você instalar um.",
                 Location = new Point(S(42), S(166)), Size = new Size(S(670), S(44)), Font = Theme.Body(10f, FontStyle.Bold)
             };
             body.Controls.Add(status);
@@ -146,13 +151,19 @@ namespace CmdCrew
             body.Controls.Add(numCount);
             Text_("Onde eles aparecem", 500, 290, 220, 20, Theme.Body(9.5f, FontStyle.Bold), Theme.Ink);
             cbMode = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(S(500), S(310)), Size = new Size(S(222), S(26)), BackColor = Theme.Card, ForeColor = Theme.Ink, Font = Theme.Body(9.5f) };
-            cbMode.Items.AddRange(new object[] { "Salas no canto da tela", "Em cima do terminal", "Os dois" });
-            cbMode.SelectedIndex = 0;
+            cbMode.Items.AddRange(new object[] { "Salas no canto da tela", "Em cima do terminal", "No terminal e na sala" });
+            cbMode.SelectedIndex = pending == null ? 2 : Math.Max(0, Array.IndexOf(new[] { "salas", "equipe", "ambos" }, pending.Mode));
+            if (pending != null) numCount.Value = Math.Max(1, Math.Min(12, pending.Count));
             body.Controls.Add(cbMode);
 
             Button_("◂  Voltar", 36, 336, 120, false, ShowWelcome);
-            Button_("Instalar  ▸", 592, 352, 130, true, ShowInstalling);
+            Button_("Próximo  ▸", 592, 352, 130, true, () => { Remember(); ShowAgents(); });
             Choose(chosen);
+            if (pending != null && pending.Character == chosen.Id)
+            {
+                int i = chosen.Skins.FindIndex(x => x.Id == pending.Skin);
+                cbSkin.SelectedIndex = i < 0 ? 0 : i + 1;
+            }
         }
 
         void Choose(Character ch)
@@ -167,6 +178,55 @@ namespace CmdCrew
             RefreshBanner();
         }
 
+        void Remember()
+        {
+            pending = new Config { Character = chosen.Id, Skin = SkinId(), Count = (int)numCount.Value,
+                Mode = new[] { "salas", "equipe", "ambos" }[Math.Max(0, cbMode.SelectedIndex)] };
+        }
+
+        // ---------- 3. agentes ----------
+
+        void ShowAgents()
+        {
+            Clear();
+            Text_("Com quais agentes?", 40, 16, 680, 40, Theme.Pixel(20f), Theme.Ink);
+            Text_("A equipe aparece quando qualquer um destes estiver trabalhando. Os que estão neste computador já vêm marcados.",
+                  42, 58, 670, 40, Theme.Body(10f), Theme.Ink2);
+            if (!agentsTouched)
+            {
+                agentIds.Clear();
+                foreach (var a in Agents.All) if (a.Id == "claude" || a.Detected) agentIds.Add(a.Id);
+            }
+            int i = 0;
+            foreach (var a in Agents.All)
+            {
+                bool found = a.Detected;
+                var cb = new CheckBox
+                {
+                    Text = a.Name + (found ? "" : "  (não encontrado)"), Checked = agentIds.Contains(a.Id),
+                    Location = new Point(S(48 + (i % 2) * 330), S(108 + (i / 2) * 40)), Size = new Size(S(320), S(30)),
+                    Font = Theme.Body(10.5f, found ? FontStyle.Bold : FontStyle.Regular), ForeColor = found ? Theme.Ink : Theme.Ink2, BackColor = Color.Transparent
+                };
+                var agent = a;
+                cb.CheckedChanged += delegate
+                {
+                    agentsTouched = true;
+                    agentIds.Remove(agent.Id);
+                    if (cb.Checked) agentIds.Add(agent.Id);
+                };
+                body.Controls.Add(cb);
+                i++;
+            }
+            Text_("As frases da equipe no spinner do terminal são só do Claude Code. Dá para mudar tudo isso depois na configuração.",
+                  42, 236, 670, 40, Theme.Body(9f), Theme.Ink2);
+            Button_("◂  Voltar", 36, 336, 120, false, ShowChoose);
+            Button_("Instalar  ▸", 592, 336, 130, true, () =>
+            {
+                if (agentIds.Count == 0) { MessageBox.Show(this, "Marque pelo menos um agente.", "CmdCrew"); return; }
+                ShowInstalling();
+            });
+        }
+
         string SkinId() { return cbSkin == null || cbSkin.SelectedIndex <= 0 ? "*" : chosen.Skins[cbSkin.SelectedIndex - 1].Id; }
 
         void RefreshBanner()
@@ -175,12 +235,12 @@ namespace CmdCrew
             banner.SetCrew(new List<Character> { chosen }, SkinId(), (int)Math.Min(8, numCount.Value));
         }
 
-        // ---------- 3. instalando ----------
+        // ---------- 4. instalando ----------
 
         void ShowInstalling()
         {
-            var cfg = new Config { Character = chosen.Id, Skin = SkinId(), Count = (int)numCount.Value,
-                Mode = cbMode == null ? "salas" : new[] { "salas", "equipe", "ambos" }[Math.Max(0, cbMode.SelectedIndex)] };
+            var cfg = pending ?? new Config { Character = chosen.Id };
+            string agents = string.Join(",", Agents.All.Where(a => agentIds.Contains(a.Id)).Select(a => a.Id).ToArray());
             Clear();
             Text_("Contratando a equipe...", 40, 40, 680, 44, Theme.Pixel(22f), Theme.Ink);
             var step = Text_("", 42, 96, 670, 24, Theme.Body(11f), Theme.Ink2);
@@ -190,7 +250,7 @@ namespace CmdCrew
             {
                 try
                 {
-                    Installer.Install(cfg, s => BeginInvoke((Action)(() => step.Text = s)));
+                    Installer.Install(cfg, agents, s => BeginInvoke((Action)(() => step.Text = s)));
                     Thread.Sleep(600);
                     BeginInvoke((Action)ShowDone);
                 }
@@ -204,17 +264,17 @@ namespace CmdCrew
             t.Start();
         }
 
-        // ---------- 4. pronto ----------
+        // ---------- 5. pronto ----------
 
         void ShowDone()
         {
             Clear();
             Text_("Equipe contratada!", 40, 24, 680, 52, Theme.Pixel(28f), Theme.Ink);
-            Text_("Na próxima vez que você mandar um prompt no Claude Code, eles aparecem. " +
-                  "Se o Claude Code já estiver aberto, feche e abra de novo para ele perceber a equipe nova.",
+            Text_("Na próxima vez que você mandar um prompt para o agente, eles aparecem. " +
+                  "Se ele já estiver aberto, feche e abra de novo para ele perceber a equipe nova.",
                   42, 84, 670, 64, Theme.Body(11f), Theme.Ink2);
             Text_("Para mudar personagem, cores, frases e tamanho, procure \"CmdCrew\" no menu Iniciar. " +
-                  "Para desinstalar, use \"Aplicativos instalados\" do Windows.",
+                  "Lá também dá para desligar ou desinstalar.",
                   42, 160, 670, 48, Theme.Body(9.5f), Theme.Ink2);
             Button_("▶  Testar agora", 42, 330, 170, false, () => Run("demo-salas 3 10"));
             Button_("Configurar", 224, 330, 130, false, () => { Run("config"); Close(); });

@@ -16,6 +16,7 @@ namespace CmdCrew
         public static string Root { get { return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Exe), "..")); } }
         public static string ConfigFile { get { return Path.Combine(Root, "config.json"); } }
         public static string CharactersDir { get { return Path.Combine(Root, "personagens"); } }
+        public static string RoomsDir { get { return Path.Combine(Root, "salas"); } }
         // Pacotes de personagens extras (o Supporters Pack é instalado aqui). Na pasta do projeto,
         // supporters-pack\personagens também vale, para desenvolver sem instalar nada.
         public static string PacksDir { get { return Path.Combine(Root, "pacotes"); } }
@@ -71,6 +72,9 @@ namespace CmdCrew
         public List<Skin> Skins = new List<Skin>();
         public Dictionary<string, List<string>> Phrases = new Dictionary<string, List<string>>();
         public int Width, Height, TopRow, BottomRow;
+        // Linha dos pés: o fim da pose parada (ou do andar). É o que encosta no chão; efeitos que passam
+        // dele (a terra que voa da picareta) não contam, senão o personagem fica flutuando.
+        public int FeetRow;
         // Quantos pontos do desenho cabem em um "ponto" do tamanho padrão (1 = normal, 2 = 2×2, 3 = 3×3).
         public int Detail = 1;
         // Personagens que voam ("voo": altura em pontos do desenho acima do chão). 0 = andam no chão.
@@ -214,6 +218,16 @@ namespace CmdCrew
             }
             if (c.TopRow > c.BottomRow) throw new InvalidDataException("os sprites estão vazios");
             foreach (var s in c.Skins) s.TopRow = Math.Min(tops[s.Frames], c.BottomRow);
+            c.FeetRow = c.BottomRow;
+            List<string[]> pose;
+            if (c.Frames.TryGetValue("parado", out pose) || c.Frames.TryGetValue("andar", out pose))
+            {
+                int feet = -1;
+                foreach (var fr in pose)
+                    for (int y = fr.Length - 1; y > feet; y--)
+                        if (fr[y].Any(ch => !Blank(ch))) { feet = y; break; }
+                if (feet >= c.TopRow) c.FeetRow = feet;
+            }
 
             // Skins sem "base" herdam da primeira as cores que não definirem.
             for (int i = 1; i < c.Skins.Count; i++)
@@ -272,6 +286,7 @@ namespace CmdCrew
 
         public static Character Find(List<Character> all, string id)
         {
+            if (id == "oompa-loompas") id = "chocolateiros";   // nome antigo (v1.0.0)
             foreach (var c in all) if (c.Id == id) return c;
             return all.Count > 0 ? all[0] : null;
         }
@@ -311,12 +326,15 @@ namespace CmdCrew
             return Phrases.TryGetValue(kind, out l) ? l : new List<string>();
         }
 
+        public bool HasKind(Skin skin, string kind) { return (skin.Frames ?? Frames).ContainsKey(kind); }
+
         // Tipos de quadro: "andar", "trabalhar" e o opcional "parado" (sem ele, usa o primeiro de "andar").
+        // Um "trabalhar-algo" que o personagem não tem vira o "trabalhar" dele.
         public Bitmap[] Render(Skin skin, string kind, int scale, bool flip)
         {
             List<string[]> frames;
             var set = skin.Frames ?? Frames;
-            if (!set.TryGetValue(kind, out frames))
+            if (!set.TryGetValue(kind, out frames) && !(kind.StartsWith("trabalhar-") && set.TryGetValue("trabalhar", out frames)))
                 frames = kind == "parado" ? set["andar"].Take(1).ToList() : set["andar"];
             return frames.Select(f => PixelArt.Render(f, skin.Colors, scale, flip)).ToArray();
         }
@@ -325,13 +343,16 @@ namespace CmdCrew
     public class Config
     {
         // modo: "equipe" (bichinhos em cima do terminal), "salas" (uma sala por terminal no canto) ou "ambos"
-        public string Mode = "salas";
+        public string Mode = "ambos";
         public bool Enabled = true;
-        public double IdleMinutes = 5;
+        // Rede de segurança: sem Stop nem interrupção, a sala sai depois desse tempo todo sem nada mexer.
+        // Builds, testes e raciocínios longos passam vários minutos sem gravar nada, então o mínimo é alto.
+        public const double MinIdleMinutes = 30;
+        public double IdleMinutes = 45;
         public bool Bubbles = true;
 
         // equipe
-        public string Character = "oompa-loompas";
+        public string Character = "chocolateiros";
         public string Skin = "classico";           // "*" = misturar todas
         public string Position = "terminal";       // terminal | rodape | topo
         public string VerbMode = "replace";        // replace | append
@@ -343,7 +364,9 @@ namespace CmdCrew
         public Dictionary<string, object> Custom = new Dictionary<string, object>();
 
         // salas
-        public string Theme = "escritorio";        // id do tema, ou "*" para alternar (cada terminal ganha o próximo)
+        // Quem trabalha nas salas (cada personagem tem a sua sala): "" = o mesmo da equipe, "*" = alternar entre todos
+        // (cada terminal ganha o próximo), ou o id de um personagem (por exemplo, o dragão no terminal e o dev na sala).
+        public string RoomCharacter = "";
         public string Corner = "direita";          // direita | esquerda (embaixo, acima da barra de tarefas)
         public int RoomSize = 2;                   // pixels de tela por ponto da sala (antes do ajuste de DPI)
         public double DoneSeconds = 10;            // quanto tempo a sala fica na tela depois que o agente termina
@@ -365,7 +388,7 @@ namespace CmdCrew
             try { d = Json.LoadObject(path); }
             catch (Exception ex) { Paths.Log("config inválida: " + ex.Message); return c; }
             c.Mode = Json.Str(d, "modo", c.Mode);
-            c.Theme = Json.Str(d, "tema", c.Theme);
+            c.RoomCharacter = Json.Str(d, "sala", null) ?? FromOldTheme(Json.Str(d, "tema", null));
             c.Corner = Json.Str(d, "canto", c.Corner);
             c.RoomSize = Math.Max(1, Math.Min(6, (int)Json.Num(d, "tamanhoSala", c.RoomSize)));
             c.DoneSeconds = Math.Max(2, Math.Min(120, Json.Num(d, "segundosFim", c.DoneSeconds)));
@@ -390,6 +413,36 @@ namespace CmdCrew
             return c;
         }
 
+        // Configurações antigas escolhiam o tema da sala ("tema"); hoje cada personagem tem a sua.
+        static string FromOldTheme(string theme)
+        {
+            switch (theme ?? "")
+            {
+                case "*": return "*";
+                case "escritorio": return "programadores";
+                case "mina": return "anoes";
+                default: return "";
+            }
+        }
+
+        // O personagem da próxima sala; n = quantas salas já abriram (para alternar entre todos).
+        public Character RoomCharacterFor(List<Character> all, int n)
+        {
+            if (all.Count == 0) return null;
+            string id = RoomCharacter;
+            if (id == "*") return all[n % all.Count];
+            if (string.IsNullOrEmpty(id)) id = Character;
+            if (id == "oompa-loompas") id = "chocolateiros";
+            var c = all.FirstOrDefault(x => x.Id == id);
+            // personagem de um pacote que não está instalado (o anão da mina): quem mais trabalha naquela sala
+            if (c == null)
+                c = RoomTheme.ForCharacter(id).Characters.Select(i => all.FirstOrDefault(x => x.Id == i)).FirstOrDefault(x => x != null);
+            return c ?? CmdCrew.Character.Find(all, Character);
+        }
+
+        // A cor escolhida na configuração vale para a sala quando o personagem é o mesmo da equipe.
+        public string RoomSkinFor(Character c) { return c != null && c.Id == Character ? Skin : null; }
+
         public void Save() { Save(Paths.ConfigFile); }
 
         public void Save(string path)
@@ -408,7 +461,7 @@ namespace CmdCrew
             d["frasesTerminal"] = TerminalPhrases;
             d["modoVerbos"] = VerbMode;
             d["dicasTerminal"] = TerminalTips;
-            d["tema"] = Theme;
+            d["sala"] = RoomCharacter;
             d["canto"] = Corner;
             d["tamanhoSala"] = RoomSize;
             d["segundosFim"] = DoneSeconds;

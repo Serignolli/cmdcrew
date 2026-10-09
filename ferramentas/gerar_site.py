@@ -13,7 +13,7 @@ OUT = os.path.join(ROOT, "site", "dados.js")
 
 # ordem de exibição. Só entram os gratuitos (personagens/): os do Supporters Pack aparecem no site como GIF
 # (ferramentas/gerar_gifs.py), para o pacote não ficar público.
-ORDEM = ["oompa-loompas", "programadores", "dragao", "elfos", "gnomos", "clawd", "cachorros", "claude", "robos-classicos", "gatos", "pinguins", "formigas", "robos"]
+ORDEM = ["chocolateiros", "programadores", "dragao", "elfos", "gnomos", "clawd", "cachorros", "claude", "robos-classicos", "gatos", "pinguins", "formigas", "robos"]
 DESTAQUE = set()
 CAMPOS = ["id", "nome", "categoria", "descricao", "detalhe", "voo", "efeito", "carga", "efeitosTrabalho",
           "sprites", "skins", "verbos", "dicas", "falas", "falasFim"]

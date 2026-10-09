@@ -2,7 +2,7 @@
   "id": "cachorros",
   "nome": "Cachorros",
   "categoria": "Animais",
-  "descricao": "Vira-lata caramelo e companhia. Latem para os bugs, cavam o repositório e trazem a bolinha de volta.",
+  "descricao": "Cães de guarda do repositório. Latem para os bugs, enterram TODOs no quintal e sempre trazem o build de volta.",
   "efeito": "latidos",
   "carga": "osso",
   "efeitosTrabalho": {

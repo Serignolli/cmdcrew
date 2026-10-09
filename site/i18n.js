@@ -25,7 +25,15 @@
     "nav.download": "Download",
     "nav.langLabel": "Ler em português",
 
-    "hero.pill": "for Claude Code · Windows · free and open source",
+    "hero.pill": "for Claude Code, Codex, Gemini, Qwen, OpenCode and Copilot · Windows, macOS and Linux · free",
+    "rooms.eachTitle": "Every character has its own room.",
+    "rooms.eachSub": "The dragon breathes fire in its lair, the penguin keeps the servers cold, the elf practices archery in the woods. The one on the terminal can be someone else: the dragon on top of the terminal and the dev in the room, for example.",
+    "rooms.each1": "<b>Dragon's lair.</b> Torches, treasure and fire.",
+    "rooms.each2": "<b>Elven woods.</b> Fireflies and target practice.",
+    "rooms.each3": "<b>Frozen data center.</b> Blinking servers and snow outside.",
+    "rooms.each4": "<b>Chocolate factory.</b> A chocolate river and a running conveyor.",
+    "rooms.each5": "<b>Backyard.</b> Digs, barks and guards the doghouse.",
+    "rooms.each6": "<b>Claude's studio.</b> Clawd at the orange terminal.",
     "hero.title": "Claude thinks.<br><span class=\"hl\">The crew works.</span>",
     "hero.lead": "While Claude Code works on your code, a pixel art crew works right along: on top of the terminal or in a little room in the corner of the screen, one per terminal. When it's done, they celebrate and let you know. If it needs you, they call you.",
     "hero.cta": "Hire the crew",
@@ -59,13 +67,7 @@
 
     "pack.title": "Support the project and take the medieval guild home.",
     "pack.sub": "A pack of high definition fantasy and RPG characters, animated frame by frame, with more animations and more detail. CmdCrew stays free and open: the pack is for those who want to support it and get a polished crew in return.",
-    "pack.card1Alt": "HD dwarf miner walking, breaking rocks and pushing the cart",
-    "pack.card1": "<h3>Dwarf miners</h3><p>They break rocks, push the cart and haul the sack. Five helmet and beard colors.</p><div class=\"tags\"><span>5 animations</span><span>5 colors</span><span>mine room</span></div>",
-    "pack.card2Alt": "HD garden gnome walking, watering, digging and raking",
-    "pack.card2": "<h3>Garden gnomes</h3><p>They water, dig and rake while Claude works. Five hat colors.</p><div class=\"tags\"><span>5 animations</span><span>5 colors</span></div>",
-    "pack.card3Alt": "Mine room with the HD dwarf breaking rocks",
-    "pack.card3": "<h3>The mine, in HD</h3><p>In Rooms mode, the HD dwarf takes over the mine: a flickering lamp, rails, the cart and shining rocks.</p><div class=\"tags\"><span>themed room</span></div>",
-    "pack.card4": "<h3>And more on the way</h3><p>Elf archers, a real dragon, wizards, knights and other RPG heroes join the pack as they're ready.</p><div class=\"tags\"><span>elves</span><span>dragon</span><span>wizards</span><span>knights</span></div>",
+    "pack.card4": "<h3>And more on the way</h3><p>A real dragon, wizards, knights and other RPG heroes join the pack as they're ready.</p><div class=\"tags\"><span>dragon</span><span>wizards</span><span>knights</span></div>",
     "pack.cta": "I want to support",
     "pack.note": "The pack comes as a <code>.zip</code> file. In CmdCrew, open the settings and click <em>Add pack</em>.",
 
@@ -83,33 +85,45 @@
     "how.sfxFail": "▶ Failed",
 
     "dl.title": "Hire the crew.",
-    "dl.sub": "Download the installer, pick your characters and where they show up. Next time Claude Code gets to work, they arrive.",
+    "dl.sub": "Download the installer, pick your characters and where they show up. Next time your agent gets to work, they arrive.",
     "dl.button": "Download for Windows",
-    "dl.note": "Windows 10 or 11 · requires <a href=\"https://docs.anthropic.com/claude-code\" target=\"_blank\" rel=\"noopener\">Claude Code</a> · nothing else needed",
+    "dl.note": "Windows 10 or 11 · no admin rights and nothing else besides your agent",
+    "dl.unixTitle": "On macOS and Linux, paste this in the terminal:",
+    "dl.copy": "Copy",
+    "dl.unixNote": "Installs without sudo and opens the setup right in the terminal. To change it later: <code>cmdcrew config</code>.",
+    "dl.worksWith": "Works with",
     "dl.repo": "code on GitHub",
-    "dl.steps": "<li><b>1</b> Open <code>CmdCrew-Setup.exe</code></li><li><b>2</b> Pick the crew and where it shows up</li><li><b>3</b> Click <em>Install</em></li><li><b>4</b> Send a prompt in Claude Code!</li>",
-    "dl.laterOs": "macOS and Linux",
-    "dl.soon": "coming soon",
+    "dl.steps": "<li><b>1</b> Open <code>CmdCrew-Setup.exe</code></li><li><b>2</b> Pick the crew and where it shows up</li><li><b>3</b> Click <em>Install</em></li><li><b>4</b> Send a prompt to your agent!</li>",
 
     "faq.eyebrow": "FAQ",
     "faq.title": "Questions the crew has heard before.",
     "faq.q1": "<summary>Will they get in my way while I work?</summary><p>No. No window steals focus. The crew on the terminal lets clicks pass through; the rooms sit in a corner and only respond to their buttons and to double clicks. Everything only shows up while Claude Code is working.</p>",
     "faq.q2": "<summary>How does approving permissions in the room work?</summary><p>When Claude Code needs permission, it calls CmdCrew (through the <code>PermissionRequest</code> hook) and the room shows the request. <em>Allow</em> and <em>Deny</em> answer Claude directly; <em>Terminal</em> hands the decision back to the terminal. The usual question still appears in the terminal too, so you can answer there if you prefer. This can be turned off in the settings.</p>",
     "faq.q3": "<summary>Does it need internet? Does it send any data?</summary><p>No. Everything runs on your computer: no account, no telemetry, no server. The app only talks to Claude Code itself, through the hooks it provides.</p>",
-    "faq.q4": "<summary>Can I see the code before installing?</summary><p>You can and you should: CmdCrew is open source (MIT license). You can even build it yourself with <code>instalar.cmd</code> from the repository, using only the compiler that already ships with Windows.</p>",
-    "faq.q5": "<summary>What does it change in my Claude Code?</summary><p>It adds start, stop, permission and notification hooks and, if you want, swaps the spinner phrases. Your <code>settings.json</code> is backed up before the first change.</p>",
+    "faq.q4": "<summary>Can I see the code before installing?</summary><p>You can and you should: CmdCrew is open source (MIT license). You can even build it yourself with <code>scripts\\instalar.cmd</code> from the repository, using only the compiler that already ships with Windows.</p>",
+    "faq.q5": "<summary>What does it change in my agents?</summary><p>It adds start, stop, permission and notification hooks (a plugin, in OpenCode) and, in Claude Code, if you want, swaps the spinner phrases. Each config file is backed up before the first change.</p>",
     "faq.q6": "<summary>What is the Supporters Pack?</summary><p>A pack of high definition medieval and RPG characters with better animations, for those who want to support the project. The app and the regular characters stay free.</p>",
-    "faq.q7": "<summary>What if I press Esc halfway through?</summary><p>Claude Code doesn't announce when it's interrupted, so the crew figures it out: after a few minutes without activity, they leave.</p>",
-    "faq.q8": "<summary>How do I change the settings or uninstall?</summary><p>Open CmdCrew from the Start menu: that's the settings screen. There you can switch the crew, turn it off without uninstalling or, tucked in the corner, uninstall it. You can also uninstall it from Windows' \"Installed apps\". It removes the hooks and restores the original spinner phrases.</p>",
+    "faq.q7": "<summary>What if I press Esc halfway through? And long tasks?</summary><p>Claude Code doesn't announce when it's interrupted, so the crew reads the conversation and notices the interruption on its own. For long tasks (builds, tests, subagents, long reasoning) the room stays until the end: it only leaves on its own after a long time with no activity at all.</p>",
+    "faq.q8": "<summary>How do I change the settings or uninstall?</summary><p>Open CmdCrew from the Start menu: that's the settings screen. There you can switch the crew, choose who works in the room, turn each agent on and off or, tucked in the corner, uninstall it. You can also uninstall it from Windows' \"Installed apps\". On macOS and Linux it's <code>cmdcrew config</code> and <code>cmdcrew desinstalar</code>. It removes the hooks and restores the original spinner phrases.</p>",
 
     "footer.made": "Made with pixels and coffee",
     "footer.license": "MIT license",
     "footer.credit": "Built by <a href=\"https://serignolli.com\" target=\"_blank\" rel=\"noopener noreferrer\">Serignolli</a> · <a href=\"https://buymeacoffee.com/gabrielserignolli\" target=\"_blank\" rel=\"noopener noreferrer\">Buy the crew a coffee</a>",
 
+    "pack.card1": "<h3>Code-mining dwarves</h3><p>They chip away at the repository looking for veins of gold, push the commit cart and haul the bugs out of the mine in sacks. They come with the mine: a flickering lamp, rails and shining rocks.</p><div class=\"tags\"><span>character + room</span><span>5 animations</span><span>5 colors</span></div>",
+    "pack.card2": "<h3>Gnomes who plant databases</h3><p>They water the tables, dig the indexes and rake the logs until the garden is fully normalized. They come with the garden: fence, flower bed and butterflies.</p><div class=\"tags\"><span>character + room</span><span>5 animations</span><span>5 colors</span></div>",
+    "pack.card3": "<h3>Bug-hunting elves</h3><p>They find the error before the compiler does and hit it right in the middle of the stack trace. They come with the woods: fireflies, the moon and the target on the tree.</p><div class=\"tags\"><span>character + room</span><span>new</span><span>5 colors</span></div>",
+    "pack.card1AltChar": "HD code-mining dwarf walking, mining and pushing the cart",
+    "pack.card1AltRoom": "The mine: the HD dwarf mining and pushing the cart",
+    "pack.card2AltChar": "HD garden gnome walking, watering, digging and raking",
+    "pack.card2AltRoom": "The garden: the HD gnome watering the flower bed",
+    "pack.card3AltChar": "HD elf archer walking and shooting the bow",
+    "pack.card3AltRoom": "The woods: the HD elf shooting at the target",
+    "pack.swapChar": "character",
+    "pack.swapRoom": "and its room",
     "support.title": "The crew is on its way!",
-    "support.text": "Thanks for hiring the crew. The project is free, open and ad-free. If they make your day more fun, support the project and get the Supporters Pack, with the dwarves, gnomes and other heroes in high definition.",
+    "support.text": "Thanks for hiring the crew. The project is free, open and ad-free. If they make your day more fun, support the project and get the Supporters Pack: dwarves, gnomes, elves and other heroes in high definition, each with its own room.",
     "support.pack": "See the Supporters Pack",
-    "support.coffee": "Buy a coffee",
     "support.close": "Not now",
 
     // textos montados pelo main.js
@@ -135,27 +149,27 @@
 
   // Personagens gratuitos (personagens/*.json): nome, descrição, frases e nomes das cores.
   const CHARS_EN = {
-    "oompa-loompas": {
-      nome: "Oompa-Loompas",
-      descricao: "The most dedicated workers in the factory. They hammer, carry chocolate bars and sing a little moral song for every bug.",
-      verbos: ["Loompaing", "Doompetying", "Stirring the chocolate river", "Seasoning the caramel", "Testing three-course gum", "Polishing golden tickets", "Wrapping candies", "Composing a moral song", "Tuning the chocolate waterfall", "Hauling cocoa sacks", "Blowing soda bubbles", "Painting lollipops", "Inspecting the factory"],
-      dicas: ["Oompa-loompas work best when paid in cocoa beans.", "Never chew the three-course gum before the code compiles.", "Every bug gets a moral song. The oompa-loompas are already writing this one."],
-      falas: ["Oompa loompa doompety doo!", "More chocolate on line 42!", "Who touched my caramel?", "This bug tastes like raspberry", "Golden ticket found!", "Mind the river!", "Almost there!", "One more chocolate commit"],
-      falasFim: ["Done, boss!", "Doompety dee!", "All wrapped up!", "Factory in order!"],
+    chocolateiros: {
+      nome: "Chocolatiers",
+      descricao: "Chocolate factory workers who hammer the code until it's crunchy. Every bug fixed becomes a chocolate bar and a little moral song.",
+      verbos: ["Humming", "Drumming on the molds", "Stirring the chocolate river", "Seasoning the caramel", "Testing new gum", "Polishing golden wrappers", "Wrapping candies", "Composing a moral song", "Tuning the chocolate waterfall", "Hauling cocoa sacks", "Blowing soda bubbles", "Painting lollipops", "Inspecting the factory"],
+      dicas: ["Chocolatiers work best with a cup of hot cocoa.", "Never taste the chocolate before the code compiles.", "Every bug gets a moral song. The chocolatiers are already writing this one."],
+      falas: ["La-la-la, one more bug!", "More chocolate on line 42!", "Who touched my caramel?", "This bug tastes like raspberry", "Winning bar found!", "Mind the river!", "Almost there!", "One more chocolate commit"],
+      falasFim: ["Done, boss!", "La-la-la, done!", "All wrapped up!", "Factory in order!"],
       skins: ["Classic (green hair)", "Modern (red overalls)", "Cotton candy", "Mint chocolate"],
     },
     programadores: {
       nome: "Developers",
-      descricao: "The tired dev with a coffee mug, the gamer with headphones and the hoodie hacker. They type nonstop while Claude works.",
+      descricao: "The on-call devs: the tired one running on coffee, the gamer speedrunning deploys and the hacker who only types with his hood up. Commit, coffee, repeat.",
       verbos: ["Compiling", "Refactoring", "Hunting bugs", "Deploying on a Friday", "Reading the docs", "Resolving a merge conflict", "Having one more coffee", "Writing tests", "Blaming the cache", "Checking Stack Overflow", "Restarting the server", "Reviewing the pull request"],
       dicas: ["Works on my machine is a state of mind, not a guarantee.", "Every bug fixed at 6 pm on a Friday comes back Monday at 9.", "Coffee isn't a dependency. It's infrastructure."],
-      falas: ["Works on my machine!", "Who touched main?", "It's just a semicolon...", "Out of coffee?!", "Found the bug!", "Hack the planet!", "git push --force? No!", "One more console.log", "It was the cache.", "Level up!"],
+      falas: ["Works on my machine!", "Who touched main?", "It's just a semicolon...", "Out of coffee?!", "Found the bug!", "Breaking into the mainframe!", "git push --force? No!", "One more console.log", "It was the cache.", "Level up!"],
       falasFim: ["Deployed!", "All tests passed!", "Merge approved!", "Committed!"],
       skins: ["Tired dev (he, with coffee)", "Tired dev (she, with coffee)", "Gamer (headset and controller)", "Hacker (hoodie and shades)"],
     },
     dragao: {
       nome: "Dragon",
-      descricao: "Flies over the terminal flapping its wings and breathes fire while it works. Guards the gems of your code.",
+      descricao: "Guardian of the repository's treasure. Flies over the terminal and breathes fire on legacy code until only the good parts are left.",
       verbos: ["Breathing fire on the bug", "Hatching the feature egg", "Guarding the repo treasure", "Flying over the code", "Heating up the server", "Counting gems", "Scaring the QA knights", "Melting the legacy code", "Blowing smoke", "Sharpening claws", "Flapping wings"],
       dicas: ["Dragons don't deploy on Fridays. They set things on fire on Thursdays.", "Every dragon guards a treasure: yours is the git history.", "If the build breaks, the dragon breathes fire. If it passes, too."],
       falas: ["ROOOAR!", "Who touched my treasure?", "This bug is getting barbecued", "Hot in here, huh?", "One more gem for the pile!", "Smells like burnt code", "Fly, little dragon!", "Pfffff..."],
@@ -164,7 +178,7 @@
     },
     elfos: {
       nome: "Elves",
-      descricao: "Nimble and organized. They tread lightly across the terminal and hit every bug with an arrow.",
+      descricao: "Bug hunters from the woods. They spot a missing semicolon 200 lines away and hit it with an arrow.",
       verbos: ["Aiming at the bug", "Tuning the harp", "Gathering backlog herbs", "Reading ancient runes", "Weaving the documentation", "Walking without a sound", "Enchanting the functions", "Reading the stars", "Braiding hair", "Guarding the dependency forest"],
       dicas: ["An elf never misses. Sometimes the bug moves.", "Elvish code: beautiful, ancient and nobody knows how to change it anymore.", "The elves think your README is too short."],
       falas: ["Bullseye!", "Bug down!", "What a lovely forest of folders", "I hear a bug approaching", "One more arrow!", "This is ancient elvish code", "Quiet, I'm aiming", "The forest thanks you"],
@@ -173,16 +187,16 @@
     },
     gnomos: {
       nome: "Gnome miners",
-      descricao: "Bearded gnomes who pickaxe through the code looking for gems (and sometimes bugs).",
+      descricao: "Miner gnomes who dig through the source code for rare gems: reusable functions and, every now and then, a fossilized bug.",
       verbos: ["Mining", "Hammering", "Digging for crystals", "Forging tools", "Growing mushrooms", "Guarding the garden", "Cutting gems", "Counting coins", "Sharpening the pickaxe"],
       dicas: ["All good code has at least one hidden gem.", "The gnomes say a well-mined bug is worth more than gold.", "Never argue with a gnome holding a pickaxe."],
-      falas: ["Heigh-ho!", "Found a crystal!", "Deeper!", "This rock is tough", "Mushrooms for lunch", "Gold! Oh no, it's pyrite", "Nobody touches my garden"],
-      falasFim: ["Heigh-ho, it's home I go!", "Mine closed!", "Treasure secured!"],
+      falas: ["Let's dig!", "Found a crystal!", "Deeper!", "This rock is tough", "Mushrooms for lunch", "Gold! Oh no, it's pyrite", "Nobody touches my garden"],
+      falasFim: ["Shift's over, heading home!", "Mine closed!", "Treasure secured!"],
       skins: ["Classic (red hat)", "Forest guardian", "Helmet miner", "Winter"],
     },
     clawd: {
       nome: "Clawd (Claude Code)",
-      descricao: "Claude Code's little critter. Types nonstop, gives off Claude's sparkles and carries the icon on its head.",
+      descricao: "Claude Code's mascot in the flesh. Types faster than your linter and gives off sparkles every time a function compiles on the first try.",
       verbos: ["Clauding", "Thinking with tiny claws", "Reading CLAUDE.md", "Running the tests", "Compacting the context", "Grepping the repo", "Refactoring with care", "Checking the skills", "Writing the diff", "Summoning subagents"],
       dicas: ["Clawd reminds you: a good CLAUDE.md saves a lot of explaining.", "Esc interrupts Claude, but Clawd keeps working for a few minutes.", "Clawd's tip: ask for a plan before big changes."],
       falas: ["Clawd's here!", "Leave it to me", "Reading CLAUDE.md…", "Running the tests…", "May I edit this file?", "Hmm, interesting", "Context almost full!", "✻ ✳ ✢ ✶", "Found the bug!"],
@@ -191,7 +205,7 @@
     },
     cachorros: {
       nome: "Dogs",
-      descricao: "The caramel mutt and friends. They bark at bugs, dig through the repo and bring the ball back.",
+      descricao: "The repository's guard dogs. They bark at bugs, bury TODOs in the backyard and always fetch the build back.",
       verbos: ["Sniffing out the bug", "Burying the bone", "Fetching the ball", "Wagging the tail", "Barking at the mailman", "Digging through the repo", "Begging for treats", "Chasing their tail", "Guarding the server", "Sniffing the logs"],
       dicas: ["Who's a good boy? The code that passes the tests.", "No bones were buried in main during this deploy.", "The dogs accept payment in treats."],
       falas: ["Woof woof!", "Ball?!", "Found a bone in the code!", "Walk?", "Who's a good boy?", "Grrr... bug!", "Can I get on the couch?", "Smells like a deploy!", "Treat!", "Woof!"],
@@ -200,7 +214,7 @@
     },
     claude: {
       nome: "Claude Sparkles",
-      descricao: "Claude's icon grew little legs. It pulses like the terminal spinner and carries a terminal on its head.",
+      descricao: "Claude's icon grew little legs and ran away from the spinner. It pulses to the beat of \"Thinking…\" and carries a whole terminal on its head.",
       verbos: ["Clauding", "Shining", "Pulsing", "Radiating ideas", "Thinking in sparkles", "Spinning the spinner", "Untangling the code", "Tokenizing"],
       dicas: ["The sparkles pulse to the same beat as the spinner: ✢ ✳ ✶ ✻ ✽", "Every sparkle on screen is a happy token."],
       falas: ["✻", "Shining…", "Thinking deep", "One token at a time", "Look at the spinner!", "I'm in the terminal", "What a nice prompt"],
@@ -209,16 +223,16 @@
     },
     "robos-classicos": {
       nome: "Classic robots",
-      descricao: "The short one that beeps, the golden one that talks too much and the vacuum that never stops. Inspired by science fiction robots.",
-      verbos: ["Calculating the odds", "Beeping in binary", "Vacuuming the logs", "Checking the memory bank", "Translating six million languages", "Recharging batteries", "Sweeping the repo", "Spinning the dome", "Obeying the three laws", "Soldering the circuit"],
-      dicas: ["The odds of a Friday deploy going well are 3,720 to 1.", "Cleaning robots also sweep up unused dependencies.", "Beep boop: this commit was approved by an astromech."],
-      falas: ["Beep boop!", "Oh no! We're doomed!", "Vrrrrrr...", "We seem to be made to suffer", "Beep beep booo!", "Dust detected!", "How unpleasant!", "Battery at 12%"],
-      falasFim: ["Beep boop, done!", "Thank the maker!", "Returning to base!", "All squeaky clean!"],
-      skins: ["Astromech (beeps)", "Red astromech", "Golden protocol droid", "Vacuum"],
+      descricao: "A science fiction crew: the short one that beeps in binary, the golden one that translates stack traces and the vacuum that clears the cache.",
+      verbos: ["Calculating the odds", "Beeping in binary", "Vacuuming the logs", "Checking the memory bank", "Translating too many languages", "Recharging batteries", "Sweeping the repo", "Spinning the dome", "Obeying the three laws", "Soldering the circuit"],
+      dicas: ["The odds of a Friday deploy going well are a thousand to 1.", "Cleaning robots also sweep up unused dependencies.", "Beep boop: this commit was approved by a dome bot."],
+      falas: ["Beep boop!", "Oh dear, this will go wrong!", "Vrrrrrr...", "My circuits can't take it", "Beep beep booo!", "Dust detected!", "How unpleasant!", "Battery at 12%"],
+      falasFim: ["Beep boop, done!", "Phew, I survived!", "Returning to base!", "All squeaky clean!"],
+      skins: ["Dome bot (beeps)", "Red dome bot", "Golden chatterbox", "Vacuum"],
     },
     gatos: {
       nome: "Cats",
-      descricao: "Official code supervisors. Their job is napping on the keyboard and sometimes carrying a fish.",
+      descricao: "Senior code reviewers. They review the PR by lying on the keyboard and approve anything in exchange for a fish.",
       verbos: ["Purring", "Kneading biscuits", "Knocking things off the desk", "Chasing the mouse pointer", "Napping on the keyboard", "Sharpening claws on the code", "Ignoring bugs with elegance", "Staring into the void", "Sitting on the keyboard", "Chasing the cursor"],
       dicas: ["If it doesn't fit, the cat sits anyway.", "The cats reviewed the code and knocked three imports off the desk.", "A cat sleeping on the keyboard counts as a code review."],
       falas: ["Meow.", "This code is mine now.", "Zzz… reviewing", "Where's my snack?", "I knocked off a semicolon", "Meow? (a test is missing)", "Prrrr"],
@@ -227,16 +241,16 @@
     },
     pinguins: {
       nome: "Penguins",
-      descricao: "Cooling engineers. They waddle back and forth with fresh fish and keep the processor nice and chilly.",
+      descricao: "The data center's cooling crew. They keep the processor nice and chilly, waddle between the servers and take payment in fresh fish.",
       verbos: ["Sliding", "Waddling", "Fishing for sardines", "Stacking ice cubes", "Hatching the egg", "Skating on the code", "Breaking the ice", "Cooling the processor", "Marching in line"],
       dicas: ["The penguins keep your processor at -4 °F.", "No penguins caught a cold while running this code.", "When the code freezes, the penguins call it controlled freezing."],
-      falas: ["Noot noot!", "Fresh fish!", "Ice just right", "Slipped on a null", "It's cold in this server", "Let's slide!", "Smile and wave"],
-      falasFim: ["Noot! Done!", "Iceberg delivered!", "Smile and wave, boys!"],
+      falas: ["Quack quack!", "Fresh fish!", "Ice just right", "Slipped on a null", "It's cold in this server", "Let's slide!", "Penguin pose!"],
+      falasFim: ["Quack! Done!", "Iceberg delivered!", "Icy mission complete!"],
       skins: ["Emperor", "Little blue penguin", "Bubblegum pink", "Gold"],
     },
     formigas: {
       nome: "Ants",
-      descricao: "A whole colony working in line: they lift leaves, carry sugar cubes and kick up dust.",
+      descricao: "A whole colony marching single file and carrying bytes. Every sugar cube is a data packet delivered on time.",
       verbos: ["Anting", "Carrying crumbs", "Stacking leaves", "Digging tunnels", "Organizing the colony", "Following the pheromone trail", "Lifting 50 times their weight", "Storing sugar", "Building the anthill"],
       dicas: ["One ant does little; a thousand ants do a refactor.", "The ants already found three bug crumbs in your code.", "Single file is the oldest way to process tasks in order."],
       falas: ["One more leaf!", "Sugar ahead!", "Trail clear!", "For the queen!", "This weighs 50x me", "Tunnel almost done", "Single file!"],
@@ -245,7 +259,7 @@
     },
     robos: {
       nome: "Little robots",
-      descricao: "Small maintenance robots that solder circuits, throw sparks and carry gears.",
+      descricao: "Little maintenance robots that solder circuits, tighten the back-end's loose screws and beep with joy when the tests pass.",
       verbos: ["Computing", "Soldering circuits", "Tightening screws", "Recalibrating sensors", "Oiling gears", "Compiling beep-boops", "Processing bits", "Defragmenting ideas", "Updating firmware", "Beeping"],
       dicas: ["Maintenance robots recommend a git commit every 42 screws.", "Robot oil level: great. Human coffee level: unknown.", "Robots don't dream of electric sheep; they dream of passing tests."],
       falas: ["Beep boop!", "Running task 0x2A", "Loose screw detected", "Oil at 42%", "01101111 01101001!", "Recalculating route", "Humans are funny"],
@@ -271,9 +285,10 @@
       btn.addEventListener("click", () => {
         const next = lang === "en" ? "pt" : "en";
         try { localStorage.setItem(STORE, next); } catch { /* sem armazenamento */ }
-        // recarrega para refazer os personagens e o terminal no outro idioma (sem o ?lang= que forçaria o atual)
+        // recarrega para refazer os personagens e o terminal no outro idioma. O idioma vai também na URL:
+        // aberto direto do disco (file://) ou com o armazenamento bloqueado, o localStorage não guarda nada.
         const url = new URL(location.href);
-        url.searchParams.delete("lang");
+        url.searchParams.set("lang", next);
         location.replace(url.href);
       });
     }

@@ -1,0 +1,81 @@
+{
+ "id": "polo",
+ "nome": "Data center gelado",
+ "descricao": "Os pinguins mantêm os servidores fresquinhos enquanto a neve cai lá fora.",
+ "personagens": ["pinguins-hd", "pinguins"],
+ "cor": "#5aa8e0",
+ "imagem": "polo.png",
+ "chao": 42,
+ "altura": 20,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 30,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 7
+  },
+  {
+   "x": 62,
+   "tipo": "trabalhar-peixe",
+   "andar": "andar",
+   "direita": true,
+   "min": 3,
+   "max": 6
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "pontos": [
+    [55, 10],
+    [55, 15],
+    [55, 19],
+    [71, 10],
+    [71, 15],
+    [71, 19],
+    [87, 10],
+    [87, 15],
+    [87, 19]
+   ],
+   "cores": ["#69f0ae", "#40c4ff", "#69f0ae", "#ffd740"],
+   "vel": 4.3,
+   "limiar": -0.1,
+   "tipo": "piscar"
+  },
+  {
+   "pontos": [
+    [8, 7],
+    [14, 6],
+    [22, 8],
+    [29, 6]
+   ],
+   "cores": ["#ffffff"],
+   "vel": 2,
+   "limiar": 0.2,
+   "tipo": "piscar"
+  },
+  {
+   "area": [5, 5, 28, 13],
+   "cores": ["#ffffff"],
+   "n": 8,
+   "vx": 1,
+   "vy": 5,
+   "tam": [1, 1],
+   "tipo": "particulas"
+  },
+  {
+   "area": [0, 0, 96, 42],
+   "cores": ["#ffffff", "#e1f5fe"],
+   "n": 6,
+   "vx": 0.6,
+   "vy": 3,
+   "tam": [1, 1],
+   "quando": ["pronto"],
+   "tipo": "particulas"
+  }
+ ],
+ "frente": []
+}

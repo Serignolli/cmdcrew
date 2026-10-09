@@ -1,8 +1,8 @@
 {
-  "id": "oompa-loompas",
-  "nome": "Oompa-Loompas",
+  "id": "chocolateiros",
+  "nome": "Chocolateiros",
   "categoria": "Fábrica de Chocolate",
-  "descricao": "Os funcionários mais dedicados da fábrica. Martelam, carregam barras de chocolate e cantam uma musiquinha de moral a cada bug.",
+  "descricao": "Operários da fábrica de chocolate que martelam o código até ele ficar crocante. Cada bug corrigido vira uma barra de chocolate e uma musiquinha de moral.",
   "efeito": "notas",
   "carga": "chocolate",
   "sprites": {
@@ -106,12 +106,12 @@
     }
   ],
   "verbos": [
-    "Loompando",
-    "Doompetiando",
+    "Cantarolando",
+    "Batucando nas formas",
     "Mexendo o rio de chocolate",
     "Temperando o caramelo",
-    "Testando chicletes de três pratos",
-    "Polindo bilhetes dourados",
+    "Testando chicletes novos",
+    "Polindo embalagens douradas",
     "Enrolando balas",
     "Compondo uma canção de moral",
     "Ajustando a cascata de chocolate",
@@ -121,23 +121,23 @@
     "Inspecionando a fábrica"
   ],
   "dicas": [
-    "Os oompa-loompas trabalham melhor quando recebem cacau em grão.",
-    "Nunca mastigue o chiclete de três pratos antes do código compilar.",
-    "Cada bug ganha uma canção de moral. Os oompa-loompas já estão compondo a deste."
+    "Os chocolateiros trabalham melhor com uma xícara de cacau quente.",
+    "Nunca prove o chocolate antes do código compilar.",
+    "Cada bug ganha uma canção de moral. Os chocolateiros já estão compondo a deste."
   ],
   "falas": [
-    "Oompa loompa doompety doo!",
+    "Lá-rá-lá, mais um bug!",
     "Mais chocolate na linha 42!",
     "Quem mexeu no meu caramelo?",
     "Esse bug tem gosto de framboesa",
-    "Bilhete dourado encontrado!",
+    "Barra premiada encontrada!",
     "Cuidado com o rio!",
     "Tá quase!",
     "Mais um commit de chocolate"
   ],
   "falasFim": [
     "Pronto, chefe!",
-    "Doompety dee!",
+    "Lá-rá-lá, pronto!",
     "Tudo embalado!",
     "Fábrica em ordem!"
   ]

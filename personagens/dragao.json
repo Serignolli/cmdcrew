@@ -2,7 +2,7 @@
   "id": "dragao",
   "nome": "Dragão",
   "categoria": "Fantasia",
-  "descricao": "Voa em cima do terminal batendo as asas e cospe fogo quando está trabalhando. Guarda as gemas do seu código.",
+  "descricao": "Guardião do tesouro do repositório. Voa em cima do terminal e cospe fogo no código legado até sobrar só o que presta.",
   "voo": 5,
   "efeito": "fogo",
   "carga": "gema",

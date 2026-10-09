@@ -19,11 +19,13 @@ namespace CmdCrew
         static int Main(string[] args)
         {
             string cmd = args.Length > 0 ? args[0].ToLowerInvariant() : "";
+            // os ganchos dos outros agentes mandam o nome deles depois do comando ("start qwen")
+            agent = args.Length > 1 ? args[1].ToLowerInvariant() : "claude";
             try
             {
                 switch (cmd)
                 {
-                    // ganchos do Claude Code
+                    // ganchos do Claude Code e dos outros agentes (Agents.cs)
                     case "start": return Hook("trabalhando");
                     case "wait": return Hook("aguardando");
                     case "stop": return Hook("pronto");
@@ -37,13 +39,14 @@ namespace CmdCrew
                     case "demo": return RunDemo(args);
                     case "demo-salas": return RunRoomsDemo(args);
                     case "install":
-                        ClaudeSettings.InstallHooks();
+                        // "install [claude,qwen,...]": sem lista, o Claude Code e todos os agentes encontrados
                         if (!File.Exists(Paths.ConfigFile)) new Config().Save();
-                        ClaudeSettings.ApplyPhrases(Config.Load());
+                        foreach (var a in Agents.Parse(args.Length > 1 ? args[1] : null)) a.Install();
+                        if (ClaudeSettings.HooksInstalled()) ClaudeSettings.ApplyPhrases(Config.Load());
                         return 0;
                     case "uninstall":
                         KillOthers();
-                        ClaudeSettings.RemoveAll();
+                        Agents.RemoveAll();
                         return 0;
                     case "quit":
                         KillOthers();
@@ -59,6 +62,12 @@ namespace CmdCrew
                     default:
                         // Baixado sozinho (sem a pasta personagens/ ao lado): é o instalador.
                         if (cmd == "config" || Installer.RunningInstalled) return RunForm(() => new ConfigForm());
+                        // Já instalado (mesma versão ou mais nova): não há o que instalar, vai para a configuração.
+                        if (!Installer.SetupIsNewer)
+                        {
+                            Process.Start(new ProcessStartInfo(Installer.InstalledExe, "config") { UseShellExecute = true });
+                            return 0;
+                        }
                         return RunForm(() => new SetupForm());
                 }
             }
@@ -73,7 +82,28 @@ namespace CmdCrew
 
         // ---------- ganchos ----------
 
+        static string agent = "claude";
+
+        // O Copilot CLI manda os campos em camelCase (sessionId, transcriptPath...); aqui tudo vira o formato do Claude Code.
+        static readonly string[][] InputAliases = {
+            new[] { "sessionId", "session_id" }, new[] { "transcriptPath", "transcript_path" }, new[] { "toolName", "tool_name" },
+            new[] { "toolArgs", "tool_input" }, new[] { "toolUseId", "tool_use_id" }, new[] { "notificationType", "notification_type" } };
+
         static Dictionary<string, object> ReadHookInput()
+        {
+            var d = ReadRawHookInput();
+            foreach (var a in InputAliases)
+            {
+                if (d.ContainsKey(a[1]) || !d.ContainsKey(a[0])) continue;
+                object v = d[a[0]];
+                // os argumentos da ferramenta às vezes chegam como texto JSON
+                if (a[1] == "tool_input" && v is string) { try { v = Json.Parse((string)v); } catch { } }
+                d[a[1]] = v;
+            }
+            return d;
+        }
+
+        static Dictionary<string, object> ReadRawHookInput()
         {
             string text = "";
             var t = new Thread(() =>
@@ -117,7 +147,11 @@ namespace CmdCrew
                     s.Hwnd = fg.ToInt64();
                     try { Directory.CreateDirectory(Paths.StateDir); File.WriteAllText(Paths.TargetFile, s.Hwnd.ToString(CultureInfo.InvariantCulture)); } catch { }
                 }
-                if (s.State != "trabalhando" && s.State != "aguardando" || s.Started == default(DateTime)) s.Started = now;
+                int pid = TerminalTab.CapturePid();
+                if (pid > 0) s.Pid = pid;
+                // novo trabalho: depois de pronto, de erro ou de uma interrupção (Esc) que não passou pelo Stop
+                if (s.State != "trabalhando" && s.State != "aguardando" || s.Started == default(DateTime)
+                    || s.Resolve(cfg.IdleMinutes) == RoomState.Stopped) s.Started = now;
             }
             if (state != "aguardando") s.Ask = null;
             s.State = state;
@@ -143,7 +177,13 @@ namespace CmdCrew
             var input = ReadHookInput();
             string id = Json.Str(input, "session_id", "");
             var s = Sessions.Read(Sessions.FileFor(id));
-            if (s == null || s.Ask == null) return 0;
+            if (s == null) return 0;
+            if (s.Ask == null)
+            {
+                // sinal de vida para agentes sem transcript (OpenCode): a ferramenta rodou, ainda está trabalhando
+                if (s.State == "trabalhando" && string.IsNullOrEmpty(s.Transcript)) { s.Changed = DateTime.UtcNow; Sessions.Write(s); }
+                return 0;
+            }
             s.Ask = null;
             s.State = "trabalhando";
             s.Changed = DateTime.UtcNow;
@@ -204,7 +244,15 @@ namespace CmdCrew
                 Sessions.Write(after);
             }
 
-            if (answer == "allow" || answer == "deny")
+            if ((answer == "allow" || answer == "deny") && agent == "copilot")
+            {
+                // o Copilot CLI lê a decisão direto na raiz da resposta
+                var cd = new Dictionary<string, object>();
+                cd["behavior"] = answer;
+                if (answer == "deny") cd["message"] = "Negado pelo CmdCrew.";
+                WriteOut(cd);
+            }
+            else if (answer == "allow" || answer == "deny")
             {
                 var decision = new Dictionary<string, object>();
                 decision["behavior"] = answer;
@@ -214,10 +262,15 @@ namespace CmdCrew
                 hso["decision"] = decision;
                 var output = new Dictionary<string, object>();
                 output["hookSpecificOutput"] = hso;
-                var bytes = new UTF8Encoding(false).GetBytes(Json.Stringify(output));
-                using (var o = Console.OpenStandardOutput()) { o.Write(bytes, 0, bytes.Length); o.Flush(); }
+                WriteOut(output);
             }
             return 0;
+        }
+
+        static void WriteOut(Dictionary<string, object> output)
+        {
+            var bytes = new UTF8Encoding(false).GetBytes(Json.Stringify(output));
+            using (var o = Console.OpenStandardOutput()) { o.Write(bytes, 0, bytes.Length); o.Flush(); }
         }
 
         // O transcript já tem o resultado (tool_result) desta chamada? Lê só o final do arquivo.
@@ -401,7 +454,10 @@ namespace CmdCrew
         // Com quadros > 1, salva <arquivo>-00.png, -01.png... (para montar GIFs do site).
         static int Shot(string[] args)
         {
-            var theme = RoomTheme.Find(args.Length > 1 ? args[1] : "escritorio");
+            // o primeiro argumento pode ser o id da sala ou de um personagem (mostra a sala dele)
+            string what = args.Length > 1 ? args[1] : "escritorio";
+            var all = Character.LoadAll(null);
+            var theme = RoomTheme.All.FirstOrDefault(x => x.Id == what) ?? RoomTheme.ForCharacter(what);
             string stName = args.Length > 2 ? args[2] : "trabalhando";
             var st = stName == "pronto" ? RoomState.Done : stName == "aguardando" || stName == "permissao" ? RoomState.Waiting : RoomState.Working;
             string outPath = args.Length > 3 ? args[3] : Path.Combine(Paths.StateDir, "sala.png");
@@ -409,8 +465,8 @@ namespace CmdCrew
             int frames = 1;
             if (args.Length > 4) double.TryParse(args[4], NumberStyles.Float, CultureInfo.InvariantCulture, out secs);
             if (args.Length > 5) int.TryParse(args[5], out frames);
-            var all = Character.LoadAll(null);
-            var ch = all.FirstOrDefault(c => c.Id == theme.CharacterId) ?? all.FirstOrDefault(c => c.Id == theme.FallbackId) ?? all[0];
+            var ch = all.FirstOrDefault(c => c.Id == what)
+                     ?? theme.Characters.Select(id => all.FirstOrDefault(c => c.Id == id)).FirstOrDefault(c => c != null) ?? all[0];
             var room = new Room(theme, ch, 0, 1) { ProjectName = "meu-projeto", Started = DateTime.UtcNow.AddSeconds(-83) };
             if (stName == "permissao") room.Ask = new PermissionAsk { Id = "x", Tool = "Bash", Summary = "npm test -- --coverage" };
             const int unit = 3;

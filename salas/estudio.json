@@ -1,0 +1,54 @@
+{
+ "id": "estudio",
+ "nome": "Estúdio do Claude",
+ "descricao": "O Clawd digita no terminal laranja e as estrelinhas do Claude giram na parede.",
+ "personagens": ["clawd", "claude"],
+ "cor": "#d97757",
+ "imagem": "estudio.png",
+ "chao": 48,
+ "altura": 20,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 42,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 5,
+   "max": 9
+  },
+  {
+   "x": 80,
+   "tipo": "parado",
+   "andar": "andar",
+   "direita": true,
+   "min": 2,
+   "max": 4
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "x": 48,
+   "y": 14,
+   "w": 18,
+   "h": 12,
+   "fundo": "#141413",
+   "cores": ["#d97757", "#f0eee6", "#f5a37f", "#91877a"],
+   "tipo": "tela"
+  },
+  {
+   "pontos": [
+    [17, 3],
+    [9, 13],
+    [25, 13],
+    [17, 22]
+   ],
+   "cores": ["#f5a37f"],
+   "vel": 3,
+   "limiar": 0.2,
+   "tipo": "piscar"
+  }
+ ],
+ "frente": []
+}

@@ -152,7 +152,7 @@ namespace CmdCrew
             if (notes.Count > 40) return;
             notes.Add(new Note
             {
-                X = w.X + w.Dir * w.Ch.Width * w.Px * 0.25f, Y = Ground - (w.Ch.BottomRow - w.Skin.TopRow) * w.Px,
+                X = w.X + w.Dir * w.Ch.Width * w.Px * 0.25f, Y = Ground - (w.Ch.FeetRow - w.Skin.TopRow) * w.Px,
                 VY = -28 * k, Life = 1.4f, Text = Glyphs[rnd.Next(Glyphs.Length)], Color = GlyphColors[rnd.Next(GlyphColors.Length)]
             });
         }
@@ -180,7 +180,7 @@ namespace CmdCrew
                 var bmp = set[w.Frame % set.Length];
                 // quem voa fica no alto, subindo e descendo devagar
                 int fly = w.Ch.FlyHeight == 0 ? 0 : (int)(w.Ch.FlyHeight * w.Px * 0.6 + Math.Sin(clock * 3.2 + w.Target) * 3 * k);
-                int top = Ground - (w.Ch.BottomRow + 1) * w.Px - (int)w.Y - fly;
+                int top = Ground - (w.Ch.FeetRow + 1) * w.Px - (int)w.Y - fly;
                 g.DrawImage(bmp, new Rectangle((int)w.X - bmp.Width / 2, top, bmp.Width, bmp.Height));
             }
             g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;

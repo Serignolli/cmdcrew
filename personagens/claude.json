@@ -2,7 +2,7 @@
   "id": "claude",
   "nome": "Estrelinhas do Claude",
   "categoria": "Claude",
-  "descricao": "O ícone do Claude criou perninhas. Pulsa como o spinner do terminal e carrega um terminal na cabeça.",
+  "descricao": "O ícone do Claude ganhou perninhas e fugiu do spinner. Pulsa no ritmo do \"Thinking…\" e carrega um terminal inteiro na cabeça.",
   "efeito": "claude",
   "carga": "terminal",
   "sprites": {

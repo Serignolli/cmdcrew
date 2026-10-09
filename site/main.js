@@ -41,7 +41,7 @@
   const termStage = document.getElementById("termStage");
   const termBody = document.getElementById("termBody");
   const picker = document.getElementById("picker");
-  let current = byId("oompa-loompas") || CHARS[0];
+  let current = byId("chocolateiros") || CHARS[0];
   const crew = new Crew(termStage, { char: current, unit: 4, count: 5, groundPad: 0 });
   watch(termStage, crew);
 
@@ -220,7 +220,7 @@
 
   const parade = document.querySelector(".parade-wrap");
   const paradeBase = document.getElementById("parade");
-  ["oompa-loompas", "programadores", "dragao", "clawd", "gatos", "pinguins"].filter(byId).forEach((id, i) => {
+  ["chocolateiros", "programadores", "dragao", "clawd", "gatos", "pinguins"].filter(byId).forEach((id, i) => {
     const c = i === 0 ? paradeBase : paradeBase.cloneNode();
     c.style.position = "absolute"; c.style.left = "0"; c.style.width = "100%"; c.style.height = "150px";
     if (i) parade.appendChild(c);
@@ -236,6 +236,30 @@
   dl.href = `https://github.com/${REPO}/releases/latest/download/${SETUP}`;
   document.getElementById("repoLink").href = `https://github.com/${REPO}`;
   document.getElementById("repoLink2").href = `https://github.com/${REPO}`;
+
+  // Supporters Pack: cada cartão alterna o personagem e a sala dele (eles vêm juntos)
+  document.querySelectorAll("[data-swap]").forEach((box, i) => {
+    const imgs = box.querySelectorAll("img");
+    let room = false;
+    setTimeout(() => setInterval(() => {
+      room = !room;
+      imgs[0].classList.toggle("on", !room);
+      imgs[1].classList.toggle("on", room);
+      box.classList.toggle("room", room);
+    }, 4200), i * 900);
+  });
+
+  // comando de instalação do macOS/Linux: botão de copiar
+  const copyBtn = document.getElementById("copyCmd");
+  if (copyBtn) copyBtn.addEventListener("click", () => {
+    const cmd = document.getElementById("unixCmd").textContent;
+    const done = () => {
+      const old = copyBtn.textContent;
+      copyBtn.textContent = document.documentElement.lang === "en" ? "Copied!" : "Copiado!";
+      setTimeout(() => { copyBtn.textContent = old; }, 1600);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(cmd).then(done, () => {});
+  });
 
   // ---------- sons (feitos no SFX Forge) ----------
 

@@ -2,7 +2,7 @@
   "id": "gatos",
   "nome": "Gatos",
   "categoria": "Animais",
-  "descricao": "Supervisores oficiais do código. O trabalho deles é cochilar em cima do teclado e às vezes carregar um peixe.",
+  "descricao": "Revisores sêniores de código. Avaliam o PR deitando em cima do teclado e aprovam qualquer coisa em troca de um peixe.",
   "efeito": "zzz",
   "carga": "peixe",
   "sprites": {

@@ -12,7 +12,7 @@ namespace CmdCrew
     // se copia para %LOCALAPPDATA%\Programs\CmdCrew e aparece em "Aplicativos instalados".
     public static class Installer
     {
-        public const string Version = "1.0.0";
+        public const string Version = "1.1.0";
         const string UninstallKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\CmdCrew";
 
         public static string InstallDir
@@ -26,6 +26,35 @@ namespace CmdCrew
         }
 
         public static bool IsInstalled { get { return File.Exists(InstalledExe); } }
+
+        // Versão gravada em "Aplicativos instalados" na última instalação (null se não houver).
+        public static System.Version InstalledVersion
+        {
+            get
+            {
+                try
+                {
+                    using (var k = Registry.CurrentUser.OpenSubKey(UninstallKey))
+                    {
+                        var v = k == null ? null : k.GetValue("DisplayVersion") as string;
+                        System.Version parsed;
+                        return v != null && System.Version.TryParse(v, out parsed) ? parsed : null;
+                    }
+                }
+                catch { return null; }
+            }
+        }
+
+        // O Setup.exe baixado só precisa instalar de novo se for mais novo do que o que já está instalado.
+        // Senão, clicar nele abre direto a configuração da instalação existente.
+        public static bool SetupIsNewer
+        {
+            get
+            {
+                var installed = InstalledVersion;
+                return !IsInstalled || installed == null || new System.Version(Version) > installed;
+            }
+        }
 
         // Rodando de dentro da instalação (ou da pasta do projeto, com personagens/ ao lado)?
         public static bool RunningInstalled { get { return Directory.Exists(Paths.CharactersDir); } }
@@ -48,7 +77,8 @@ namespace CmdCrew
 
         // Copia os arquivos, grava a configuração escolhida e instala os ganchos pelo executável instalado
         // (o caminho dele é o que fica gravado no settings.json do Claude Code).
-        public static void Install(Config chosen, Action<string> progress)
+        // agents: ids separados por vírgula dos agentes que a equipe acompanha (Agents.cs).
+        public static void Install(Config chosen, string agents, Action<string> progress)
         {
             progress("Arrumando a oficina...");
             foreach (var p in Process.GetProcessesByName("CmdCrew"))
@@ -65,22 +95,32 @@ namespace CmdCrew
             progress("Chamando a equipe...");
             foreach (var f in Character.EmbeddedFiles())
                 File.WriteAllText(Path.Combine(chars, f.Key), f.Value, new UTF8Encoding(false));
+            string rooms = Path.Combine(InstallDir, "salas");
+            Directory.CreateDirectory(rooms);
+            foreach (var f in RoomTheme.EmbeddedFiles())
+                File.WriteAllText(Path.Combine(rooms, f.Key), f.Value, new UTF8Encoding(false));
+            // arte de fundo das salas (PNG)
+            var asm = typeof(RoomTheme).Assembly;
+            foreach (var name in asm.GetManifestResourceNames().Where(n => n.StartsWith(RoomTheme.ResourcePrefix) && n.EndsWith(".png")))
+                using (var st = asm.GetManifestResourceStream(name))
+                using (var o = File.Create(Path.Combine(rooms, name.Substring(RoomTheme.ResourcePrefix.Length)))) st.CopyTo(o);
 
             // Atualização: mantém a configuração antiga (frases editadas etc.) e só troca a escolha da equipe.
             string cfgPath = Path.Combine(InstallDir, "config.json");
             var cfg = File.Exists(cfgPath) ? Config.Load(cfgPath) : new Config();
             cfg.Character = chosen.Character; cfg.Skin = chosen.Skin; cfg.Count = chosen.Count; cfg.Mode = chosen.Mode; cfg.Enabled = true;
+            cfg.RoomCharacter = "";   // o escolhido trabalha no terminal e na sala dele
             cfg.Save(cfgPath);
 
-            progress("Avisando o Claude Code...");
-            var psi = new ProcessStartInfo(InstalledExe, "install") { UseShellExecute = false, CreateNoWindow = true };
+            progress("Avisando os agentes...");
+            var psi = new ProcessStartInfo(InstalledExe, "install " + (string.IsNullOrEmpty(agents) ? "claude" : agents)) { UseShellExecute = false, CreateNoWindow = true };
             using (var p = Process.Start(psi))
             {
                 p.WaitForExit(30000);
                 if (p.ExitCode != 0)
                 {
                     string msg = File.Exists(Paths.ErrorFile) ? File.ReadAllText(Paths.ErrorFile) : "erro desconhecido";
-                    throw new InvalidOperationException("Não consegui configurar o Claude Code: " + msg);
+                    throw new InvalidOperationException("Não consegui configurar os agentes: " + msg);
                 }
             }
 
@@ -100,7 +140,7 @@ namespace CmdCrew
                 k.SetValue("DisplayIcon", InstalledExe);
                 k.SetValue("InstallLocation", InstallDir);
                 k.SetValue("UninstallString", "\"" + InstalledExe + "\" uninstall-app");
-                k.SetValue("URLInfoAbout", "https://serignolli.com");
+                k.SetValue("URLInfoAbout", "https://cmdcrew.serignolli.com");
                 k.SetValue("NoModify", 1, RegistryValueKind.DWord);
                 k.SetValue("NoRepair", 1, RegistryValueKind.DWord);
                 long size = new DirectoryInfo(InstallDir).GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length) / 1024;
@@ -129,7 +169,7 @@ namespace CmdCrew
         {
             foreach (var p in Process.GetProcessesByName("CmdCrew"))
                 try { if (p.Id != Process.GetCurrentProcess().Id) p.Kill(); } catch { }
-            ClaudeSettings.RemoveAll();
+            Agents.RemoveAll();
             try { if (File.Exists(Shortcut)) File.Delete(Shortcut); } catch { }
             try { Registry.CurrentUser.DeleteSubKeyTree(UninstallKey, false); } catch { }
             if (Directory.Exists(InstallDir))

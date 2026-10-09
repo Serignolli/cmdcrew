@@ -1,0 +1,89 @@
+{
+ "id": "mina",
+ "nome": "Mina",
+ "descricao": "O mineiro pica pedra, empurra o carrinho pelos trilhos e a lamparina tremeluz.",
+ "personagens": ["anoes", "gnomos"],
+ "cor": "#d98e3a",
+ "imagem": "mina.png",
+ "chao": 44,
+ "altura": 26,
+ "skins": {
+  "anoes": ["classico", "ferro-ruivo", "ouro", "azul", "verde"]
+ },
+ "lugares": [
+  {
+   "x": 22,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 5,
+   "max": 9
+  },
+  {
+   "x": 70,
+   "tipo": "trabalhar-saco",
+   "andar": "trabalhar-carrinho",
+   "direita": true,
+   "min": 2.5,
+   "max": 3.5
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "pontos": [
+    [42, 13],
+    [16, 33],
+    [46, 35],
+    [42, 39],
+    [50, 38]
+   ],
+   "tipo": "brilho"
+  },
+  {
+   "x": 48.5,
+   "y": 14,
+   "raio": 20,
+   "cor": "#ffc862",
+   "pronto": "#8ff0b0",
+   "erro": "#ff7070",
+   "tipo": "luz"
+  },
+  {
+   "vel": 0,
+   "quadros": [
+    [
+     ["#caa04a", 46, 11, 5, 1],
+     ["#caa04a", 46, 16, 5, 1],
+     ["#caa04a", 46, 12, 1, 4],
+     ["#caa04a", 50, 12, 1, 4]
+    ]
+   ],
+   "tipo": "quadros"
+  },
+  {
+   "x": 47,
+   "y": 12,
+   "w": 3,
+   "h": 4,
+   "cores": {
+    "trabalhando": "#ffe08a",
+    "esperando": "#ffe08a",
+    "pronto": "#8ff0b0",
+    "erro": "#ff9a8a",
+    "parado": "#c9b27a"
+   },
+   "tipo": "estado"
+  },
+  {
+   "pontos": [
+    [48, 13, 1, 2]
+   ],
+   "cores": ["#fff6d0"],
+   "vel": 13,
+   "limiar": -0.2,
+   "tipo": "piscar"
+  }
+ ],
+ "frente": []
+}

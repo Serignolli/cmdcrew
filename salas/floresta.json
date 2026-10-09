@@ -1,0 +1,57 @@
+{
+ "id": "floresta",
+ "nome": "Bosque dos elfos",
+ "descricao": "O elfo treina tiro ao alvo entre as árvores e os vaga-lumes piscam.",
+ "personagens": ["elfos-hd", "elfos"],
+ "cor": "#4caf7a",
+ "imagem": "floresta.png",
+ "chao": 42,
+ "altura": 24,
+ "skins": {},
+ "lugares": [
+  {
+   "x": 24,
+   "tipo": "trabalhar",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 8
+  },
+  {
+   "x": 56,
+   "tipo": "parado",
+   "andar": "andar",
+   "direita": true,
+   "min": 2,
+   "max": 3.5
+  }
+ ],
+ "fundo": [],
+ "animacoes": [
+  {
+   "pontos": [
+    [12, 20],
+    [28, 14],
+    [44, 24],
+    [60, 16],
+    [70, 28],
+    [36, 34],
+    [20, 30]
+   ],
+   "cores": ["#e6ff7a", "#b2ff59"],
+   "vel": 1.6,
+   "limiar": 0.3,
+   "tipo": "piscar"
+  },
+  {
+   "area": [0, 4, 78, 36],
+   "cores": ["#c5e1a5"],
+   "n": 3,
+   "vx": 2,
+   "vy": -1,
+   "tam": [1, 1],
+   "tipo": "particulas"
+  }
+ ],
+ "frente": []
+}

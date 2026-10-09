@@ -2,7 +2,7 @@
   "id": "elfos",
   "nome": "Elfos",
   "categoria": "Fantasia",
-  "descricao": "Ágeis e organizados. Andam leves por cima do terminal e acertam cada bug com uma flecha.",
+  "descricao": "Caçadores de bugs da floresta. Enxergam um ponto e vírgula faltando a 200 linhas de distância e acertam com uma flecha.",
   "efeito": "flechas",
   "carga": "folha",
   "sprites": {

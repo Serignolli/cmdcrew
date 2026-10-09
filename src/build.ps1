@@ -1,5 +1,5 @@
 # Compila src\*.cs em bin\CmdCrew.exe usando o compilador C# que já vem no Windows.
-# Os personagens gratuitos (personagens\*.json), a fonte, os sons e o ícone vão embutidos no .exe, para ele também
+# Os personagens gratuitos (personagens\*.json), as salas (salas\*.json), a fonte, os sons e o ícone vão embutidos no .exe, para ele também
 # funcionar sozinho como instalador. Uma cópia com o nome de distribuição fica em dist\CmdCrew-Setup.exe.
 # Os personagens do Supporters Pack (supporters-pack\) nunca entram no .exe: são um pacote à parte.
 $ErrorActionPreference = 'Stop'
@@ -22,10 +22,15 @@ foreach ($f in Get-ChildItem (Join-Path $res 'sons\*.wav')) {
 foreach ($f in Get-ChildItem (Join-Path $root 'personagens\*.json')) {
     $resources += "/resource:$($f.FullName),personagens/$($f.Name)"
 }
+foreach ($f in Get-ChildItem (Join-Path $root 'salas\*') -Include *.json, *.png -File) {
+    $resources += "/resource:$($f.FullName),salas/$($f.Name)"
+}
+$resources += "/resource:$(Join-Path $root 'agentes\opencode.js'),agentes/opencode.js"
 $out = Join-Path $bin 'CmdCrew.exe'
 & $csc /nologo /target:winexe /optimize+ /codepage:65001 "/out:$out" "/win32icon:$(Join-Path $res 'icone.ico')" `
     /r:System.Windows.Forms.dll /r:System.Drawing.dll /r:System.Web.Extensions.dll /r:System.Core.dll `
-    /r:System.IO.Compression.dll /r:System.IO.Compression.FileSystem.dll $resources $sources
+    /r:System.IO.Compression.dll /r:System.IO.Compression.FileSystem.dll `
+    "/lib:$(Join-Path (Split-Path $csc) 'WPF')" /r:UIAutomationClient.dll /r:UIAutomationTypes.dll $resources $sources
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar.' }
 
 $dist = Join-Path $root 'dist'

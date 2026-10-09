@@ -2,7 +2,7 @@
   "id": "gnomos",
   "nome": "Gnomos mineiros",
   "categoria": "Outros",
-  "descricao": "Gnomos barbudos que picaretam o código atrás de pedras preciosas (e às vezes de bugs).",
+  "descricao": "Gnomos mineiros que escavam o código-fonte atrás de gemas raras: funções reaproveitáveis e, de vez em quando, um bug fossilizado.",
   "efeito": "faiscas",
   "carga": "gema",
   "sprites": {
@@ -122,7 +122,7 @@
     "Nunca discuta com um gnomo armado de picareta."
   ],
   "falas": [
-    "Hei-hou!",
+    "Bora cavar!",
     "Achei um cristal!",
     "Mais fundo!",
     "Essa rocha é dura",
@@ -131,7 +131,7 @@
     "Ninguém mexe no meu jardim"
   ],
   "falasFim": [
-    "Hei-hou, pra casa eu vou!",
+    "Turno encerrado, pra casa!",
     "Mina fechada!",
     "Tesouro guardado!"
   ]
