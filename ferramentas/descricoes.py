@@ -14,9 +14,6 @@ DESCRICOES = {
     "chocolateiros": (
         "Operários da fábrica de chocolate que martelam o código até ele ficar crocante. Cada bug corrigido vira uma barra de chocolate e uma musiquinha de moral.",
         "Chocolate factory workers who hammer the code until it's crunchy. Every bug fixed becomes a chocolate bar and a little moral song."),
-    "programadores": (
-        "Os devs de plantão: o cansado movido a café, o gamer que faz speedrun de deploy e o hacker que só digita de capuz. Commit, café, repete.",
-        "The on-call devs: the tired one running on coffee, the gamer speedrunning deploys and the hacker who only types with his hood up. Commit, coffee, repeat."),
     "clawd": (
         "O mascote do Claude Code em pessoa. Digita mais rápido que o seu linter e solta estrelinhas a cada função que compila de primeira.",
         "Claude Code's mascot in the flesh. Types faster than your linter and gives off sparkles every time a function compiles on the first try."),
@@ -30,11 +27,8 @@ DESCRICOES = {
         "Caçadores de bugs da floresta. Enxergam um ponto e vírgula faltando a 200 linhas de distância e acertam com uma flecha.",
         "Bug hunters from the woods. They spot a missing semicolon 200 lines away and hit it with an arrow."),
     "gnomos": (
-        "Gnomos mineiros que escavam o código-fonte atrás de gemas raras: funções reaproveitáveis e, de vez em quando, um bug fossilizado.",
-        "Miner gnomes who dig through the source code for rare gems: reusable functions and, every now and then, a fossilized bug."),
-    "cachorros": (
-        "Cães de guarda do repositório. Latem para os bugs, enterram TODOs no quintal e sempre trazem o build de volta.",
-        "The repository's guard dogs. They bark at bugs, bury TODOs in the backyard and always fetch the build back."),
+        "Anões barbudos que escavam o código-fonte atrás de gemas raras: funções reaproveitáveis e, de vez em quando, um bug fossilizado.",
+        "Bearded dwarves who dig through the source code for rare gems: reusable functions and, every now and then, a fossilized bug."),
     "gatos": (
         "Revisores sêniores de código. Avaliam o PR deitando em cima do teclado e aprovam qualquer coisa em troca de um peixe.",
         "Senior code reviewers. They review the PR by lying on the keyboard and approve anything in exchange for a fish."),
@@ -54,9 +48,6 @@ DESCRICOES = {
     "anoes": (
         "Anões mineradores de código. Picam pedra atrás dos veios de ouro do repositório, empurram o carrinho de commits e carregam os bugs para fora da mina em sacos.",
         "Code-mining dwarves. They chip away at the repository looking for veins of gold, push the commit cart and haul the bugs out of the mine in sacks."),
-    "gnomos-jardim": (
-        "Gnomos que plantam bancos de dados. Regam as tabelas, cavam os índices e rastelam os logs até o jardim ficar normalizado.",
-        "Gnomes who plant databases. They water the tables, dig the indexes and rake the logs until the garden is fully normalized."),
     "elfos-hd": (
         "Elfos arqueiros caçadores de bugs. Acham o erro antes do compilador e acertam bem no meio da stack trace.",
         "Bug-hunting elf archers. They find the error before the compiler does and hit it right in the middle of the stack trace."),

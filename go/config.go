@@ -18,6 +18,7 @@ type Config struct {
 
 	// salas: "" = o mesmo personagem da equipe, "*" = alternar entre todos, ou o id de um personagem
 	RoomCharacter   string
+	RoomSkin        string // cor de quem trabalha na sala quando ele foi escolhido à parte ("*" = misturar)
 	Corner          string
 	RoomSize        int
 	DoneSeconds     float64
@@ -35,7 +36,7 @@ func defaultConfig() *Config {
 		Mode: "ambos", Enabled: true, IdleMinutes: 45, Bubbles: true,
 		Character: "chocolateiros", Skin: "classico", Position: "rodape", VerbMode: "replace",
 		Count: 4, Size: 3, Speed: 1, TerminalPhrases: true, TerminalTips: true, Custom: NewObj(),
-		RoomCharacter: "", Corner: "direita", RoomSize: 2, DoneSeconds: 10, ShowName: true, RoomPermissions: true,
+		RoomCharacter: "", RoomSkin: "*", Corner: "direita", RoomSize: 2, DoneSeconds: 10, ShowName: true, RoomPermissions: true,
 		SoundDone: true, SoundAttention: true, SoundFailure: true,
 	}
 }
@@ -59,6 +60,7 @@ func loadConfigFrom(path string) *Config {
 	} else {
 		c.RoomCharacter = fromOldTheme(jStr(d, "tema", ""))
 	}
+	c.RoomSkin = jStr(d, "skinSala", c.RoomSkin)
 	c.Corner = jStr(d, "canto", c.Corner)
 	c.RoomSize = int(clamp(jNum(d, "tamanhoSala", float64(c.RoomSize)), 1, 6))
 	c.DoneSeconds = clamp(jNum(d, "segundosFim", c.DoneSeconds), 2, 120)
@@ -91,7 +93,7 @@ func fromOldTheme(theme string) string {
 	case "*":
 		return "*"
 	case "escritorio":
-		return "programadores"
+		return "devs-hd"
 	case "mina":
 		return "anoes"
 	}
@@ -116,6 +118,7 @@ func (c *Config) SaveTo(path string) error {
 	d.Set("modoVerbos", c.VerbMode)
 	d.Set("dicasTerminal", c.TerminalTips)
 	d.Set("sala", c.RoomCharacter)
+	d.Set("skinSala", c.RoomSkin)
 	d.Set("canto", c.Corner)
 	d.Set("tamanhoSala", c.RoomSize)
 	d.Set("segundosFim", c.DoneSeconds)
@@ -165,9 +168,16 @@ func (c *Config) RoomCharacterFor(all []*Character, n int) *Character {
 	return findCharacter(all, c.Character)
 }
 
-// A cor escolhida vale para a sala quando o personagem é o mesmo da equipe.
+// A cor da sala: a escolhida para ela, quando o personagem da sala foi escolhido à parte;
+// senão a da equipe, quando é o mesmo personagem.
 func (c *Config) RoomSkinFor(ch *Character) string {
-	if ch != nil && ch.ID == c.Character {
+	if ch == nil {
+		return ""
+	}
+	if c.RoomCharacter != "" && ch.ID == c.RoomCharacter {
+		return c.RoomSkin
+	}
+	if ch.ID == c.Character {
 		return c.Skin
 	}
 	return ""

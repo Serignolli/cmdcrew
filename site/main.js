@@ -220,7 +220,7 @@
 
   const parade = document.querySelector(".parade-wrap");
   const paradeBase = document.getElementById("parade");
-  ["chocolateiros", "programadores", "dragao", "clawd", "gatos", "pinguins"].filter(byId).forEach((id, i) => {
+  ["chocolateiros", "gnomos", "dragao", "clawd", "gatos", "pinguins"].filter(byId).forEach((id, i) => {
     const c = i === 0 ? paradeBase : paradeBase.cloneNode();
     c.style.position = "absolute"; c.style.left = "0"; c.style.width = "100%"; c.style.height = "150px";
     if (i) parade.appendChild(c);
@@ -233,7 +233,9 @@
   // ---------- download e modal de apoio ----------
 
   const dl = document.getElementById("dlWindows");
-  dl.href = `https://github.com/${REPO}/releases/latest/download/${SETUP}`;
+  // Aberto no próprio computador (teste local), baixa o .exe que o src\build.ps1 acabou de copiar para site\.
+  const local = location.protocol === "file:" || ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+  dl.href = local ? SETUP : `https://github.com/${REPO}/releases/latest/download/${SETUP}`;
   document.getElementById("repoLink").href = `https://github.com/${REPO}`;
   document.getElementById("repoLink2").href = `https://github.com/${REPO}`;
 
@@ -277,7 +279,7 @@
   const wasShown = () => { try { return localStorage.getItem(STORE) === "1"; } catch { return shown; } };
   const markShown = () => { shown = true; try { localStorage.setItem(STORE, "1"); } catch { /* sem armazenamento */ } };
   document.addEventListener("click", (e) => {
-    const a = e.target.closest('a[href*="/releases/latest/download/"]');
+    const a = e.target.closest('a[href*="/releases/latest/download/"], #dlWindows');
     if (!a || shown || wasShown()) return;
     markShown();
     // não bloqueia o download: o navegador segue o link e o modal abre logo depois

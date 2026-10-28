@@ -8,12 +8,12 @@
   "sprites": {
     "andar": [
       [
-        "......HHHH......",
-        ".....HHHHHH.....",
+        ".....H.HH.H.....",
         "....HHHHHHHH....",
-        "....SEESSEES....",
-        "....SSKSSKSS....",
-        "....SSSSSSSS....",
+        "...HHhHHHHhHH...",
+        "...HHEESSEEHH...",
+        "...HSSKSSKSSH...",
+        "...hSSSSSSSSh...",
         ".....SSKKSS.....",
         "......SSSS......",
         "...CCOOOOOOCC...",
@@ -27,12 +27,12 @@
       ],
       [
         "................",
-        "......HHHH......",
-        ".....HHHHHH.....",
+        ".....H.HH.H.....",
         "....HHHHHHHH....",
-        "....SEESSEES....",
-        "....SSKSSKSS....",
-        "....SSSSSSSS....",
+        "...HHhHHHHhHH...",
+        "...HHEESSEEHH...",
+        "...HSSKSSKSSH...",
+        "...hSSSSSSSSh...",
         ".....SSKKSS.....",
         "......SSSS......",
         "...CCOOOOOOCC...",
@@ -46,15 +46,15 @@
     ],
     "trabalhar": [
       [
-        "......HHHH..TTT.",
-        ".....HHHHHH.TTT.",
-        "....HHHHHHHH.G..",
-        "....SEESSEES.G..",
-        "....SSKSSKSSSG..",
-        "....SSSSSSSS.S..",
-        ".....SSKKSS..S..",
-        "......SSSS...C..",
-        "...CCOOOOOOCCC..",
+        ".....H.HH.H..TTT",
+        "....HHHHHHHH.TTT",
+        "...HHhHHHHhHH.G.",
+        "...HHEESSEEHH.G.",
+        "...HSSKSSKSSHSG.",
+        "...hSSSSSSSSh.S.",
+        ".....SSKKSS...S.",
+        "......SSSS....C.",
+        "...CCOOOOOOCCCC.",
         "..SCCOOAAOOO....",
         "..S.COOOOOOO....",
         "....OOOOOOOO....",
@@ -64,12 +64,12 @@
         "................"
       ],
       [
-        "......HHHH......",
-        ".....HHHHHH.....",
+        ".....H.HH.H.....",
         "....HHHHHHHH....",
-        "....SEESSEES....",
-        "....SSKSSKSS....",
-        "....SSSSSSSS....",
+        "...HHhHHHHhHH...",
+        "...HHEESSEEHH...",
+        "...HSSKSSKSSH...",
+        "...hSSSSSSSSh...",
         ".....SSKKSS.....",
         "......SSSS......",
         "...CCOOOOOOCC...",
@@ -87,22 +87,60 @@
     {
       "id": "classico",
       "nome": "Clássico (cabelo verde)",
-      "cores": { "H": "#3fa34d", "S": "#f08a24", "E": "#ffffff", "K": "#2b1a12", "C": "#6b3e1f", "O": "#f4f1e8", "A": "#c9a227", "B": "#3b2414", "T": "#8a8f98", "G": "#7a4a21" }
+      "cores": {
+        "H": "#3fa34d",
+        "S": "#f08a24",
+        "E": "#ffffff",
+        "K": "#2b1a12",
+        "C": "#6b3e1f",
+        "O": "#f4f1e8",
+        "A": "#c9a227",
+        "B": "#3b2414",
+        "T": "#8a8f98",
+        "G": "#7a4a21",
+        "h": "#2c7a37"
+      }
     },
     {
       "id": "moderno",
       "nome": "Moderno (macacão vermelho)",
-      "cores": { "H": "#2b1d14", "S": "#8d5a3b", "E": "#2b1d14", "K": "#1b1b1b", "C": "#9e1f18", "O": "#c62828", "A": "#ffd54f", "B": "#222222" }
+      "cores": {
+        "H": "#2b1d14",
+        "S": "#8d5a3b",
+        "E": "#2b1d14",
+        "K": "#1b1b1b",
+        "C": "#9e1f18",
+        "O": "#c62828",
+        "A": "#ffd54f",
+        "B": "#222222",
+        "h": "#160e09"
+      }
     },
     {
       "id": "algodao-doce",
       "nome": "Algodão-doce",
-      "cores": { "H": "#ff8fc8", "S": "#ffb070", "C": "#ffffff", "O": "#8ecdf5", "A": "#ff5fa2", "B": "#5a3d7a" }
+      "cores": {
+        "H": "#ff8fc8",
+        "S": "#ffb070",
+        "C": "#ffffff",
+        "O": "#8ecdf5",
+        "A": "#ff5fa2",
+        "B": "#5a3d7a",
+        "h": "#e0609f"
+      }
     },
     {
       "id": "menta",
       "nome": "Menta com chocolate",
-      "cores": { "H": "#5a3217", "S": "#f2a65a", "C": "#3e2410", "O": "#9be3c6", "A": "#5a3217", "B": "#3e2410" }
+      "cores": {
+        "H": "#5a3217",
+        "S": "#f2a65a",
+        "C": "#3e2410",
+        "O": "#9be3c6",
+        "A": "#5a3217",
+        "B": "#3e2410",
+        "h": "#3a1f0d"
+      }
     }
   ],
   "verbos": [
@@ -113,32 +151,14 @@
     "Testando chicletes novos",
     "Polindo embalagens douradas",
     "Enrolando balas",
-    "Compondo uma canção de moral",
+    "Compondo uma can\u00e7\u00e3o de moral",
     "Ajustando a cascata de chocolate",
     "Carregando sacas de cacau",
     "Soprando bolhas de refrigerante",
     "Pintando pirulitos",
-    "Inspecionando a fábrica"
+    "Inspecionando a f\u00e1brica"
   ],
-  "dicas": [
-    "Os chocolateiros trabalham melhor com uma xícara de cacau quente.",
-    "Nunca prove o chocolate antes do código compilar.",
-    "Cada bug ganha uma canção de moral. Os chocolateiros já estão compondo a deste."
-  ],
-  "falas": [
-    "Lá-rá-lá, mais um bug!",
-    "Mais chocolate na linha 42!",
-    "Quem mexeu no meu caramelo?",
-    "Esse bug tem gosto de framboesa",
-    "Barra premiada encontrada!",
-    "Cuidado com o rio!",
-    "Tá quase!",
-    "Mais um commit de chocolate"
-  ],
-  "falasFim": [
-    "Pronto, chefe!",
-    "Lá-rá-lá, pronto!",
-    "Tudo embalado!",
-    "Fábrica em ordem!"
-  ]
+  "dicas": ["Os chocolateiros trabalham melhor com uma xícara de cacau quente.", "Nunca prove o chocolate antes do código compilar.", "Cada bug ganha uma canção de moral. Os chocolateiros já estão compondo a deste."],
+  "falas": ["Lá-rá-lá, mais um bug!", "Mais chocolate na linha 42!", "Quem mexeu no meu caramelo?", "Esse bug tem gosto de framboesa", "Barra premiada encontrada!", "Cuidado com o rio!", "Tá quase!", "Mais um commit de chocolate"],
+  "falasFim": ["Pronto, chefe!", "Lá-rá-lá, pronto!", "Tudo embalado!", "Fábrica em ordem!"]
 }

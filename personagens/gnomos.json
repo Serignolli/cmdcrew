@@ -1,84 +1,84 @@
 {
   "id": "gnomos",
-  "nome": "Gnomos mineiros",
+  "nome": "Anões mineiros",
   "categoria": "Outros",
-  "descricao": "Gnomos mineiros que escavam o código-fonte atrás de gemas raras: funções reaproveitáveis e, de vez em quando, um bug fossilizado.",
+  "descricao": "Anões barbudos que escavam o código-fonte atrás de gemas raras: funções reaproveitáveis e, de vez em quando, um bug fossilizado.",
   "efeito": "faiscas",
   "carga": "gema",
   "sprites": {
     "andar": [
       [
-        ".......R........",
-        "......RRR.......",
-        ".....RRRRR......",
-        "....RRRRRRR.....",
-        "...RRRRRRRRR....",
-        "....SKSSSKS.....",
-        "....SSSNNSS.....",
-        "....BBBBBBB.....",
-        "...CBBBBBBBC....",
-        "..SCCBBBBBCCS...",
-        "...CLLLBLLLC....",
-        "....CCCCCCC.....",
-        "....PP...PP.....",
-        "...PP.....PP....",
-        "..KKK.....KKK...",
+        "................",
+        "......RRRR......",
+        ".....RRRRRR.....",
+        ".....RRYYRR.....",
+        "...RRRRRRRRRR...",
+        "....SKSSSSKS....",
+        "....BSSNNSSB....",
+        "....BBBBBBBB....",
+        "..CCBBBBBBBBCC..",
+        ".SCCCBBBBBBCCCS.",
+        "..CLLLBBBBLLLC..",
+        "...CCCCBBCCCC...",
+        "....PPP..PPP....",
+        "...PPP....PPP...",
+        "..KKKK....KKKK..",
         "................"
       ],
       [
         "................",
-        ".......R........",
-        "......RRR.......",
-        ".....RRRRR......",
-        "....RRRRRRR.....",
-        "...RRRRRRRRR....",
-        "....SKSSSKS.....",
-        "....SSSNNSS.....",
-        "....BBBBBBB.....",
-        "...CBBBBBBBC....",
-        "...SCBBBBBCS....",
-        "...CLLLBLLLC....",
-        "....CCCCCCC.....",
-        ".....PP.PP......",
-        ".....KKKKKK.....",
+        "................",
+        "......RRRR......",
+        ".....RRRRRR.....",
+        ".....RRYYRR.....",
+        "...RRRRRRRRRR...",
+        "....SKSSSSKS....",
+        "....BSSNNSSB....",
+        "....BBBBBBBB....",
+        "..CCBBBBBBBBCC..",
+        "..SCCBBBBBBCCS..",
+        "..CLLLBBBBLLLC..",
+        "...CCCCBBCCCC...",
+        ".....PP..PP.....",
+        "....KKKKKKKK....",
         "................"
       ]
     ],
     "trabalhar": [
       [
-        ".......R....TTT.",
-        "......RRR....G.T",
-        ".....RRRRR...G..",
-        "....RRRRRRR..G..",
-        "...RRRRRRRRR.G..",
-        "....SKSSSKS.SS..",
-        "....SSSNNSS.S...",
-        "....BBBBBBB.C...",
-        "...CBBBBBBBCC...",
-        "..SCCBBBBBCC....",
-        "...CLLLBLLLC....",
-        "....CCCCCCC.....",
-        "....PP...PP.....",
-        "...PP.....PP....",
-        "..KKK.....KKK...",
+        "...........TTTTT",
+        "......RRRR...G..",
+        ".....RRRRRR..G..",
+        ".....RRYYRR..G..",
+        "...RRRRRRRRRRS..",
+        "....SKSSSSKS.C..",
+        "....BSSNNSSB.C..",
+        "....BBBBBBBBCC..",
+        "..CCBBBBBBBBCC..",
+        ".SCCCBBBBBBCC...",
+        "..CLLLBBBBLLLC..",
+        "...CCCCBBCCCC...",
+        "....PPP..PPP....",
+        "...PPP....PPP...",
+        "..KKKK....KKKK..",
         "................"
       ],
       [
-        ".......R........",
-        "......RRR.......",
-        ".....RRRRR......",
-        "....RRRRRRR.....",
-        "...RRRRRRRRR....",
-        "....SKSSSKS.....",
-        "....SSSNNSS.....",
-        "....BBBBBBB.....",
-        "...CBBBBBBBC....",
-        "..SCCBBBBBCCSGGG",
-        "...CLLLBLLLC..T.",
-        "....CCCCCCC...T.",
-        "....PP...PP..T..",
-        "...PP.....PP....",
-        "..KKK.....KKK...",
+        "................",
+        "......RRRR......",
+        ".....RRRRRR.....",
+        ".....RRYYRR.....",
+        "...RRRRRRRRRR...",
+        "....SKSSSSKS....",
+        "....BSSNNSSB....",
+        "....BBBBBBBB....",
+        "..CCBBBBBBBBCC..",
+        ".SCCCBBBBBBCCCSG",
+        "..CLLLBBBBLLLC.G",
+        "...CCCCBBCCCC..G",
+        "....PPP..PPP.TTT",
+        "...PPP....PPPT..",
+        "..KKKK....KKKK..",
         "................"
       ]
     ]
@@ -86,23 +86,51 @@
   "skins": [
     {
       "id": "classico",
-      "nome": "Clássico (gorro vermelho)",
-      "cores": { "R": "#c62828", "S": "#f1c27d", "K": "#2b2b2b", "N": "#e57373", "B": "#f5f5f5", "C": "#1e5aa8", "P": "#6d4c41", "L": "#3e2723", "T": "#9e9e9e", "G": "#8d6e63" }
+      "nome": "Clássico (capacete amarelo)",
+      "cores": {
+        "R": "#f9a825",
+        "Y": "#fff59d",
+        "S": "#f1c27d",
+        "K": "#2b2b2b",
+        "N": "#e0896b",
+        "B": "#8d5a2b",
+        "C": "#c62828",
+        "L": "#3e2723",
+        "P": "#5d4037",
+        "T": "#9e9e9e",
+        "G": "#8d6e63"
+      }
     },
     {
-      "id": "floresta",
-      "nome": "Guardião da floresta",
-      "cores": { "R": "#2e7d32", "C": "#8d6e63", "B": "#d7ccc8", "P": "#4e342e", "L": "#1b5e20" }
+      "id": "ruivo",
+      "nome": "Barba ruiva (capacete de ferro)",
+      "cores": {
+        "R": "#8a8f98",
+        "B": "#d84315",
+        "C": "#2e7d32",
+        "P": "#4e342e"
+      }
     },
     {
-      "id": "mineiro",
-      "nome": "Mineiro de capacete",
-      "cores": { "R": "#f9a825", "C": "#455a64", "B": "#795548", "P": "#37474f", "L": "#ffb300" }
+      "id": "anciao",
+      "nome": "Ancião (barba branca)",
+      "cores": {
+        "R": "#6d4c41",
+        "B": "#f5f5f5",
+        "C": "#1565c0",
+        "P": "#37474f"
+      }
     },
     {
-      "id": "inverno",
-      "nome": "Inverno",
-      "cores": { "R": "#1565c0", "C": "#e53935", "B": "#ffffff", "P": "#263238", "L": "#90caf9" }
+      "id": "ouro",
+      "nome": "Mina de ouro",
+      "cores": {
+        "R": "#ffca28",
+        "Y": "#ffffff",
+        "B": "#3e2723",
+        "C": "#6a1b9a",
+        "L": "#ffb300"
+      }
     }
   ],
   "verbos": [
@@ -110,29 +138,13 @@
     "Martelando",
     "Cavando cristais",
     "Forjando ferramentas",
-    "Cultivando cogumelos",
-    "Guardando o jardim",
+    "Tran\u00e7ando a barba",
     "Lapidando pedras preciosas",
     "Contando moedas",
-    "Afiando a picareta"
+    "Afiando a picareta",
+    "Acendendo o lampi\u00e3o"
   ],
-  "dicas": [
-    "Todo bom código tem pelo menos uma pedra preciosa escondida.",
-    "Os gnomos dizem que um bug bem minerado vale mais que ouro.",
-    "Nunca discuta com um gnomo armado de picareta."
-  ],
-  "falas": [
-    "Bora cavar!",
-    "Achei um cristal!",
-    "Mais fundo!",
-    "Essa rocha é dura",
-    "Cogumelo no almoço",
-    "Ouro! Ah não, é pirita",
-    "Ninguém mexe no meu jardim"
-  ],
-  "falasFim": [
-    "Turno encerrado, pra casa!",
-    "Mina fechada!",
-    "Tesouro guardado!"
-  ]
+  "dicas": ["Todo bom código tem pelo menos uma pedra preciosa escondida.", "Os anões dizem que um bug bem minerado vale mais que ouro.", "Nunca discuta com um anão armado de picareta."],
+  "falas": ["Bora cavar!", "Achei um cristal!", "Mais fundo!", "Essa rocha é dura", "Cerveja no almoço", "Ouro! Ah não, é pirita", "Ninguém toca na minha barba"],
+  "falasFim": ["Turno encerrado, pra casa!", "Mina fechada!", "Tesouro guardado!"]
 }

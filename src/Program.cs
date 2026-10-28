@@ -127,12 +127,14 @@ namespace CmdCrew
             var cfg = Config.Load();
             if (!cfg.Enabled) return 0;
             string id = Json.Str(input, "session_id", "");
+            if (id.Length == 0) { Paths.Log(state + ": gancho sem session_id (entrada vazia ou cortada)"); return 0; }
             var s = Sessions.Read(Sessions.FileFor(id));
 
             if (state != "trabalhando")
             {
                 // só muda quem está trabalhando: o aviso de "parado há um tempo" (idle_prompt) chega depois do Stop
-                if (s == null || s.State != "trabalhando" && s.State != "aguardando") return 0;
+                if (s == null) { if (state != "aguardando") Paths.Log(state + ": sessão " + id + " não encontrada"); return 0; }
+                if (s.State != "trabalhando" && s.State != "aguardando") return 0;
                 if (state == "aguardando" && Json.Str(input, "notification_type", "") == "idle_prompt") return 0;
             }
             if (s == null) s = new SessionInfo();
@@ -149,9 +151,11 @@ namespace CmdCrew
                 }
                 int pid = TerminalTab.CapturePid();
                 if (pid > 0) s.Pid = pid;
-                // novo trabalho: depois de pronto, de erro ou de uma interrupção (Esc) que não passou pelo Stop
+                // novo trabalho: depois de pronto, de erro, de uma interrupção (Esc) ou de uma resposta terminada
+                // que não passaram pelo Stop
+                RoomState before = s.Resolve(cfg.IdleMinutes);
                 if (s.State != "trabalhando" && s.State != "aguardando" || s.Started == default(DateTime)
-                    || s.Resolve(cfg.IdleMinutes) == RoomState.Stopped) s.Started = now;
+                    || before == RoomState.Stopped || before == RoomState.Done) s.Started = now;
             }
             if (state != "aguardando") s.Ask = null;
             s.State = state;

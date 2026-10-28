@@ -77,10 +77,11 @@ def _compact(text):
 # ---------------------------------------------------------------- Escritório
 def escritorio():
     s = Sala("escritorio", "Escritório do dev", "O dev digita sem parar, o monitor enche de código e a caneca solta fumaça.",
-             ["devs-hd", "programadores"], "#7c6cf0", 41, 22, {"programadores": ["cansado", "cansada", "gamer", "hacker"]})
+             ["devs-hd"], "#7c6cf0", 41, 22)
     s.lugar(40, "trabalhar", min=5, max=10)
     s.lugar(60, "trabalhar-digitar", min=4, max=8)   # quem não tem notebook faz o "trabalhar" de sempre
     s.lugar(82, "parado", min=2.5, max=4)
+    s.lugar(18, "trabalhar-bocejar", min=3, max=5)   # boceja olhando a janela (os outros devs fazem o "trabalhar")
     s.r("#3d3657", 0, 0, W, 40)
     for x in range(2, W, 6): s.r("#433c60", x, 0, 2, 38)
     s.r("#2a2440", 0, 38, W, 2)
@@ -163,44 +164,10 @@ def mina():
     return s
 
 
-# ---------------------------------------------------------------- Jardim (gnomos de jardim)
-def jardim():
-    s = Sala("jardim", "Jardim", "O gnomo rega, cava e rastela o canteiro enquanto as borboletas passeiam.",
-             ["gnomos-jardim"], "#5bb85b", 42, 26)
-    s.lugar(26, "trabalhar", min=4, max=7)
-    s.lugar(54, "trabalhar-cavar", min=3, max=5)
-    s.lugar(74, "trabalhar-rastelar", min=3, max=5)
-    for i, c in enumerate(["#8fd3ff", "#9fdaff", "#afe1ff", "#bfe8ff", "#cdeefe"]):
-        s.r(c, 0, i * 6, W, 6)
-    s.r("#ffe066", 80, 4, 8, 8); s.r("#fff3b0", 82, 6, 3, 3)
-    # cerca
-    for x in range(2, W, 8):
-        s.r("#f3ead3", x, 22, 4, 16); s.r("#f3ead3", x + 1, 21, 2, 1); s.r("#d8ccb0", x + 3, 22, 1, 16)
-    s.r("#f3ead3", 0, 26, W, 2); s.r("#f3ead3", 0, 33, W, 2); s.r("#d8ccb0", 0, 27, W, 1); s.r("#d8ccb0", 0, 34, W, 1)
-    # gramado e canteiro
-    s.r("#5fae4a", 0, 37, W, 5); s.r("#4f9a3c", 0, 41, W, 1)
-    s.r("#7a5236", 0, 42, W, H - 42); s.r("#6a4630", 0, 45, W, 1); s.r("#8b6040", 0, 43, W, 1)
-    for x in range(3, W, 7): s.r("#6a4630", x, 47, 2, 1)
-    # flores no canteiro de trás
-    flores = ["#ec407a", "#ffeb3b", "#ab47bc", "#ff7043", "#ffffff"]
-    for i, x in enumerate(range(4, W, 9)):
-        h = 4 + i % 3
-        s.r("#3f8f4a", x + 1, 37 - h, 1, h)
-        c = flores[i % len(flores)]
-        s.r(c, x, 37 - h - 2, 3, 2); s.r("#ffd54f" if c != "#ffeb3b" else "#ff8f00", x + 1, 37 - h - 2, 1, 1)
-    # regador e carrinho de mão
-    s.r("#90a4ae", 88, 38, 5, 4); s.r("#90a4ae", 86, 38, 2, 1); s.r("#78909c", 92, 37, 1, 2)
-    s.arte("jardim.png")   # os vãos pretos da cerca foram pintados de verde à mão
-    s.a("particulas", area=[0, 4, W, 14], cores=["#ffffff"], n=3, vx=3, vy=0, tam=[4, 2])
-    s.a("piscar", pontos=[[20, 16], [44, 12], [66, 18]], cores=["#ff80ab", "#ffd54f", "#b388ff"], vel=6, limiar=0)
-    s.a("particulas", area=[10, 8, 76, 14], cores=["#ff80ab", "#b388ff"], n=2, vx=6, vy=1.5, tam=[2, 1])
-    return s
-
-
 # ---------------------------------------------------------------- Covil do dragão
 def covil():
     s = Sala("covil", "Covil do dragão", "O dragão voa sobre o tesouro, cospe fogo e as tochas iluminam a caverna.",
-             ["dragao"], "#e0663a", 42, 22)
+             ["dragoes-hd", "dragao"], "#e0663a", 42, 22)
     s.lugar(30, "trabalhar", min=4, max=7)
     s.lugar(64, "parado", min=2.5, max=4)
     s.r("#2a1d2e", 0, 0, W, H)
@@ -243,6 +210,8 @@ def floresta():
              ["elfos-hd", "elfos"], "#4caf7a", 42, 24)
     s.lugar(24, "trabalhar", min=4, max=8)
     s.lugar(56, "parado", min=2, max=3.5)
+    s.lugar(44, "trabalhar-ervas", min=3, max=5)   # colhe ervas perto do cogumelo (os elfos simples fazem o "trabalhar")
+    s.lugar(68, "trabalhar-flauta", min=4, max=7)   # toca flauta entre as árvores
     for i, c in enumerate(["#16324a", "#1b3d52", "#21485a", "#285463"]):
         s.r(c, 0, i * 8, W, 8)
     s.r("#2f5f5a", 0, 32, W, 10)
@@ -294,36 +263,6 @@ def fabrica():
     return s
 
 
-# ---------------------------------------------------------------- Quintal (cachorros)
-def quintal():
-    s = Sala("quintal", "Quintal", "O cachorro cava, late para as borboletas e tira um cochilo perto da casinha.",
-             ["cachorros"], "#e0a040", 42, 20)
-    s.lugar(18, "trabalhar-cavar", min=4, max=7)   # o buraco da arte fica à esquerda
-    s.lugar(60, "trabalhar", min=3, max=5)
-    for i, c in enumerate(["#7ec8f0", "#8ed0f2", "#9fd8f5", "#b0e0f8"]):
-        s.r(c, 0, i * 7, W, 7)
-    s.r("#fff176", 6, 4, 7, 7); s.r("#fffde7", 8, 6, 3, 3)
-    # cerca de madeira
-    s.r("#c8995a", 0, 22, W, 2); s.r("#c8995a", 0, 30, W, 2)
-    for x in range(1, W, 6): s.r("#d9aa6a", x, 18, 4, 18); s.r("#b5884c", x + 3, 18, 1, 18); s.r("#d9aa6a", x + 1, 17, 2, 1)
-    # casinha
-    s.r("#c62828", 66, 19, 26, 3); s.r("#c62828", 68, 16, 22, 3); s.r("#c62828", 71, 13, 16, 3); s.r("#b71c1c", 66, 21, 26, 1)
-    s.r("#ffcc80", 68, 22, 22, 20); s.r("#f0b060", 68, 22, 22, 1); s.r("#4e342e", 74, 29, 10, 13); s.r("#3e2723", 74, 29, 10, 2)
-    s.r("#5d4037", 77, 24, 4, 3); s.r("#ffffff", 78, 25, 2, 1)
-    # grama e buraco
-    s.r("#66bb6a", 0, 36, W, 6); s.r("#57a85b", 0, 41, W, 1)
-    s.r("#5ea95f", 0, 42, W, H - 42)
-    for x in range(1, W, 5): s.r("#7cc87d", x, 35, 1, 2); s.r("#4c944d", x + 2, 45, 1, 1)
-    s.r("#6d4c41", 36, 42, 12, 2); s.r("#8d6e63", 34, 41, 3, 1); s.r("#8d6e63", 47, 41, 3, 1)
-    # osso e tigela
-    s.r("#f3ead3", 52, 44, 6, 1); s.r("#f3ead3", 51, 43, 2, 3); s.r("#f3ead3", 57, 43, 2, 3)
-    s.r("#1e88e5", 6, 40, 8, 3); s.r("#1565c0", 7, 42, 6, 1); s.r("#a1887f", 7, 40, 6, 1)
-    s.arte("quintal.png")   # 2ª tentativa, força 30 (a de 45 saiu chapada, com buracos pretos na cerca)
-    s.a("particulas", area=[0, 2, W, 14], cores=["#ffffff"], n=3, vx=2.5, vy=0, tam=[5, 2])
-    s.a("piscar", pontos=[[22, 12], [44, 9], [58, 14]], cores=["#fff176", "#ff8a65"], vel=7, limiar=0)
-    return s
-
-
 # ---------------------------------------------------------------- Sala de estar (gatos)
 def sala_gatos():
     s = Sala("sala-gatos", "Sala de estar", "O gato cochila no tapete, brinca com o novelo e vigia a janela.",
@@ -350,8 +289,9 @@ def sala_gatos():
     s.r("#d84b6b", 20, 42, 34, 4); s.r("#f06292", 21, 42, 32, 1); s.r("#ad1457", 21, 45, 32, 1)
     # novelo
     s.r("#ab47bc", 8, 39, 5, 4); s.r("#ce93d8", 9, 40, 2, 1); s.r("#ab47bc", 13, 42, 6, 1)
-    s.a("particulas", area=[9, 6, 24, 10], cores=["#ffffff"], n=2, vx=1.5, vy=0, tam=[4, 1])
-    s.a("piscar", pontos=[[12, 8], [28, 12], [16, 18], [30, 20]], cores=["#fffde7"], vel=1.1, limiar=0.6)
+    s.arte("sala-gatos.png", chao=44)   # força 30; o novelo da arte fica em x=41 e o tapete à direita, na frente do sofá
+    s.a("particulas", area=[10, 6, 22, 8], cores=["#ffffff"], n=2, vx=1.5, vy=0, tam=[4, 1])
+    s.a("piscar", pontos=[[12, 8], [28, 12], [16, 18], [29, 20]], cores=["#fffde7"], vel=1.1, limiar=0.6)
     return s
 
 
@@ -410,7 +350,8 @@ def formigueiro():
     # raízes
     s.r("#c49a6c", 34, 9, 1, 6); s.r("#c49a6c", 35, 14, 1, 4); s.r("#c49a6c", 60, 9, 1, 4); s.r("#c49a6c", 59, 12, 1, 6)
     s.r("#3d2b1e", 0, 40, W, 1); s.r("#5b4330", 0, 41, W, 9)
-    s.a("piscar", pontos=[[16, 15], [19, 17], [80, 17]], cores=["#ffffff"], vel=3, limiar=0.75)
+    s.arte("formigueiro.png")   # força 30; açúcar e sementes ficam em câmaras redondas, o túnel de baixo é a terra escura
+    s.a("piscar", pontos=[[13, 17], [16, 20], [54, 18], [57, 20]], cores=["#ffffff"], vel=3, limiar=0.75)
     s.a("particulas", area=[0, 0, W, 5], cores=["#ffffff"], n=2, vx=2, vy=0, tam=[4, 1])
     return s
 
@@ -441,12 +382,12 @@ def oficina():
     s.r("#78848c", 0, 42, W, H - 42); s.r("#5f6a71", 0, 42, W, 1)
     for x in range(0, W, 8): s.r("#6b767d", x, 42, 1, H - 42); s.r("#8e9aa1", x + 3, 46, 1, 1)
     s.r("#78848c", 0, 36, W, 6); s.r("#6b767d", 0, 41, W, 1)
-    esteira = lambda k: [["#90a4ae", 38 + i * 4 + k, 30, 2, 1] for i in range(8)]
-    peca = lambda x: [["#ffb300", x, 27, 4, 3], ["#ffe082", x + 1, 27, 2, 1]]
-    s.a("quadros", vel=4, quadros=[esteira(0) + peca(42) + peca(58), esteira(1) + peca(43) + peca(59), esteira(2) + peca(44) + peca(60), esteira(3) + peca(45) + peca(61)])
-    s.a("tela", x=9, y=9, w=10, h=7)
-    s.a("piscar", pontos=[[21, 9, 2, 1], [24, 9, 2, 1], [21, 12, 2, 1], [24, 12, 2, 1], [21, 15, 2, 1], [24, 15, 2, 1]], cores=["#ff5252", "#69f0ae", "#ffd740"], vel=5, limiar=0)
-    s.a("estado", x=46, y=2, w=4, h=3, cores={"trabalhando": "#ffb300", "esperando": "#ff9100", "pronto": "#00e676", "erro": "#ff1744", "parado": "#607d8b"}, piscar=True)
+    s.arte("oficina.png")   # força 30; as placas do chão foram desenhadas à mão (a arte veio lisa), as peças já estão na esteira
+    esteira = lambda k: [["#90a4ae", 27 + i * 4 + k, 33, 2, 1] for i in range(8)]
+    s.a("quadros", vel=4, quadros=[esteira(0), esteira(1), esteira(2), esteira(3)])
+    s.a("tela", x=5, y=14, w=7, h=7)
+    s.a("piscar", pontos=[[14, 13], [17, 13], [14, 15], [17, 15], [14, 18], [17, 18], [14, 20], [17, 20]], cores=["#ff5252", "#69f0ae", "#ffd740"], vel=5, limiar=0)
+    s.a("estado", x=77, y=15, w=3, h=1, cores={"trabalhando": "#ffb300", "esperando": "#ff9100", "pronto": "#00e676", "erro": "#ff1744", "parado": "#607d8b"}, piscar=True)
     return s
 
 
@@ -470,8 +411,9 @@ def nave():
     s.r("#4a5168", 0, 36, W, H - 36); s.r("#3a4058", 0, 41, W, 1); s.r("#5a627c", 0, 36, W, 1)
     for x in range(0, W, 12): s.r("#3a4058", x, 36, 1, H - 36)
     for x in range(6, W, 12): s.r("#ffca28", x, 46, 4, 1)
-    s.a("particulas", area=[10, 8, 76, 14], cores=["#ffffff", "#bbdefb", "#fff9c4"], n=14, vx=-14, vy=0, tam=[1, 1])
-    s.a("piscar", pontos=[[7, 31, 2, 1], [10, 32, 3, 1], [15, 31, 2, 1], [19, 32, 2, 1], [76, 31, 3, 1], [81, 32, 2, 1], [85, 31, 2, 1]], cores=["#40c4ff", "#69f0ae", "#ff4081"], vel=3.7, limiar=-0.2)
+    s.arte("nave.png", chao=47)   # força 30; a arte é um corredor em perspectiva, o piso só aparece embaixo
+    s.a("particulas", area=[19, 12, 58, 14], cores=["#ffffff", "#bbdefb", "#fff9c4"], n=14, vx=-14, vy=0, tam=[1, 1])
+    s.a("piscar", pontos=[[6, 37], [9, 38], [12, 40], [8, 41], [84, 37], [87, 38], [90, 40], [86, 41]], cores=["#40c4ff", "#69f0ae", "#ff4081"], vel=3.7, limiar=-0.2)
     s.a("estado", x=46, y=2, w=4, h=1, cores={"trabalhando": "#40c4ff", "esperando": "#ffab40", "pronto": "#69f0ae", "erro": "#ff5252", "parado": "#546e7a"}, piscar=True)
     return s
 
@@ -514,8 +456,8 @@ def estudio():
 def generica():
     s = Sala("generica", "Salinha", "Uma salinha simples para qualquer personagem, com mesa, janela e um monitor.",
              [], "#8a7cf0", 42, 22)
-    s.lugar(34, "trabalhar", min=4, max=8)
-    s.lugar(74, "parado", min=2, max=4)
+    s.lugar(50, "trabalhar", min=4, max=8)   # na frente da mesa (a cadeira da arte fica em x=32-46)
+    s.lugar(72, "parado", min=2, max=4)
     s.r("#4a5a78", 0, 0, W, 38); s.r("#405070", 0, 30, W, 8); s.r("#36445f", 0, 30, W, 1)
     s.r("#36445f", 8, 5, 22, 16); s.r("#9fd8f5", 9, 6, 20, 14); s.r("#c8ecfb", 9, 6, 20, 5); s.r("#36445f", 18, 6, 2, 14)
     s.r("#5d4a6e", 66, 6, 20, 12); s.r("#e8d8b0", 67, 7, 18, 10); s.r("#f28b82", 71, 10, 10, 4)
@@ -523,7 +465,9 @@ def generica():
     s.r("#1e1e26", 50, 16, 16, 12); s.r("#2b2b33", 56, 28, 4, 2)
     s.r("#6b5a48", 0, 38, W, H - 38); s.r("#5a4a3a", 0, 38, W, 1)
     for x in range(4, W, 12): s.r("#5a4a3a", x, 43, 6, 1)
-    s.a("tela", x=51, y=17, w=14, h=10)
+    s.arte("generica.png", chao=45)   # força 30; o monitor da arte está de lado, então a tela virou um LED de estado na base
+    s.a("estado", x=56, y=28, w=2, h=1, cores={"trabalhando": "#40c4ff", "esperando": "#ffab40", "pronto": "#69f0ae", "erro": "#ff5252", "parado": "#546e7a"}, piscar=True)
+    s.a("particulas", area=[9, 6, 20, 6], cores=["#ffffff"], n=2, vx=1.5, vy=0, tam=[3, 1])
     return s
 
 
@@ -533,6 +477,7 @@ def torre():
              ["magos-hd"], "#9c6cf0", 42, 24)
     s.lugar(24, "trabalhar", min=4, max=8)
     s.lugar(62, "parado", direita=False, min=2.5, max=4)
+    s.lugar(78, "trabalhar-grimorio", direita=False, min=4, max=7)   # lê o grimório na frente da estante
     # rascunho para o PixelLab (a arte final mudou a janela para o meio e a vela para a esquerda)
     s.r("#2a2438", 0, 0, W, 42)
     for y in range(0, 42, 5):
@@ -555,7 +500,7 @@ def torre():
     return s
 
 
-SALAS = [escritorio, mina, jardim, covil, floresta, fabrica, quintal, sala_gatos, polo, formigueiro, oficina, nave, estudio, generica, torre]
+SALAS = [escritorio, mina, covil, floresta, fabrica, sala_gatos, polo, formigueiro, oficina, nave, estudio, generica, torre]
 
 
 if __name__ == "__main__":

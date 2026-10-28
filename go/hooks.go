@@ -58,10 +58,20 @@ func hook(state string) {
 		return
 	}
 	id := jStr(input, "session_id", "")
+	if id == "" {
+		logf("%s: gancho sem session_id (entrada vazia ou cortada)", state)
+		return
+	}
 	s := readSession(sessionFile(id))
 	if state != "trabalhando" {
 		// só muda quem está trabalhando (o aviso de "parado há um tempo" chega depois do Stop)
-		if s == nil || s.State != "trabalhando" && s.State != "aguardando" {
+		if s == nil {
+			if state != "aguardando" {
+				logf("%s: sessão %s não encontrada", state, id)
+			}
+			return
+		}
+		if s.State != "trabalhando" && s.State != "aguardando" {
 			return
 		}
 		if state == "aguardando" && jStr(input, "notification_type", "") == "idle_prompt" {
@@ -78,7 +88,9 @@ func hook(state string) {
 		if t := captureTerminal(); t != "" {
 			s.Terminal = t
 		}
-		if s.State != "trabalhando" && s.State != "aguardando" || s.Started.IsZero() || s.Resolve(cfg.IdleMinutes) == Stopped {
+		// novo trabalho: depois de pronto, de erro, de uma interrupção (Esc) ou de uma resposta terminada sem o Stop
+		before := s.Resolve(cfg.IdleMinutes)
+		if s.State != "trabalhando" && s.State != "aguardando" || s.Started.IsZero() || before == Stopped || before == Done {
 			s.Started = now
 		}
 	}

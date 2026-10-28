@@ -2,7 +2,7 @@
  "id": "covil",
  "nome": "Covil do dragão",
  "descricao": "O dragão voa sobre o tesouro, cospe fogo e as tochas iluminam a caverna.",
- "personagens": ["dragao"],
+ "personagens": ["dragoes-hd", "dragao"],
  "cor": "#e0663a",
  "imagem": "covil.png",
  "chao": 42,

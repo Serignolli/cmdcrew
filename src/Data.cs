@@ -367,6 +367,7 @@ namespace CmdCrew
         // Quem trabalha nas salas (cada personagem tem a sua sala): "" = o mesmo da equipe, "*" = alternar entre todos
         // (cada terminal ganha o próximo), ou o id de um personagem (por exemplo, o dragão no terminal e o dev na sala).
         public string RoomCharacter = "";
+        public string RoomSkin = "*";              // cor de quem trabalha na sala quando ele foi escolhido à parte ("*" = misturar)
         public string Corner = "direita";          // direita | esquerda (embaixo, acima da barra de tarefas)
         public int RoomSize = 2;                   // pixels de tela por ponto da sala (antes do ajuste de DPI)
         public double DoneSeconds = 10;            // quanto tempo a sala fica na tela depois que o agente termina
@@ -389,6 +390,7 @@ namespace CmdCrew
             catch (Exception ex) { Paths.Log("config inválida: " + ex.Message); return c; }
             c.Mode = Json.Str(d, "modo", c.Mode);
             c.RoomCharacter = Json.Str(d, "sala", null) ?? FromOldTheme(Json.Str(d, "tema", null));
+            c.RoomSkin = Json.Str(d, "skinSala", c.RoomSkin);
             c.Corner = Json.Str(d, "canto", c.Corner);
             c.RoomSize = Math.Max(1, Math.Min(6, (int)Json.Num(d, "tamanhoSala", c.RoomSize)));
             c.DoneSeconds = Math.Max(2, Math.Min(120, Json.Num(d, "segundosFim", c.DoneSeconds)));
@@ -419,7 +421,7 @@ namespace CmdCrew
             switch (theme ?? "")
             {
                 case "*": return "*";
-                case "escritorio": return "programadores";
+                case "escritorio": return "devs-hd";
                 case "mina": return "anoes";
                 default: return "";
             }
@@ -440,8 +442,14 @@ namespace CmdCrew
             return c ?? CmdCrew.Character.Find(all, Character);
         }
 
-        // A cor escolhida na configuração vale para a sala quando o personagem é o mesmo da equipe.
-        public string RoomSkinFor(Character c) { return c != null && c.Id == Character ? Skin : null; }
+        // A cor da sala: a escolhida para ela, quando o personagem da sala foi escolhido à parte;
+        // senão a da equipe, quando é o mesmo personagem.
+        public string RoomSkinFor(Character c)
+        {
+            if (c == null) return null;
+            if (!string.IsNullOrEmpty(RoomCharacter) && c.Id == RoomCharacter) return RoomSkin;
+            return c.Id == Character ? Skin : null;
+        }
 
         public void Save() { Save(Paths.ConfigFile); }
 
@@ -462,6 +470,7 @@ namespace CmdCrew
             d["modoVerbos"] = VerbMode;
             d["dicasTerminal"] = TerminalTips;
             d["sala"] = RoomCharacter;
+            d["skinSala"] = RoomSkin;
             d["canto"] = Corner;
             d["tamanhoSala"] = RoomSize;
             d["segundosFim"] = DoneSeconds;

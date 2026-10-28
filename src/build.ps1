@@ -36,4 +36,6 @@ if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar.' }
 $dist = Join-Path $root 'dist'
 New-Item -ItemType Directory -Force $dist | Out-Null
 Copy-Item $out (Join-Path $dist 'CmdCrew-Setup.exe') -Force
-Write-Host 'Compilado: bin\CmdCrew.exe (e dist\CmdCrew-Setup.exe para distribuir)'
+# o site aberto localmente baixa esta cópia (fora do git: o site publicado baixa do release do GitHub)
+Copy-Item $out (Join-Path $root 'site\CmdCrew-Setup.exe') -Force
+Write-Host 'Compilado: bin\CmdCrew.exe (e dist\CmdCrew-Setup.exe para distribuir, site\CmdCrew-Setup.exe para testar o site local)'

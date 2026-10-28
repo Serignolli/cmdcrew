@@ -12,7 +12,7 @@ namespace CmdCrew
     // se copia para %LOCALAPPDATA%\Programs\CmdCrew e aparece em "Aplicativos instalados".
     public static class Installer
     {
-        public const string Version = "1.1.0";
+        public const string Version = "1.2.0";
         const string UninstallKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\CmdCrew";
 
         public static string InstallDir
@@ -77,26 +77,32 @@ namespace CmdCrew
 
         // Copia os arquivos, grava a configuração escolhida e instala os ganchos pelo executável instalado
         // (o caminho dele é o que fica gravado no settings.json do Claude Code).
-        // agents: ids separados por vírgula dos agentes que a equipe acompanha (Agents.cs).
+        // chosen: a equipe escolhida na instalação; null numa atualização (a configuração fica como está).
+        // agents: ids separados por vírgula dos agentes que a equipe acompanha (Agents.cs); null = os que já estão ligados.
         public static void Install(Config chosen, string agents, Action<string> progress)
         {
             progress("Arrumando a oficina...");
+            if (agents == null)
+                agents = string.Join(",", Agents.All.Where(a => { try { return a.Installed(); } catch { return false; } }).Select(a => a.Id).ToArray());
             foreach (var p in Process.GetProcessesByName("CmdCrew"))
-                try { if (p.Id != Process.GetCurrentProcess().Id) p.Kill(); } catch { }
+            {
+                if (p.Id == Process.GetCurrentProcess().Id) continue;
+                try { p.Kill(); p.WaitForExit(5000); } catch { }
+            }
             Directory.CreateDirectory(Path.Combine(InstallDir, "bin"));
-            string chars = Path.Combine(InstallDir, "personagens");
-            Directory.CreateDirectory(chars);
 
             progress("Copiando o programa...");
             string self = Assembly.GetExecutingAssembly().Location;
             if (!string.Equals(Path.GetFullPath(self), Path.GetFullPath(InstalledExe), StringComparison.OrdinalIgnoreCase))
-                File.Copy(self, InstalledExe, true);
+                CopyWithRetry(self, InstalledExe);
 
+            // personagens e salas são trocados por inteiro: os que saíram do programa não ficam para trás
+            // (os pacotes ficam em pacotes\ e não são tocados)
             progress("Chamando a equipe...");
+            string chars = FreshDir(Path.Combine(InstallDir, "personagens"));
             foreach (var f in Character.EmbeddedFiles())
                 File.WriteAllText(Path.Combine(chars, f.Key), f.Value, new UTF8Encoding(false));
-            string rooms = Path.Combine(InstallDir, "salas");
-            Directory.CreateDirectory(rooms);
+            string rooms = FreshDir(Path.Combine(InstallDir, "salas"));
             foreach (var f in RoomTheme.EmbeddedFiles())
                 File.WriteAllText(Path.Combine(rooms, f.Key), f.Value, new UTF8Encoding(false));
             // arte de fundo das salas (PNG)
@@ -108,8 +114,11 @@ namespace CmdCrew
             // Atualização: mantém a configuração antiga (frases editadas etc.) e só troca a escolha da equipe.
             string cfgPath = Path.Combine(InstallDir, "config.json");
             var cfg = File.Exists(cfgPath) ? Config.Load(cfgPath) : new Config();
-            cfg.Character = chosen.Character; cfg.Skin = chosen.Skin; cfg.Count = chosen.Count; cfg.Mode = chosen.Mode; cfg.Enabled = true;
-            cfg.RoomCharacter = "";   // o escolhido trabalha no terminal e na sala dele
+            if (chosen != null)
+            {
+                cfg.Character = chosen.Character; cfg.Skin = chosen.Skin; cfg.Count = chosen.Count; cfg.Mode = chosen.Mode; cfg.Enabled = true;
+                cfg.RoomCharacter = "";   // o escolhido trabalha no terminal e na sala dele
+            }
             cfg.Save(cfgPath);
 
             progress("Avisando os agentes...");
@@ -128,6 +137,23 @@ namespace CmdCrew
             try { CreateShortcut(Shortcut, InstalledExe, "config", "CmdCrew: configurar a equipe do Claude Code"); } catch (Exception ex) { Paths.Log("atalho: " + ex.Message); }
             try { RegisterUninstall(); } catch (Exception ex) { Paths.Log("registro: " + ex.Message); }
             progress("Pronto!");
+        }
+
+        static string FreshDir(string dir)
+        {
+            Directory.CreateDirectory(dir);
+            foreach (var f in Directory.GetFiles(dir)) try { File.Delete(f); } catch { }
+            return dir;
+        }
+
+        // O CmdCrew que acabou de ser fechado pode levar um instante para soltar o .exe.
+        static void CopyWithRetry(string from, string to)
+        {
+            for (int i = 0; ; i++)
+            {
+                try { File.Copy(from, to, true); return; }
+                catch (IOException) { if (i >= 20) throw; System.Threading.Thread.Sleep(250); }
+            }
         }
 
         static void RegisterUninstall()

@@ -24,6 +24,22 @@
    "direita": true,
    "min": 2,
    "max": 3.5
+  },
+  {
+   "x": 44,
+   "tipo": "trabalhar-ervas",
+   "andar": "andar",
+   "direita": true,
+   "min": 3,
+   "max": 5
+  },
+  {
+   "x": 68,
+   "tipo": "trabalhar-flauta",
+   "andar": "andar",
+   "direita": true,
+   "min": 4,
+   "max": 7
   }
  ],
  "fundo": [],

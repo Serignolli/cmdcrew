@@ -76,7 +76,8 @@ func (s *SessionInfo) LastActivity() time.Time {
 type cachedTail struct {
 	stamp time.Time
 	size  int64
-	at    time.Time
+	at    time.Time // interrupção (Esc)
+	ended time.Time // fim da resposta (stop_reason "end_turn")
 }
 
 var (
@@ -85,30 +86,45 @@ var (
 )
 
 // O Esc não dispara o Stop: a interrupção só aparece no transcript ("[Request interrupted by user...]").
-func (s *SessionInfo) Interrupted() bool {
+func (s *SessionInfo) Interrupted() bool { return s.tail().at.After(s.Started) }
+
+// Quando a resposta terminou no transcript, se foi depois do início do trabalho (rede de segurança para quando o
+// aviso do Stop não chega; ver src/Sessions.cs).
+func (s *SessionInfo) EndedAt() time.Time {
+	if t := s.tail().ended; t.After(s.Started) {
+		return t
+	}
+	return time.Time{}
+}
+
+func (s *SessionInfo) tail() cachedTail {
 	if s.Transcript == "" {
-		return false
+		return cachedTail{}
 	}
 	fi, err := os.Stat(s.Transcript)
 	if err != nil {
-		return false
+		return cachedTail{}
 	}
 	tailsMu.Lock()
 	c, ok := tails[s.Transcript]
 	tailsMu.Unlock()
 	if !ok || !c.stamp.Equal(fi.ModTime()) || c.size != fi.Size() {
-		c = cachedTail{stamp: fi.ModTime(), size: fi.Size(), at: lastInterrupt(s.Transcript)}
+		c = readTail(s.Transcript)
+		c.stamp, c.size = fi.ModTime(), fi.Size()
 		tailsMu.Lock()
 		tails[s.Transcript] = c
 		tailsMu.Unlock()
 	}
-	return c.at.After(s.Started)
+	return c
 }
 
-func lastInterrupt(transcript string) time.Time {
+// A última mensagem de verdade (usuário ou assistente) do final do transcript decide. Cada linha é lida como JSON
+// (a saída de uma ferramenta pode conter o texto "type":"user", e a primeira linha do pedaço pode vir cortada).
+func readTail(transcript string) cachedTail {
+	var c cachedTail
 	f, err := os.Open(transcript)
 	if err != nil {
-		return time.Time{}
+		return c
 	}
 	defer f.Close()
 	fi, _ := f.Stat()
@@ -121,20 +137,30 @@ func lastInterrupt(transcript string) time.Time {
 		if !strings.Contains(l, `"type":"user"`) && !strings.Contains(l, `"type":"assistant"`) {
 			continue
 		}
-		if !strings.Contains(l, "[Request interrupted by user") {
-			return time.Time{}
+		v, err := ParseJSON(lines[i])
+		if err != nil {
+			continue
 		}
-		if k := strings.Index(l, `"timestamp":"`); k >= 0 {
-			rest := l[k+13:]
-			if j := strings.IndexByte(rest, '"'); j > 0 {
-				if t, err := time.Parse(time.RFC3339Nano, rest[:j]); err == nil {
-					return t
-				}
-			}
+		o, ok := v.(*Obj)
+		if !ok {
+			continue
 		}
-		return time.Now()
+		typ := jStr(o, "type", "")
+		if typ != "user" && typ != "assistant" {
+			continue
+		}
+		ts, err := time.Parse(time.RFC3339Nano, jStr(o, "timestamp", ""))
+		if err != nil {
+			ts = time.Now()
+		}
+		if strings.Contains(l, "[Request interrupted by user") {
+			c.at = ts
+		} else if typ == "assistant" && jStr(jObj(o, "message"), "stop_reason", "") == "end_turn" {
+			c.ended = ts
+		}
+		return c
 	}
-	return time.Time{}
+	return c
 }
 
 // Estado para desenhar (ver o comentário em src/Sessions.cs).
@@ -158,6 +184,13 @@ func (s *SessionInfo) Resolve(idleMinutes float64) RoomState {
 		}
 		if s.Interrupted() {
 			return Stopped
+		}
+		if ended := s.EndedAt(); !ended.IsZero() {
+			// o Changed vira (só na memória) o horário do fim, para a sala mostrar o "pronto" e depois sair
+			if ended.After(s.Changed) {
+				s.Changed = ended
+			}
+			return Done
 		}
 		if time.Since(s.LastActivity()).Minutes() > math.Max(minIdleMinutes, idleMinutes) {
 			return Stopped

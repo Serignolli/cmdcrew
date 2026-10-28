@@ -72,7 +72,7 @@ func bold(s string) string {
 
 func sortedCharacters() []*Character {
 	all := loadAllCharacters(nil)
-	order := []string{"anoes", "gnomos-jardim", "elfos-hd", "chocolateiros", "programadores", "clawd", "claude", "dragao", "elfos", "gatos", "pinguins", "formigas", "robos", "robos-classicos", "cachorros", "gnomos"}
+	order := []string{"anoes", "elfos-hd", "magos-hd", "devs-hd", "pinguins-hd", "dragoes-hd", "chocolateiros", "gnomos", "clawd", "claude", "dragao", "elfos", "gatos", "pinguins", "formigas", "robos", "robos-classicos"}
 	idx := func(id string) int {
 		for i, o := range order {
 			if o == id {
@@ -206,7 +206,11 @@ func runConfig() {
 			room = "alternar entre todos"
 		} else if cfg.RoomCharacter != "" {
 			if c := findCharacterExact(all, cfg.RoomCharacter); c != nil {
-				room = c.Name
+				roomSkin := "todas misturadas"
+				if cfg.RoomSkin != "*" && cfg.RoomSkin != "" {
+					roomSkin = c.GetSkin(cfg.RoomSkin).Name
+				}
+				room = c.Name + " (" + roomSkin + ")"
 			}
 		}
 		var on []string
@@ -234,7 +238,7 @@ func runConfig() {
 		opts := []string{
 			"Onde eles aparecem: " + modeNames[indexOf(modeIDs, cfg.Mode)],
 			"Personagem da equipe: " + crew.Name + " (" + skin + ")",
-			"Quem trabalha na sala: " + room,
+			"Personagem da sala: " + room,
 			fmt.Sprintf("Salas: tamanho %d, canto %s, ficam %.0f s depois de terminar", cfg.RoomSize, corner, cfg.DoneSeconds),
 			fmt.Sprintf("Equipe: %d, tamanho %d, %s", cfg.Count, cfg.Size, pos),
 			"Agentes: " + agents,
@@ -271,14 +275,19 @@ func runConfig() {
 			if cfg.RoomCharacter == "*" {
 				def = len(labels) - 1
 			}
-			k := choose("Quem trabalha na sala (cada personagem tem a sua)", labels, def)
+			k := choose("Personagem da sala (cada personagem tem a sua)", labels, def)
 			switch {
 			case k == 0:
 				cfg.RoomCharacter = ""
 			case k == len(labels)-1:
 				cfg.RoomCharacter = "*"
 			default:
-				cfg.RoomCharacter = list[k-1].ID
+				c := list[k-1]
+				if c.ID != cfg.RoomCharacter {
+					cfg.RoomSkin = "*"
+				}
+				cfg.RoomCharacter = c.ID
+				cfg.RoomSkin = chooseSkin(c, cfg.RoomSkin)
 			}
 		case 3:
 			cfg.RoomSize = int(askNumber("Tamanho das salas (1 a 4)", float64(cfg.RoomSize), 1, 4))
@@ -385,7 +394,7 @@ func addPack(path string) {
 		defer z.Close()
 		for _, f := range z.File {
 			name := filepath.Base(f.Name)
-			if !strings.HasSuffix(strings.ToLower(name), ".json") {
+			if !isPackEntry(f.Name) {
 				continue
 			}
 			rc, err := f.Open()
@@ -394,19 +403,42 @@ func addPack(path string) {
 			}
 			data, _ := io.ReadAll(rc)
 			rc.Close()
-			if os.WriteFile(filepath.Join(packsDir(), name), data, 0o644) == nil {
+			if dest := filepath.Join(packsDir(), name); os.WriteFile(dest, data, 0o644) == nil && keepIfCharacter(dest) {
 				n++
 			}
 		}
 	} else if data, err := os.ReadFile(path); err == nil {
-		if os.WriteFile(filepath.Join(packsDir(), filepath.Base(path)), data, 0o644) == nil {
+		if dest := filepath.Join(packsDir(), filepath.Base(path)); os.WriteFile(dest, data, 0o644) == nil && keepIfCharacter(dest) {
 			n++
 		}
 	} else {
 		fmt.Println("Não deu: " + err.Error())
 		return
 	}
+	if n == 0 {
+		fmt.Println("Nenhum personagem encontrado nesse arquivo.")
+		return
+	}
 	fmt.Printf("%d personagem(ns) adicionado(s). Obrigado pelo apoio!\n", n)
+}
+
+// No .zip, só valem os personagens soltos na raiz ou numa pasta personagens/ (nada de arquivo/, rascunhos etc.).
+func isPackEntry(name string) bool {
+	if !strings.HasSuffix(strings.ToLower(name), ".json") {
+		return false
+	}
+	parts := strings.Split(strings.ReplaceAll(name, "\\", "/"), "/")
+	return len(parts) == 1 || strings.EqualFold(parts[len(parts)-2], "personagens")
+}
+
+// Um .json que não é personagem não fica na pasta de pacotes.
+func keepIfCharacter(path string) bool {
+	if _, err := loadCharacterFile(path); err != nil {
+		logf("pacote %s: %v", filepath.Base(path), err)
+		_ = os.Remove(path)
+		return false
+	}
+	return true
 }
 
 // Tira dos agentes e apaga a instalação (o atalho em ~/.local/bin, a pasta do programa e o estado).

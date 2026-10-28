@@ -22,7 +22,10 @@ namespace CmdCrew
         public static Dictionary<string, object> LoadObject(string path)
         {
             if (!File.Exists(path)) return new Dictionary<string, object>();
-            string text = File.ReadAllText(path, Encoding.UTF8);
+            // lê deixando os outros gravarem e trocarem o arquivo (o File.Replace das sessões falha com ele aberto sem FileShare.Delete)
+            string text;
+            using (var f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            using (var r = new StreamReader(f, Encoding.UTF8)) text = r.ReadToEnd();
             if (text.Trim().Length == 0) return new Dictionary<string, object>();
             var d = Parse(text) as Dictionary<string, object>;
             if (d == null) throw new InvalidDataException(path + " não contém um objeto JSON");

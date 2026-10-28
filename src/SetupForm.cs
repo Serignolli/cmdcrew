@@ -11,6 +11,8 @@ using System.Windows.Forms;
 namespace CmdCrew
 {
     // Assistente de instalação: boas-vindas → escolher a equipe → instalando → pronto.
+    // Com uma instalação mais antiga no computador, é só uma atualização: boas-vindas → atualizando → pronto,
+    // sem escolher nada de novo (equipe, pacotes, frases e agentes continuam como estavam).
     public class SetupForm : Form
     {
         readonly List<Character> chars;
@@ -26,6 +28,7 @@ namespace CmdCrew
         Config pending;                                   // a escolha da tela "quem vai trabalhar"
         readonly List<string> agentIds = new List<string>();   // os agentes marcados
         bool agentsTouched;
+        bool updating;
 
         int S(int v) { return (int)Math.Round(v * k); }
 
@@ -35,7 +38,7 @@ namespace CmdCrew
             chars = Character.LoadEmbedded(null);
             if (chars.Count == 0) chars = Character.LoadAll(null);
             // destaques primeiro, como no site
-            var order = new[] { "anoes", "gnomos-jardim", "chocolateiros", "programadores", "clawd", "claude", "dragao", "elfos", "gatos", "pinguins", "formigas", "robos", "gnomos" };
+            var order = new[] { "chocolateiros", "gnomos", "clawd", "claude", "dragao", "elfos", "gatos", "pinguins", "formigas", "robos", "robos-classicos" };
             chars = chars.OrderBy(c => Array.IndexOf(order, c.Id) < 0 ? 99 : Array.IndexOf(order, c.Id)).ThenBy(c => c.Name).ToList();
             using (var g = CreateGraphics()) k = g.DpiX / 96f;
             AutoScaleMode = AutoScaleMode.None;
@@ -94,6 +97,7 @@ namespace CmdCrew
         void ShowWelcome()
         {
             Clear();
+            if (Installer.IsInstalled && !Installer.RunningInstalled) { ShowUpdate(); return; }
             Text_("Contrate a equipe!", 40, 24, 680, 52, Theme.Pixel(28f), Theme.Ink);
             Text_("Enquanto o seu agente (Claude Code, Codex, Gemini CLI, Qwen Code, OpenCode ou Copilot CLI) trabalha, uma equipe " +
                   "de bichinhos em pixel art trabalha junto: em cima do terminal e numa salinha no canto da tela. Quando ele termina, eles comemoram e avisam.",
@@ -109,13 +113,25 @@ namespace CmdCrew
                 Location = new Point(S(42), S(166)), Size = new Size(S(670), S(44)), Font = Theme.Body(10f, FontStyle.Bold)
             };
             body.Controls.Add(status);
-            if (Installer.IsInstalled && !Installer.RunningInstalled)
-                Text_("Já existe uma instalação: ela será atualizada e suas frases e configurações continuam.", 42, 218, 670, 22, Theme.Body(9.5f), Theme.Accent2);
 
             Text_("Instala em " + Installer.InstallDir + "\r\nNão precisa de administrador · nada sai do seu computador",
                   42, 330, 410, 44, Theme.Body(8.5f), Theme.Ink2);
             Button_("Cancelar", 470, 330, 110, false, Close);
-            Button_(Installer.IsInstalled ? "Atualizar  ▸" : "Começar  ▸", 592, 330, 130, true, ShowChoose);
+            Button_("Começar  ▸", 592, 330, 130, true, ShowChoose);
+        }
+
+        // Já instalado, numa versão mais antiga: só troca o programa, os personagens e as salas.
+        void ShowUpdate()
+        {
+            var v = Installer.InstalledVersion;
+            Text_("Versão nova da equipe!", 40, 24, 680, 52, Theme.Pixel(28f), Theme.Ink);
+            Text_("O CmdCrew já está instalado" + (v == null ? "" : " (versão " + v + ")") + ". Atualizar para a " + Installer.Version +
+                  " troca só o programa: a equipe, os pacotes, as frases e os agentes continuam do jeito que você deixou.",
+                  42, 84, 670, 64, Theme.Body(11f), Theme.Ink2);
+            Text_("Depois de atualizar, a configuração abre sozinha para você trocar a equipe ou a sala.",
+                  42, 160, 670, 44, Theme.Body(9.5f), Theme.Ink2);
+            Button_("Cancelar", 300, 330, 110, false, Close);
+            Button_("Atualizar e configurar  ▸", 422, 330, 300, true, () => { updating = true; ShowInstalling(); });
         }
 
         // ---------- 2. escolher a equipe ----------
@@ -239,10 +255,10 @@ namespace CmdCrew
 
         void ShowInstalling()
         {
-            var cfg = pending ?? new Config { Character = chosen.Id };
-            string agents = string.Join(",", Agents.All.Where(a => agentIds.Contains(a.Id)).Select(a => a.Id).ToArray());
+            var cfg = updating ? null : pending ?? new Config { Character = chosen.Id };
+            string agents = updating ? null : string.Join(",", Agents.All.Where(a => agentIds.Contains(a.Id)).Select(a => a.Id).ToArray());
             Clear();
-            Text_("Contratando a equipe...", 40, 40, 680, 44, Theme.Pixel(22f), Theme.Ink);
+            Text_(updating ? "Atualizando a equipe..." : "Contratando a equipe...", 40, 40, 680, 44, Theme.Pixel(22f), Theme.Ink);
             var step = Text_("", 42, 96, 670, 24, Theme.Body(11f), Theme.Ink2);
             var bar = new BusyBar { Location = new Point(S(42), S(134)), Size = new Size(S(676), S(34)) };
             body.Controls.Add(bar);
@@ -252,7 +268,9 @@ namespace CmdCrew
                 {
                     Installer.Install(cfg, agents, s => BeginInvoke((Action)(() => step.Text = s)));
                     Thread.Sleep(600);
-                    BeginInvoke((Action)ShowDone);
+                    // numa atualização, quem abriu o instalador quer mexer na configuração: vai direto para ela
+                    if (updating) BeginInvoke((Action)(() => { Run("config"); Close(); }));
+                    else BeginInvoke((Action)ShowDone);
                 }
                 catch (Exception ex)
                 {
@@ -269,6 +287,16 @@ namespace CmdCrew
         void ShowDone()
         {
             Clear();
+            if (updating)
+            {
+                Text_("Equipe atualizada!", 40, 24, 680, 52, Theme.Pixel(28f), Theme.Ink);
+                Text_("Tudo continua como você deixou. Se o agente já estiver aberto, feche e abra de novo para ele pegar a versão nova.",
+                      42, 84, 670, 64, Theme.Body(11f), Theme.Ink2);
+                Button_("▶  Testar agora", 42, 330, 170, false, () => Run("demo-salas 3 10"));
+                Button_("Configurar", 224, 330, 130, false, () => { Run("config"); Close(); });
+                Button_("Concluir", 592, 330, 130, true, Close);
+                return;
+            }
             Text_("Equipe contratada!", 40, 24, 680, 52, Theme.Pixel(28f), Theme.Ink);
             Text_("Na próxima vez que você mandar um prompt para o agente, eles aparecem. " +
                   "Se ele já estiver aberto, feche e abra de novo para ele perceber a equipe nova.",
@@ -288,7 +316,7 @@ namespace CmdCrew
             Text_(msg, 42, 84, 670, 90, Theme.Body(10.5f), Color.Firebrick);
             Text_("Os detalhes ficam em " + Paths.LogFile, 42, 180, 670, 22, Theme.Body(9f), Theme.Ink2);
             Button_("Fechar", 470, 330, 110, false, Close);
-            Button_("Tentar de novo", 592, 330, 130, true, ShowChoose);
+            Button_("Tentar de novo", 592, 330, 130, true, () => { if (updating) ShowInstalling(); else ShowChoose(); });
         }
 
         static void Run(string args)

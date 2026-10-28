@@ -24,6 +24,14 @@
    "direita": false,
    "min": 2.5,
    "max": 4
+  },
+  {
+   "x": 78,
+   "tipo": "trabalhar-grimorio",
+   "andar": "andar",
+   "direita": false,
+   "min": 4,
+   "max": 7
   }
  ],
  "fundo": [],

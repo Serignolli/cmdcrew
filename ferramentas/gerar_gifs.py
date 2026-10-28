@@ -22,19 +22,23 @@ SALAS = [
     ("sala-pronto", "escritorio", "pronto", 1.3, 30),
     ("sala-mina", "anoes", "trabalhando", 6.0, 50),       # pega a picareta e a ida com o carrinho
     # salas do Supporters Pack (cada personagem vem com a sua)
-    ("sala-jardim", "gnomos-jardim", "trabalhando", 2.0, 40),
     ("sala-bosque-hd", "elfos-hd", "trabalhando", 2.0, 40),
+    ("sala-torre", "magos-hd", "trabalhando", 2.0, 40),
+    ("sala-escritorio-hd", "devs-hd", "trabalhando", 2.0, 40),
+    ("sala-polo-hd", "pinguins-hd", "trabalhando", 2.0, 40),
+    ("sala-covil-hd", "dragoes-hd", "trabalhando", 2.0, 40),
     # cada personagem tem a sua sala (o "tema" pode ser o id do personagem)
     ("sala-covil", "dragao", "trabalhando", 2.0, 30),
     ("sala-floresta", "elfos", "trabalhando", 2.0, 30),
     ("sala-polo", "pinguins", "trabalhando", 2.0, 30),
     ("sala-fabrica", "chocolateiros", "trabalhando", 2.0, 30),
-    ("sala-quintal", "cachorros", "trabalhando", 2.0, 30),
+    ("sala-mina-simples", "gnomos", "trabalhando", 2.0, 30),
     ("sala-estudio", "clawd", "trabalhando", 2.0, 30),
 ]
 
 # personagens do pack: as animações que entram no GIF, em ordem
-ANIMS = ["andar", "parado", "trabalhar", "trabalhar-carrinho", "trabalhar-saco", "trabalhar-cavar", "trabalhar-rastelar"]
+ANIMS = ["andar", "parado", "trabalhar", "trabalhar-carrinho", "trabalhar-saco", "trabalhar-cavar", "trabalhar-rastelar",
+         "trabalhar-grimorio", "trabalhar-digitar", "trabalhar-bocejar", "trabalhar-peixe", "trabalhar-ervas", "trabalhar-flauta"]
 
 
 def save_gif(frames, path, ms):

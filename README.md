@@ -77,15 +77,14 @@ Todos estes vêm de graça, cada um com várias cores:
 | Categoria | Personagem | Trabalho |
 |---|---|---|
 | Fábrica de Chocolate | Chocolateiros | martelam e cantam (♪) |
-| Programação | Programadores (dev cansado, dev cansada, gamer, hacker) | digitam no notebook |
 | Fantasia | Dragão | voa em cima do terminal e cospe fogo |
 | Fantasia | Elfos | atiram flechas |
-| Outros | Gnomos mineiros | picaretam (faíscas) |
+| Outros | Anões mineiros | picaretam (faíscas) |
 | Outros | Robozinhos, robôs clássicos | soldam, apitam, aspiram |
-| Animais | Gatos, cachorros, pinguins, formigas | cochilam, latem, gelam o processador, carregam folhas |
+| Animais | Gatos, pinguins, formigas | cochilam, gelam o processador, carregam folhas |
 | Claude | Clawd e as estrelinhas do Claude | digitam e soltam estrelinhas ✻ |
 
-Cada um tem a sua sala: escritório do dev, mina, covil do dragão, bosque dos elfos, fábrica de chocolate, quintal, sala de estar dos gatos, data center gelado dos pinguins, formigueiro, oficina dos robôs, hangar da nave e estúdio do Claude. Personagens feitos em casa trabalham numa salinha genérica.
+Cada um tem a sua sala: mina, covil do dragão, bosque dos elfos, fábrica de chocolate, sala de estar dos gatos, data center gelado dos pinguins, formigueiro, oficina dos robôs, hangar da nave e estúdio do Claude. Personagens feitos em casa trabalham numa salinha genérica.
 
 Cada personagem é um arquivo JSON em [`personagens/`](personagens), com o desenho em texto (cada letra é uma cor da skin, `.` é transparente). Dá para criar o seu: copie um arquivo, troque o `id` e edite os desenhos. As salas ficam em [`salas/`](salas), geradas por `ferramentas/gerar_salas.py` (retângulos e algumas animações prontas).
 
@@ -94,7 +93,6 @@ Cada personagem é um arquivo JSON em [`personagens/`](personagens), com o desen
 O CmdCrew é e continua grátis. Para quem quiser apoiar o projeto, existe o **Supporters Pack**: personagens de fantasia e RPG em alta definição, desenhados quadro a quadro, com mais animações.
 
 - **Anões mineiros HD**: picam pedra, empurram o carrinho e carregam o saco. Também assumem a sala da mina.
-- **Gnomos de jardim HD**: regam, cavam e rastelam. Trabalham no jardim.
 - **Elfos arqueiros HD**: andam leves e acertam flechas no alvo. Trabalham no bosque.
 - E mais a caminho: dragão, magos, cavaleiros...
 
@@ -165,7 +163,7 @@ Crie uma tag `v*` (por exemplo `git tag v1.1.0 && git push --tags`). O workflow 
 
 ## Créditos
 
-- Sons feitos no SFX Forge.
+- Sons feitos no [SFX Forge](https://github.com/Serignolli/sfx-forge).
 - Fonte [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) (SIL Open Font License).
 
 Desenvolvido por [Serignolli](https://serignolli.com). Licença [MIT](LICENSE).

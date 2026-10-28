@@ -4,6 +4,7 @@ dist/
 
 # Supporters Pack: personagens HD, arte de origem e referências. Nunca vai para o repositório público.
 supporters-pack/
+supporters-pack*.zip
 # pacotes instalados localmente (o programa lê de pacotes/ ao lado de bin/)
 pacotes/
 
@@ -20,3 +21,5 @@ __pycache__/
 .idea/
 Thumbs.db
 desktop.ini
+# cópia local do instalador para testar o site (src/build.ps1)
+site/CmdCrew-Setup.exe

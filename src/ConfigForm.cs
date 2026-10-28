@@ -18,10 +18,12 @@ namespace CmdCrew
         static readonly string[] ModeIds = { "salas", "equipe", "ambos" };
         static readonly string[] PosIds = { "terminal", "rodape", "topo" };
 
+        const string SfxForgeUrl = "https://github.com/Serignolli/sfx-forge";
+
         readonly Config cfg;
-        readonly List<Character> chars;
+        List<Character> chars;
         RoomPreview roomPreview;
-        ComboBox roomChar;
+        ComboBox roomChar, roomSkin;
         Label roomDesc;
         readonly List<string> roomIds = new List<string>();
         readonly RadioButton[] modeRadios = new RadioButton[3];
@@ -118,23 +120,38 @@ namespace CmdCrew
             enabled = Chk(this, "Ativo", 900, 84, 90);
 
             // ----- salas -----
+            // As duas colunas seguem a mesma ordem: personagem, cores e a prévia logo abaixo.
             roomsPanel = Add(this, new Panel { BackColor = Theme.Bg2 }, 14, 118, 600, 470);
             Lbl(roomsPanel, "Salas no canto da tela", 12, 10, 400, 22, true);
             var hint = Lbl(roomsPanel, "Uma sala por terminal trabalhando. Duplo clique na sala leva ao terminal dela.", 12, 32, 576);
             hint.ForeColor = Theme.Ink2;
-            // cada personagem tem a sua sala: escolher quem trabalha nela escolhe a sala
-            roomPreview = new RoomPreview(Math.Max(2f, 3f * k)) { Location = new Point(S(6), S(56)) };
+            // cada personagem tem a sua sala: escolher a sala escolhe quem trabalha nela
+            Lbl(roomsPanel, "Sala", 12, 61, 90);
+            roomChar = Add(roomsPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 100, 58, 488, 26);
+            roomIds.Add(""); roomChar.Items.Add("A sala de quem está no terminal");
+            foreach (var c in chars.OrderBy(c => RoomTheme.ForCharacter(c.Id).Name))
+            {
+                roomIds.Add(c.Id);
+                roomChar.Items.Add(RoomTheme.ForCharacter(c.Id).Name + "  ·  " + c.Name + (c.Premium ? "  ★" : ""));
+            }
+            roomIds.Add("*"); roomChar.Items.Add("Alternar entre todas (uma por terminal)");
+            roomChar.SelectedIndexChanged += delegate
+            {
+                if (loading) return;
+                string id = roomIds[Math.Max(0, roomChar.SelectedIndex)];
+                if (id != cfg.RoomCharacter) cfg.RoomSkin = "*";
+                cfg.RoomCharacter = id;
+                Changed();
+            };
+            Lbl(roomsPanel, "Cores", 12, 93, 90);
+            roomSkin = Add(roomsPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 100, 90, 488, 26);
+            roomSkin.SelectedIndexChanged += delegate { if (!loading && roomSkin.Enabled) { cfg.RoomSkin = SelectedRoomSkin(); Changed(); } };
+            roomPreview = new RoomPreview(Math.Max(2f, 3f * k)) { Location = new Point(S(6), S(122)) };
             roomsPanel.Controls.Add(roomPreview);
             int px = (int)(roomPreview.Width / k) + 16;
-            Lbl(roomsPanel, "Quem trabalha na sala", px, 60, 590 - px, 20, true);
-            roomChar = Add(roomsPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, px, 84, 586 - px, 26);
-            roomIds.Add(""); roomChar.Items.Add("O mesmo do terminal");
-            foreach (var c in chars) { roomIds.Add(c.Id); roomChar.Items.Add(c.Name + (c.Premium ? "  ★" : "")); }
-            roomIds.Add("*"); roomChar.Items.Add("Alternar entre todos (um por terminal)");
-            roomChar.SelectedIndexChanged += delegate { if (!loading) { cfg.RoomCharacter = roomIds[Math.Max(0, roomChar.SelectedIndex)]; Changed(); } };
-            roomDesc = Lbl(roomsPanel, "", px, 118, 586 - px, 96);
+            roomDesc = Lbl(roomsPanel, "", px, 130, 586 - px, 140);
             roomDesc.ForeColor = Theme.Ink2;
-            int y = 56 + (int)(roomPreview.Height / k) + 14;
+            int y = 122 + (int)(roomPreview.Height / k) + 10;
             Lbl(roomsPanel, "Tamanho", 12, y + 8, 70);
             roomSize = Add(roomsPanel, new TrackBar { Minimum = 1, Maximum = 4, TickStyle = TickStyle.Both, AutoSize = false }, 80, y, 150, 36);
             roomSize.ValueChanged += delegate { Changed(); };
@@ -154,35 +171,39 @@ namespace CmdCrew
             // ----- equipe -----
             crewPanel = Add(this, new Panel { BackColor = Theme.Bg2 }, 626, 118, 370, 470);
             Lbl(crewPanel, "Equipe em cima do terminal", 12, 10, 340, 22, true);
-            cbChar = Add(crewPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 12, 38, 346, 26);
+            var crewHint = Lbl(crewPanel, "Andam pela tela enquanto o agente trabalha.", 12, 32, 346);
+            crewHint.ForeColor = Theme.Ink2;
+            Lbl(crewPanel, "Personagem", 12, 61, 90);
+            cbChar = Add(crewPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 100, 58, 258, 26);
             foreach (var c in chars) cbChar.Items.Add(c);
             cbChar.Format += (s, e) => { var c = e.ListItem as Character; if (c != null) e.Value = c.Name + (c.Premium ? "  ★" : ""); };
             cbChar.SelectedIndexChanged += delegate { OnCharacterChanged(); };
-            cbSkin = Add(crewPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 12, 70, 346, 26);
+            Lbl(crewPanel, "Cores", 12, 93, 90);
+            cbSkin = Add(crewPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 100, 90, 258, 26);
             cbSkin.SelectedIndexChanged += delegate { if (!loading) { cfg.Skin = SelectedSkin(); Changed(); } };
-            crewPreview = Add(crewPanel, new PreviewBox(), 12, 102, 346, 130);
-            Lbl(crewPanel, "Quantos", 12, 246, 70);
-            count = Add(crewPanel, new NumericUpDown { Minimum = 1, Maximum = 15 }, 82, 243, 56, 26);
+            crewPreview = Add(crewPanel, new PreviewBox(), 12, 128, 346, 130);
+            Lbl(crewPanel, "Quantos", 12, 275, 70);
+            count = Add(crewPanel, new NumericUpDown { Minimum = 1, Maximum = 15 }, 82, 272, 56, 26);
             count.ValueChanged += delegate { Changed(); };
-            Lbl(crewPanel, "Tamanho", 160, 246, 70);
-            crewSize = Add(crewPanel, new NumericUpDown { Minimum = 1, Maximum = 8 }, 230, 243, 56, 26);
+            Lbl(crewPanel, "Tamanho", 160, 275, 70);
+            crewSize = Add(crewPanel, new NumericUpDown { Minimum = 1, Maximum = 8 }, 230, 272, 56, 26);
             crewSize.ValueChanged += delegate { Changed(); };
-            Lbl(crewPanel, "Velocidade", 12, 286, 80);
-            speed = Add(crewPanel, new TrackBar { Minimum = 3, Maximum = 30, TickFrequency = 3, AutoSize = false }, 92, 278, 200, 36);
+            Lbl(crewPanel, "Velocidade", 12, 312, 80);
+            speed = Add(crewPanel, new TrackBar { Minimum = 3, Maximum = 30, TickFrequency = 3, AutoSize = false }, 92, 304, 200, 36);
             speed.ValueChanged += delegate { Changed(); };
-            position = Add(crewPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 12, 324, 346, 26);
+            position = Add(crewPanel, new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList }, 12, 346, 346, 26);
             position.Items.AddRange(new object[] { "Em cima da janela do terminal", "No rodapé da tela", "No topo da tela" });
             position.SelectedIndexChanged += delegate { Changed(); };
-            bubbles = Chk(crewPanel, "Balões de fala", 12, 362, 160);
-            terminalPhrases = Chk(crewPanel, "Frases no spinner do terminal", 172, 362, 196);
-            var edit = Add(crewPanel, new Button { Text = "Editar frases…" }, 12, 398, 150, 30);
+            bubbles = Chk(crewPanel, "Balões de fala", 12, 382, 160);
+            terminalPhrases = Chk(crewPanel, "Frases no spinner do terminal", 172, 382, 196);
+            var edit = Add(crewPanel, new Button { Text = "Editar frases…" }, 12, 418, 150, 30);
             edit.Click += delegate
             {
                 var c = cbChar.SelectedItem as Character;
                 if (c == null) return;
                 using (var f = new PhrasesForm(cfg, c)) if (f.ShowDialog(this) == DialogResult.OK) Changed();
             };
-            var demo = Add(crewPanel, new Button { Text = "▶ Ver na tela" }, 172, 398, 150, 30);
+            var demo = Add(crewPanel, new Button { Text = "▶ Ver na tela" }, 172, 418, 150, 30);
             demo.Click += delegate { TestCrew(); };
 
             // ----- sons -----
@@ -194,9 +215,12 @@ namespace CmdCrew
             AddPlay(426, by, "atencao");
             soundFailure = Chk(this, "Quando falha", 472, by, 110);
             AddPlay(582, by, "falha");
-            var credit = Lbl(this, "feitos no SFX Forge", 630, by + 4, 180);
+            var credit = Add(this, new LinkLabel { Text = "feitos no SFX Forge" }, 630, by + 4, 180, 20);
+            credit.LinkArea = new LinkArea(credit.Text.IndexOf("SFX"), "SFX Forge".Length);
             credit.ForeColor = Theme.Ink2;
+            credit.LinkColor = credit.ActiveLinkColor = Theme.Accent;
             credit.Font = Theme.Body(8.5f);
+            credit.LinkClicked += delegate { try { Process.Start(SfxForgeUrl); } catch (Exception ex) { SetStatus(ex.Message); } };
 
             // ----- pacotes -----
             by += 36;
@@ -226,8 +250,15 @@ namespace CmdCrew
             hookStatus = Lbl(this, "", 20, by + 4, 600, 40);
             status = Lbl(this, "", 20, by + 46, 600);
             status.ForeColor = Color.FromArgb(40, 120, 70);
-            var test = Add(this, new PixelButton { Text = "Testar salas", Primary = true }, W - 184, by, 166, 44);
+            var test = Add(this, new PixelButton { Text = "Testar salas" }, W - 364, by, 166, 44);
             test.Click += delegate { Program.Launch("demo-salas 3 10"); SetStatus("Olha o canto da tela!"); };
+            // cada mudança já é gravada na hora; o botão grava de novo e confirma
+            var save = Add(this, new PixelButton { Text = "Salvar", Primary = true }, W - 184, by, 166, 44);
+            save.Click += delegate
+            {
+                Changed();
+                if (!status.Text.StartsWith("Não deu")) SetStatus("✔ Configuração salva. Os terminais abertos já usam a nova.");
+            };
             // discreto de propósito: quem quiser sair acha, mas não é o destaque da tela
             var uninstall = Add(this, new LinkLabel { Text = "Desinstalar", TextAlign = ContentAlignment.MiddleRight }, W - 184, by + 50, 166, 20);
             uninstall.Font = Theme.Body(8.5f);
@@ -255,6 +286,7 @@ namespace CmdCrew
             int ri = roomIds.IndexOf(cfg.RoomCharacter ?? "");
             if (ri < 0) ri = 0;
             if (roomChar.SelectedIndex != ri) roomChar.SelectedIndex = ri;
+            FillRoomSkins();
             UpdateRoomPreview();
             roomSize.Value = Math.Max(1, Math.Min(4, cfg.RoomSize));
             corner.SelectedIndex = cfg.Corner == "esquerda" ? 1 : 0;
@@ -294,6 +326,39 @@ namespace CmdCrew
             roomDesc.Text = cfg.RoomCharacter == "*"
                 ? "Cada terminal novo ganha o próximo personagem, cada um na sua sala."
                 : theme.Name + (first.Premium ? "  ★ Supporters Pack" : "") + "\n" + theme.Description;
+        }
+
+        // Cores da sala: com um personagem escolhido só para ela, dá para escolher as dele; senão segue a equipe.
+        void FillRoomSkins()
+        {
+            roomSkin.Items.Clear();
+            var c = RoomOwnCharacter();
+            if (c == null)
+            {
+                roomSkin.Items.Add(cfg.RoomCharacter == "*" ? "As cores de cada sala" : "As mesmas da equipe");
+                roomSkin.SelectedIndex = 0;
+                roomSkin.Enabled = false;
+                return;
+            }
+            roomSkin.Enabled = true;
+            roomSkin.Items.Add("Misturar todas as cores");
+            foreach (var s in c.Skins) roomSkin.Items.Add(s.Name);
+            int i = c.Skins.FindIndex(s => s.Id == cfg.RoomSkin);
+            roomSkin.SelectedIndex = cfg.RoomSkin == "*" || i < 0 ? 0 : i + 1;
+        }
+
+        // O personagem escolhido só para a sala (null quando é o mesmo da equipe ou alterna entre todos).
+        Character RoomOwnCharacter()
+        {
+            if (string.IsNullOrEmpty(cfg.RoomCharacter) || cfg.RoomCharacter == "*") return null;
+            return chars.FirstOrDefault(c => c.Id == cfg.RoomCharacter);
+        }
+
+        string SelectedRoomSkin()
+        {
+            var c = RoomOwnCharacter();
+            int i = roomSkin.SelectedIndex;
+            return c == null || i <= 0 || i > c.Skins.Count ? "*" : c.Skins[i - 1].Id;
         }
 
         void OnCharacterChanged()
@@ -415,17 +480,56 @@ namespace CmdCrew
                     {
                         if (f.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                             using (var zip = ZipFile.OpenRead(f))
-                                foreach (var e in zip.Entries.Where(e => e.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
+                                foreach (var e in zip.Entries.Where(IsPackEntry))
                                 {
-                                    e.ExtractToFile(Path.Combine(Paths.PacksDir, e.Name), true);
-                                    n++;
+                                    string dest = Path.Combine(Paths.PacksDir, e.Name);
+                                    e.ExtractToFile(dest, true);
+                                    if (KeepIfCharacter(dest)) n++;
                                 }
-                        else { File.Copy(f, Path.Combine(Paths.PacksDir, Path.GetFileName(f)), true); n++; }
+                        else
+                        {
+                            string dest = Path.Combine(Paths.PacksDir, Path.GetFileName(f));
+                            File.Copy(f, dest, true);
+                            if (KeepIfCharacter(dest)) n++;
+                        }
                     }
                 }
                 catch (Exception ex) { SetStatus("Não deu para instalar o pacote: " + ex.Message); return; }
-                SetStatus(n + " personagem(ns) adicionado(s). Reabra esta tela para vê-los na lista.");
+                Rebuild();
+                SetStatus(n == 0 ? "Nenhum personagem encontrado nesse arquivo." : n + " personagem(ns) adicionado(s). Obrigado pelo apoio!");
             }
+        }
+
+        // No .zip, só valem os personagens soltos na raiz ou numa pasta personagens\ (nada de arquivo\, rascunhos etc.).
+        static bool IsPackEntry(ZipArchiveEntry e)
+        {
+            if (!e.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) return false;
+            var parts = e.FullName.Replace('\\', '/').Split('/');
+            return parts.Length == 1 || parts.Length >= 2 && parts[parts.Length - 2].Equals("personagens", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Um .json que não é personagem não fica na pasta de pacotes.
+        static bool KeepIfCharacter(string path)
+        {
+            try { Character.Load(path); return true; }
+            catch (Exception ex) { Paths.Log("pacote " + Path.GetFileName(path) + ": " + ex.Message); try { File.Delete(path); } catch { } return false; }
+        }
+
+        // Monta a tela de novo com a lista de personagens atualizada (depois de adicionar um pacote).
+        void Rebuild()
+        {
+            loading = true;
+            chars = Character.LoadAll(null);
+            SuspendLayout();
+            foreach (Control c in Controls.Cast<Control>().ToList()) c.Dispose();
+            Controls.Clear();
+            roomIds.Clear();
+            agentBoxes.Clear();
+            BuildUi();
+            Theme.Apply(this);
+            LoadValues();
+            ResumeLayout();
+            loading = false;
         }
 
         void SetStatus(string s) { status.Text = s; }

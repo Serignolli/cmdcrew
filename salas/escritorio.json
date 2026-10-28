@@ -2,14 +2,12 @@
  "id": "escritorio",
  "nome": "Escritório do dev",
  "descricao": "O dev digita sem parar, o monitor enche de código e a caneca solta fumaça.",
- "personagens": ["devs-hd", "programadores"],
+ "personagens": ["devs-hd"],
  "cor": "#7c6cf0",
  "imagem": "escritorio.png",
  "chao": 41,
  "altura": 22,
- "skins": {
-  "programadores": ["cansado", "cansada", "gamer", "hacker"]
- },
+ "skins": {},
  "lugares": [
   {
    "x": 40,
@@ -34,6 +32,14 @@
    "direita": true,
    "min": 2.5,
    "max": 4
+  },
+  {
+   "x": 18,
+   "tipo": "trabalhar-bocejar",
+   "andar": "andar",
+   "direita": true,
+   "min": 3,
+   "max": 5
   }
  ],
  "fundo": [],

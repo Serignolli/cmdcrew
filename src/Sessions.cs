@@ -134,33 +134,43 @@ namespace CmdCrew
 
         // O Esc não dispara o Stop: a interrupção só aparece no transcript, como uma mensagem
         // "[Request interrupted by user...]" depois do início do trabalho.
-        public bool Interrupted
+        public bool Interrupted { get { return Tail().InterruptedAt > Started; } }
+
+        // Quando a resposta terminou (a última mensagem é do assistente, com stop_reason "end_turn"), se foi depois do
+        // início do trabalho. Rede de segurança para quando o aviso do Stop não chega: sem isso a sala fica "trabalhando".
+        public DateTime EndedAt
         {
-            get
-            {
-                if (string.IsNullOrEmpty(Transcript)) return false;
-                try
-                {
-                    var fi = new FileInfo(Transcript);
-                    if (!fi.Exists) return false;
-                    CachedTail c;
-                    lock (tails)
-                        if (tails.TryGetValue(Transcript, out c) && c.Stamp == fi.LastWriteTimeUtc && c.Length == fi.Length)
-                            return c.InterruptedAt > Started;
-                    DateTime at = LastInterrupt(Transcript);
-                    lock (tails) tails[Transcript] = new CachedTail { Stamp = fi.LastWriteTimeUtc, Length = fi.Length, InterruptedAt = at };
-                    return at > Started;
-                }
-                catch { return false; }
-            }
+            get { var at = Tail().EndedAt; return at > Started ? at : DateTime.MinValue; }
         }
 
-        class CachedTail { public DateTime Stamp, InterruptedAt; public long Length; }
+        CachedTail Tail()
+        {
+            var none = new CachedTail();
+            if (string.IsNullOrEmpty(Transcript)) return none;
+            try
+            {
+                var fi = new FileInfo(Transcript);
+                if (!fi.Exists) return none;
+                CachedTail c;
+                lock (tails)
+                    if (tails.TryGetValue(Transcript, out c) && c.Stamp == fi.LastWriteTimeUtc && c.Length == fi.Length) return c;
+                c = ReadTail(Transcript);
+                c.Stamp = fi.LastWriteTimeUtc; c.Length = fi.Length;
+                lock (tails) tails[Transcript] = c;
+                return c;
+            }
+            catch { return none; }
+        }
+
+        class CachedTail { public DateTime Stamp, InterruptedAt, EndedAt; public long Length; }
         static readonly Dictionary<string, CachedTail> tails = new Dictionary<string, CachedTail>();
 
-        // Horário (UTC) da última interrupção registrada no final do transcript, se a última mensagem for ela.
-        static DateTime LastInterrupt(string transcript)
+        // Lê o final do transcript: a última mensagem de verdade (usuário ou assistente) decide se a conversa foi
+        // interrompida ou se a resposta terminou. Cada linha é lida como JSON (a saída de uma ferramenta pode conter
+        // o texto "type":"user", e a primeira linha do pedaço lido pode vir cortada).
+        static CachedTail ReadTail(string transcript)
         {
+            var c = new CachedTail();
             using (var f = new FileStream(transcript, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             {
                 long start = Math.Max(0, f.Length - 64 * 1024);
@@ -169,26 +179,31 @@ namespace CmdCrew
                 int read = 0;
                 while (read < buf.Length) { int n = f.Read(buf, read, buf.Length - read); if (n <= 0) break; read += n; }
                 var lines = Encoding.UTF8.GetString(buf, 0, read).Split('\n');
-                // a última mensagem de verdade (usuário ou assistente) decide
                 for (int i = lines.Length - 1; i >= 0; i--)
                 {
                     string l = lines[i];
                     if (l.IndexOf("\"type\":\"user\"", StringComparison.Ordinal) < 0 && l.IndexOf("\"type\":\"assistant\"", StringComparison.Ordinal) < 0) continue;
-                    if (l.IndexOf("[Request interrupted by user", StringComparison.Ordinal) < 0) return DateTime.MinValue;
-                    int k = l.IndexOf("\"timestamp\":\"", StringComparison.Ordinal);
+                    Dictionary<string, object> d;
+                    try { d = Json.Parse(l) as Dictionary<string, object>; } catch { continue; }
+                    if (d == null) continue;
+                    string type = Json.Str(d, "type", "");
+                    if (type != "user" && type != "assistant") continue;
                     DateTime ts;
-                    if (k >= 0 && DateTime.TryParse(l.Substring(k + 13, Math.Min(30, l.Length - k - 13)).Split('"')[0],
-                            CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out ts))
-                        return ts;
-                    return DateTime.UtcNow;
+                    if (!DateTime.TryParse(Json.Str(d, "timestamp", ""), CultureInfo.InvariantCulture,
+                            DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out ts)) ts = DateTime.UtcNow;
+                    if (l.IndexOf("[Request interrupted by user", StringComparison.Ordinal) >= 0) c.InterruptedAt = ts;
+                    else if (type == "assistant" && Json.Str(Json.Obj(d, "message"), "stop_reason", "") == "end_turn") c.EndedAt = ts;
+                    return c;
                 }
             }
-            return DateTime.MinValue;
+            return c;
         }
 
         // Estado para desenhar. "trabalhando" só vira "parado" se a conversa foi interrompida (Esc) ou, como rede de
         // segurança, se nada mexe há muito tempo (comandos e raciocínios longos ficam vários minutos sem gravar nada).
         // "aguardando" volta a "trabalhando" assim que o transcript anda (a permissão foi respondida no terminal).
+        // Se a resposta já terminou no transcript mas o Stop não chegou, é "pronto", e Changed passa a ser (só na memória)
+        // o horário do fim, para a sala mostrar o "pronto" pelo tempo de sempre e depois sair.
         public RoomState Resolve(double idleMinutes)
         {
             switch (State)
@@ -202,6 +217,8 @@ namespace CmdCrew
                 default:
                     if (Demo) return RoomState.Working;
                     if (Interrupted) return RoomState.Stopped;
+                    var ended = EndedAt;
+                    if (ended != DateTime.MinValue) { if (ended > Changed) Changed = ended; return RoomState.Done; }
                     if ((DateTime.UtcNow - LastActivity).TotalMinutes > Math.Max(Config.MinIdleMinutes, idleMinutes)) return RoomState.Stopped;
                     return RoomState.Working;
             }
@@ -284,12 +301,15 @@ namespace CmdCrew
         public static SessionInfo Read(string file)
         {
             if (!File.Exists(file)) return null;
-            for (int i = 0; i < 4; i++)
+            Exception last = null;
+            for (int i = 0; i < 10; i++)
             {
                 try { return SessionInfo.FromJson(Json.LoadObject(file)); }
-                catch (IOException) { Thread.Sleep(40); }
-                catch { return null; }
+                catch (IOException ex) { last = ex; Thread.Sleep(50); }
+                catch (UnauthorizedAccessException ex) { last = ex; Thread.Sleep(50); }
+                catch (Exception ex) { Paths.Log("sessão ilegível " + Path.GetFileName(file) + ": " + ex.Message); return null; }
             }
+            Paths.Log("sessão ocupada " + Path.GetFileName(file) + ": " + (last == null ? "" : last.Message));
             return null;
         }
 
@@ -297,19 +317,26 @@ namespace CmdCrew
         {
             Directory.CreateDirectory(Paths.SessionsDir);
             string f = FileFor(s.Id);
-            string tmp = f + ".tmp";
-            for (int i = 0; i < 6; i++)
+            // cada processo usa o seu .tmp: dois ganchos gravando ao mesmo tempo não brigam pelo mesmo arquivo
+            string tmp = f + "." + System.Diagnostics.Process.GetCurrentProcess().Id + ".tmp";
+            string text = Json.Stringify(s.ToJson());
+            Exception last = null;
+            for (int i = 0; i < 20; i++)
             {
                 try
                 {
                     // grava ao lado e troca, para quem lê nunca pegar o arquivo pela metade
-                    File.WriteAllText(tmp, Json.Stringify(s.ToJson()), new UTF8Encoding(false));
+                    File.WriteAllText(tmp, text, new UTF8Encoding(false));
                     if (File.Exists(f)) File.Replace(tmp, f, null); else File.Move(tmp, f);
                     return;
                 }
-                catch (IOException) { Thread.Sleep(40); }
-                catch (UnauthorizedAccessException) { Thread.Sleep(40); }
+                catch (IOException ex) { last = ex; Thread.Sleep(50); }
+                catch (UnauthorizedAccessException ex) { last = ex; Thread.Sleep(50); }
             }
+            // a troca não deu certo em 1 s: grava por cima (quem ler bem nessa hora tenta de novo no próximo ciclo)
+            try { File.WriteAllText(f, text, new UTF8Encoding(false)); }
+            catch (Exception ex) { Paths.Log("sessão não gravada " + s.Id + " (" + s.State + "): " + ex.Message + " / " + (last == null ? "" : last.Message)); }
+            try { File.Delete(tmp); } catch { }
         }
 
         public static void Delete(string sessionId)
