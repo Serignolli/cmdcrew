@@ -108,7 +108,7 @@
 
     "footer.made": "Made with pixels and coffee",
     "footer.license": "MIT license",
-    "footer.credit": "Built by <a href=\"https://serignolli.com\" target=\"_blank\" rel=\"noopener noreferrer\">Serignolli</a> · <a href=\"https://buymeacoffee.com/gabrielserignolli\" target=\"_blank\" rel=\"noopener noreferrer\">Buy the crew a coffee</a>",
+    "footer.credit": "Built by <a href=\"https://serignolli.com\" target=\"_blank\" rel=\"noopener noreferrer\">Serignolli</a> · <a href=\"https://apoie.serignolli.com/\" target=\"_blank\" rel=\"noopener noreferrer\">Buy the crew a coffee</a>",
 
     "pack.card1": "<h3>Code-mining dwarves</h3><p>They chip away at the repository looking for veins of gold, push the commit cart and haul the bugs out of the mine in sacks. They come with the mine: a flickering lamp, rails and shining rocks.</p><div class=\"tags\"><span>character + room</span><span>5 animations</span><span>5 colors</span></div>",
     "pack.card3": "<h3>Bug-hunting elves</h3><p>They find the error before the compiler does and hit it right in the middle of the stack trace. They come with the woods: fireflies, the moon and the target on the tree.</p><div class=\"tags\"><span>character + room</span><span>new</span><span>5 colors</span></div>",
