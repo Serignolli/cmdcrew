@@ -2,7 +2,7 @@
 
 **Uma equipe de bichinhos em pixel art que trabalha junto com o seu agente de IA e avisa quando ele termina.**
 
-Enquanto o agente pensa, edita e roda comandos, a equipe trabalha na sua tela. Quando ele termina, ela comemora e avisa. Se ele precisar de você, ela chama. Assim você pode fazer outra coisa e saber, só de bater o olho, quando é hora de voltar.
+Enquanto o agente pensa, edita e roda comandos, a equipe trabalha na sua tela. Quando ele termina, ela comemora e avisa. Se ele precisar de você, ela chama. Assim você pode fazer outra coisa e saber, só de bater o olho, quando é hora de voltar. Não usa terminal? O irmão dele, o [Screen Pets](https://screenpets.serignolli.com), traz bichinhos que passeiam pelas bordas da tela, sem agente de IA e sem configuração técnica.
 
 Claude Code · Codex CLI · Gemini CLI · Qwen Code · OpenCode · Copilot CLI
 Windows · macOS · Linux · grátis e de código aberto (MIT) · 100% local, sem conta e sem telemetria.
@@ -163,6 +163,7 @@ Crie uma tag `v*` (por exemplo `git tag v1.1.0 && git push --tags`). O workflow 
 
 ## Créditos
 
+- Os terrestres também passeiam pela tela no [Screen Pets](https://screenpets.serignolli.com), o irmão do CmdCrew para quem não usa terminal.
 - Sons feitos no [SFX Forge](https://github.com/Serignolli/sfx-forge).
 - Fonte [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) (SIL Open Font License).
 

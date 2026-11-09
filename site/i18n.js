@@ -105,9 +105,11 @@
     "faq.q6": "<summary>What is the Supporters Pack?</summary><p>A pack of high definition medieval and RPG characters with better animations, for those who want to support the project. The app and the regular characters stay free.</p>",
     "faq.q7": "<summary>What if I press Esc halfway through? And long tasks?</summary><p>Claude Code doesn't announce when it's interrupted, so the crew reads the conversation and notices the interruption on its own. For long tasks (builds, tests, subagents, long reasoning) the room stays until the end: it only leaves on its own after a long time with no activity at all.</p>",
     "faq.q8": "<summary>How do I change the settings or uninstall?</summary><p>Open CmdCrew from the Start menu: that's the settings screen. There you can switch the crew, choose who works in the room, turn each agent on and off or, tucked in the corner, uninstall it. You can also uninstall it from Windows' \"Installed apps\". On macOS and Linux it's <code>cmdcrew config</code> and <code>cmdcrew desinstalar</code>. It removes the hooks and restores the original spinner phrases.</p>",
+    "faq.q9": "<summary>Is it related to Screen Pets?</summary><p>It's its sibling for people who don't use a terminal: <a href=\"https://screenpets.serignolli.com/\" target=\"_blank\" rel=\"noopener\">Screen Pets</a> takes the ground critters from here for a walk along the edges of your screen, no agent needed, just company.</p>",
 
     "footer.made": "Made with pixels and coffee",
     "footer.license": "MIT license",
+    "footer.sibling": "sibling of <a href=\"https://screenpets.serignolli.com/\" target=\"_blank\" rel=\"noopener\">Screen Pets</a>",
     "footer.credit": "Built by <a href=\"https://serignolli.com\" target=\"_blank\" rel=\"noopener noreferrer\">Serignolli</a> · <a href=\"https://apoie.serignolli.com/\" target=\"_blank\" rel=\"noopener noreferrer\">Buy the crew a coffee</a>",
 
     "pack.card1": "<h3>Code-mining dwarves</h3><p>They chip away at the repository looking for veins of gold, push the commit cart and haul the bugs out of the mine in sacks. They come with the mine: a flickering lamp, rails and shining rocks.</p><div class=\"tags\"><span>character + room</span><span>5 animations</span><span>5 colors</span></div>",
